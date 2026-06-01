@@ -10,3 +10,4 @@ export * from './Drawer';
 export * from './Reveal';
 export * from './Popover';
 export * from './EmptyState';
+export * from './SegmentedControl';

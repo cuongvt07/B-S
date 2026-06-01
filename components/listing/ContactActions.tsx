@@ -19,20 +19,37 @@ interface BtnProps {
 }
 
 const variantClass: Record<BtnProps['variant'], string> = {
-  phone: 'text-price hover:bg-price-soft border-price/20 hover:border-price/40',
-  zalo: 'text-[#0068FF] hover:bg-[#E6F2FF] border-[#0068FF]/20 hover:border-[#0068FF]/50',
-  messenger: 'text-[#0084FF] hover:bg-[#E6F2FF] border-[#0084FF]/20 hover:border-[#0084FF]/50',
+  phone: 'text-price hover:bg-price-soft border-price/30 hover:border-price/60',
+  zalo: 'text-[#0068FF] hover:bg-[#E6F2FF] border-[#0068FF]/30 hover:border-[#0068FF]/60',
+  messenger:
+    'text-[#0084FF] hover:bg-[#E6F2FF] border-[#0084FF]/30 hover:border-[#0084FF]/60',
 };
 
-const sizeShape: Record<ContactSize, { box: string; icon: number; gap: string; label: string }> = {
-  sm: { box: 'h-8 w-8', icon: 14, gap: 'gap-1', label: 'hidden' },
-  md: { box: 'h-9 w-9', icon: 16, gap: 'gap-1.5', label: 'hidden sm:inline text-xs' },
-  lg: { box: 'h-11 px-4', icon: 16, gap: 'gap-2', label: 'inline text-sm font-semibold' },
+const sizeShape: Record<ContactSize, { box: string; iconBox: string; icon: number; label: string }> = {
+  sm: {
+    box: 'h-8 w-8 rounded-full',
+    iconBox: 'h-8 w-8 rounded-full',
+    icon: 14,
+    label: 'hidden',
+  },
+  md: {
+    // pill with auto-width when label shown
+    box: 'h-9 px-3 rounded-full text-xs gap-1.5',
+    iconBox: 'h-9 w-9 rounded-full',
+    icon: 14,
+    label: 'inline font-semibold',
+  },
+  lg: {
+    box: 'h-11 px-4 rounded-sm text-sm gap-2',
+    iconBox: 'h-11 w-11 rounded-sm',
+    icon: 16,
+    label: 'inline font-semibold',
+  },
 };
 
 function Btn({ href, title, variant, size, children, external, fullWidth, label }: BtnProps) {
   const s = sizeShape[size];
-  const isPill = size === 'lg';
+  const iconOnly = size === 'sm' || !label;
   return (
     <a
       href={href}
@@ -43,16 +60,14 @@ function Btn({ href, title, variant, size, children, external, fullWidth, label 
       onClick={(e) => e.stopPropagation()}
       className={cn(
         'inline-flex items-center justify-center border bg-white font-semibold transition-all',
-        'hover:-translate-y-0.5',
-        isPill ? 'rounded-sm' : 'grid place-items-center rounded-full',
-        s.box,
-        s.gap,
+        'hover:-translate-y-0.5 hover:shadow-raised',
+        iconOnly ? s.iconBox : s.box,
         variantClass[variant],
         fullWidth && 'w-full'
       )}
     >
       {children}
-      {label && <span className={s.label}>{label}</span>}
+      {!iconOnly && label && <span>{label}</span>}
     </a>
   );
 }
@@ -73,16 +88,20 @@ export function ContactActions({
   className,
 }: ContactActionsProps) {
   const phoneDigits = contact.phone.replace(/\D/g, '');
+  const count = 1 + (contact.zalo ? 1 : 0) + (contact.messengerId ? 1 : 0);
 
   return (
-    <div className={cn('flex items-center gap-1.5', fullWidth && 'grid grid-cols-3 gap-2', className)}>
+    <div
+      className={cn('items-center gap-2', fullWidth ? 'grid' : 'inline-flex flex-wrap', className)}
+      style={fullWidth ? { gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` } : undefined}
+    >
       <Btn
         href={`tel:${phoneDigits}`}
         title={`Gọi ${contact.phone}`}
         variant="phone"
         size={size}
         fullWidth={fullWidth}
-        label={showLabels ? 'Gọi' : undefined}
+        label={showLabels ? 'Gọi điện' : undefined}
       >
         <Phone size={sizeShape[size].icon} />
       </Btn>

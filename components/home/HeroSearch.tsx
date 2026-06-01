@@ -4,14 +4,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Search, MapPin } from 'lucide-react';
-import { Button, Select } from '@/components/ui';
+import { Button, SegmentedControl, Select } from '@/components/ui';
 import { cities, cityByCode } from '@/mocks/data/cities';
 import { PROPERTY_TYPE_LABELS, PRICE_BRACKETS_RENT } from '@/lib/constants';
-
-const TAB_BAR = [
-  { value: 'rent', label: 'Cho thuê' },
-  { value: 'sale', label: 'Mua bán' },
-] as const;
 
 export function HeroSearch() {
   const router = useRouter();
@@ -71,21 +66,16 @@ export function HeroSearch() {
           className="mx-auto mt-8 max-w-4xl rounded-md border border-brdr bg-white p-4 shadow-raised animate-slideUp"
           style={{ animationDelay: '120ms' }}
         >
-          <div className="mb-3 flex gap-1 border-b border-brdr">
-            {TAB_BAR.map((t) => (
-              <button
-                key={t.value}
-                type="button"
-                onClick={() => setTab(t.value)}
-                className={`px-4 py-2 text-sm font-semibold border-b-2 -mb-px ${
-                  tab === t.value
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-ink-muted hover:text-ink'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
+          <div className="mb-3 flex justify-center">
+            <SegmentedControl
+              options={[
+                { value: 'rent', label: 'Cho thuê' },
+                { value: 'sale', label: 'Mua bán' },
+              ]}
+              value={tab}
+              onChange={(v) => setTab(v as 'rent' | 'sale')}
+              accent="primary"
+            />
           </div>
 
           <div className="flex items-center rounded-sm border border-brdr px-3 py-2 focus-within:border-primary">

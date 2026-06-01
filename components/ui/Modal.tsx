@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,12 @@ export function Modal({
   closeOnBackdrop = true,
   className,
 }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -54,12 +61,13 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  const content = (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm animate-fadeIn sm:items-center sm:p-4"
+      role="presentation"
       onClick={() => closeOnBackdrop && onClose()}
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-fadeIn sm:items-center sm:p-4"
     >
       <div
         role="dialog"
@@ -67,14 +75,14 @@ export function Modal({
         aria-label={typeof title === 'string' ? title : undefined}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'flex w-full max-h-[92vh] flex-col bg-white shadow-deep animate-modalIn',
+          'flex w-full max-h-[92vh] flex-col bg-white shadow-deep animate-modalIn sm:max-h-[88vh]',
           'rounded-t-md sm:rounded-md',
           sizeClasses[size],
           className
         )}
       >
         {(title || !hideClose) && (
-          <div className="flex items-start justify-between gap-3 border-b border-brdr px-5 py-4">
+          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-brdr px-5 py-4">
             <div className="min-w-0 flex-1">
               {title && (
                 <h3 className="text-base font-semibold text-ink sm:text-lg">{title}</h3>
@@ -96,14 +104,16 @@ export function Modal({
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
 
         {footer && (
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-brdr px-5 py-3">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-brdr px-5 py-3">
             {footer}
           </div>
         )}
       </div>
     </div>
   );
+
+  return createPortal(content, document.body);
 }

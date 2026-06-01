@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Menu, PlusCircle } from 'lucide-react';
 import { Logo } from './Logo';
 import { MegaMenu } from './MegaMenu';
@@ -9,15 +9,37 @@ import { HeaderSearch } from './HeaderSearch';
 import { MobileDrawer } from './MobileDrawer';
 import { NotificationBell } from './NotificationBell';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';
+import { cn } from '@/lib/utils';
 
 export function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [hideMenu, setHideMenu] = useState(false);
+  const lastYRef = useRef(0);
   const openLogin = useAuthModal((s) => s.openLogin);
   const openRegister = useAuthModal((s) => s.openRegister);
 
+  // Auto-collapse Row 2 (mega menu) when scrolling DOWN past threshold,
+  // reveal again on scroll UP or when near top.
+  useEffect(() => {
+    function onScroll() {
+      const y = window.scrollY;
+      const last = lastYRef.current;
+      if (y < 80) {
+        setHideMenu(false);
+      } else if (y > last + 4) {
+        setHideMenu(true);
+      } else if (y < last - 4) {
+        setHideMenu(false);
+      }
+      lastYRef.current = y;
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <>
-      <header className="sticky top-0 z-30 bg-white border-b border-brdr">
+      <header className="sticky top-0 z-30 bg-white border-b border-brdr shadow-[0_1px_0_rgba(0,0,0,0.04)]">
         {/* Row 1: Logo + Search + Auth + CTA */}
         <div className="container-app flex h-16 items-center gap-4">
           <button
@@ -64,8 +86,17 @@ export function Header() {
           </div>
         </div>
 
-        {/* Row 2: Mega menu (desktop only) */}
-        <div className="hidden lg:block border-t border-brdr bg-white">
+        {/* Row 2: Mega menu — auto-collapse on scroll-down, slide back on scroll-up */}
+        <div
+          className={cn(
+            'hidden lg:block overflow-hidden border-t border-brdr bg-white',
+            'transition-[max-height,opacity,transform] duration-300 ease-out',
+            hideMenu
+              ? 'max-h-0 opacity-0 -translate-y-1 pointer-events-none'
+              : 'max-h-20 opacity-100 translate-y-0'
+          )}
+          aria-hidden={hideMenu}
+        >
           <div className="container-app">
             <MegaMenu />
           </div>

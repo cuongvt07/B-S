@@ -1,15 +1,9 @@
 'use client';
 
-import { Modal } from '@/components/ui';
-import { useAuthModal } from '@/lib/hooks/useAuthModal';
+import { Modal, SegmentedControl } from '@/components/ui';
+import { useAuthModal, type AuthView } from '@/lib/hooks/useAuthModal';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
-import { cn } from '@/lib/utils';
-
-const TABS = [
-  { value: 'login' as const, label: 'Đăng nhập' },
-  { value: 'register' as const, label: 'Đăng ký' },
-];
 
 export function AuthModal() {
   const open = useAuthModal((s) => s.open);
@@ -20,23 +14,18 @@ export function AuthModal() {
 
   return (
     <Modal open={open} onClose={close} size="sm" hideClose={false} title="Tài khoản">
-      <div className="-mt-2">
-        <div className="mb-5 flex gap-1 border-b border-brdr">
-          {TABS.map((t) => (
-            <button
-              key={t.value}
-              type="button"
-              onClick={() => setView(t.value)}
-              className={cn(
-                '-mb-px px-4 py-2 text-sm font-semibold border-b-2 transition-colors',
-                view === t.value
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-ink-muted hover:text-ink'
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
+      <div className="-mt-1">
+        <div className="mb-5 flex justify-center">
+          <SegmentedControl
+            options={[
+              { value: 'login', label: 'Đăng nhập' },
+              { value: 'register', label: 'Đăng ký' },
+            ]}
+            value={view}
+            onChange={(v) => setView(v as AuthView)}
+            accent="primary"
+            fullWidth
+          />
         </div>
 
         {view === 'login' ? (

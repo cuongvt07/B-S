@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Box, Map as MapIcon, Flame, MapPin, RefreshCcw, Layers } from 'lucide-react';
 import { useListings } from '@/lib/hooks/useListings';
 import { Breadcrumbs } from '@/components/seo';
-import { Badge, Skeleton } from '@/components/ui';
+import { Badge, SegmentedControl, Skeleton } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { formatPrice, formatArea } from '@/lib/utils/format';
 import { getListingLngLat } from '@/lib/utils/coords';
@@ -125,59 +125,36 @@ export default function MapPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-md border border-brdr bg-white p-0.5 shadow-raised">
-            <button
-              type="button"
-              onClick={() => setMode('cluster')}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold transition',
-                mode === 'cluster' ? 'bg-primary text-white' : 'text-ink hover:bg-surface-subtle'
-              )}
-            >
-              <MapIcon size={14} /> Marker
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('heatmap')}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold transition',
-                mode === 'heatmap' ? 'bg-primary text-white' : 'text-ink hover:bg-surface-subtle'
-              )}
-            >
-              <Flame size={14} /> Heatmap
-            </button>
-          </div>
+          <SegmentedControl
+            options={[
+              { value: 'cluster', label: 'Marker', icon: <MapIcon size={14} /> },
+              { value: 'heatmap', label: 'Heatmap', icon: <Flame size={14} /> },
+            ]}
+            value={mode}
+            onChange={(v) => setMode(v as 'cluster' | 'heatmap')}
+            size="sm"
+            accent="primary"
+          />
 
-          <div className="inline-flex rounded-md border border-brdr bg-white p-0.5 shadow-raised">
-            {(
-              [
-                { id: 'liberty', label: 'Liberty' },
-                { id: 'bright', label: 'Bright' },
-                { id: 'positron', label: 'Mono' },
-              ] as { id: StyleId; label: string }[]
-            ).map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setStyleId(s.id)}
-                className={cn(
-                  'rounded-sm px-2.5 py-1.5 text-xs font-semibold transition',
-                  styleId === s.id ? 'bg-ink text-white' : 'text-ink hover:bg-surface-subtle'
-                )}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
+          <SegmentedControl
+            options={[
+              { value: 'liberty', label: 'Liberty' },
+              { value: 'bright', label: 'Bright' },
+              { value: 'positron', label: 'Mono' },
+            ]}
+            value={styleId}
+            onChange={(v) => setStyleId(v as StyleId)}
+            size="sm"
+          />
 
           <button
             type="button"
             onClick={() => setThreeD((v) => !v)}
             className={cn(
-              'inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold transition',
+              'inline-flex h-9 items-center gap-1.5 rounded-full border bg-white px-3 text-xs font-semibold transition',
               threeD
-                ? 'border-primary bg-primary text-white'
-                : 'border-brdr bg-white text-ink hover:bg-surface-subtle'
+                ? 'border-primary text-primary shadow-raised'
+                : 'border-brdr text-ink hover:bg-surface-subtle'
             )}
           >
             <Box size={14} /> 3D
