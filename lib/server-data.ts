@@ -1,31 +1,66 @@
 /**
  * Server-side data access for Server Components.
  *
- * MOCK mode: reads directly from mocks/store to avoid HTTP round-trip during SSR.
- * SWAP-TO-LARAVEL: replace each function body with `apiFetch` calls using an
- * absolute base URL (e.g. process.env.LARAVEL_API_URL), or use a server-side
- * fetch wrapper. Function signatures are stable.
+ * Listings + detail → fetched from the real Laravel API (public endpoints).
+ * Blogs → still mock (Laravel doesn't expose blogs yet).
  */
 import 'server-only';
 import type { Listing, ListingFilter, Blog, PaginatedResponse, ApiResponse } from '@/types';
-import { listingsStore } from '@/mocks/store';
 import { blogs as blogsData, blogBySlug } from '@/mocks/data/blogs';
-import { applyFilter, applySort } from '@/mocks/handlers/filter';
 import { paginate } from '@/mocks/handlers/paginate';
+import {
+  mapApiListing,
+  mapFilterToApi,
+  mapPaginated,
+  type LaravelListing,
+  type LaravelPaginated,
+} from './api/laravelAdapter';
 
-export async function listListings(filter: ListingFilter = {}): Promise<PaginatedResponse<Listing>> {
-  const all = listingsStore.all();
-  const filtered = applyFilter(all, filter);
-  const sorted = applySort(filtered, filter.sort);
-  return paginate(sorted, filter.page, filter.pageSize);
+const REAL_HOST = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+
+async function realServerFetch<T>(path: string, query?: Record<string, unknown>): Promise<T> {
+  const url = new URL(`${REAL_HOST}/api/v1${path.startsWith('/') ? path : `/${path}`}`);
+  if (query) {
+    for (const [k, v] of Object.entries(query)) {
+      if (v === undefined || v === null || v === '') continue;
+      url.searchParams.append(k, String(v));
+    }
+  }
+  const res = await fetch(url.toString(), {
+    headers: { Accept: 'application/json' },
+    // ISR-friendly cache; tune per route if needed.
+    next: { revalidate: 60 },
+  });
+  if (!res.ok) {
+    throw new Error(`API ${path} ${res.status} ${res.statusText}`);
+  }
+  return (await res.json()) as T;
 }
 
-export async function getListing(id: string): Promise<ApiResponse<Listing> | null> {
-  const listing = listingsStore.get(id);
-  if (!listing) return null;
-  return { data: listing };
+export async function listListings(
+  filter: ListingFilter = {}
+): Promise<PaginatedResponse<Listing>> {
+  try {
+    const query = mapFilterToApi(filter) as unknown as Record<string, unknown>;
+    const res = await realServerFetch<LaravelPaginated<LaravelListing>>('/listings', query);
+    return mapPaginated(res);
+  } catch (err) {
+    console.error('[server-data] listListings failed:', err);
+    return { data: [], meta: { page: 1, pageSize: filter.pageSize ?? 12, total: 0, totalPages: 0 } };
+  }
 }
 
+export async function getListing(idOrCode: string): Promise<ApiResponse<Listing> | null> {
+  try {
+    const res = await realServerFetch<{ data: LaravelListing }>(`/listings/${idOrCode}`);
+    return { data: mapApiListing(res.data) };
+  } catch (err) {
+    console.error('[server-data] getListing failed:', err);
+    return null;
+  }
+}
+
+// ── Blogs (mock — Laravel chưa có) ──
 export async function listBlogs(
   params: { tag?: string; page?: number; pageSize?: number } = {}
 ): Promise<PaginatedResponse<Blog>> {
