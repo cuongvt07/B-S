@@ -8,15 +8,13 @@ import { MegaMenu } from './MegaMenu';
 import { HeaderSearch } from './HeaderSearch';
 import { MobileDrawer } from './MobileDrawer';
 import { NotificationBell } from './NotificationBell';
-import { useAuthModal } from '@/lib/hooks/useAuthModal';
+import { AccountMenu } from './AccountMenu';
 import { cn } from '@/lib/utils';
 
 export function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [hideMenu, setHideMenu] = useState(false);
   const lastYRef = useRef(0);
-  const openLogin = useAuthModal((s) => s.openLogin);
-  const openRegister = useAuthModal((s) => s.openRegister);
 
   // Auto-collapse Row 2 (mega menu) when scrolling DOWN past threshold,
   // reveal again on scroll UP or when near top.
@@ -55,30 +53,16 @@ export function Header() {
 
           <HeaderSearch />
 
-          <div className="ml-auto flex shrink-0 items-center gap-1 whitespace-nowrap">
+          <div className="ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap">
             <span className="hidden md:inline-flex">
               <NotificationBell />
             </span>
-            <div className="hidden md:flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => openLogin()}
-                className="px-3 py-2 text-sm font-semibold text-ink hover:text-primary"
-              >
-                Đăng nhập
-              </button>
-              <span className="text-ink-muted">·</span>
-              <button
-                type="button"
-                onClick={() => openRegister()}
-                className="px-3 py-2 text-sm font-semibold text-ink hover:text-primary"
-              >
-                Đăng ký
-              </button>
-            </div>
+            <span className="hidden md:inline-flex">
+              <AccountMenu />
+            </span>
             <Link
               href="/tai-khoan/dang-tin"
-              className="unstyled ml-2 inline-flex items-center gap-1 rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover"
+              className="unstyled inline-flex items-center gap-1 rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover"
             >
               <PlusCircle size={16} />
               <span className="hidden sm:inline">Đăng tin</span>

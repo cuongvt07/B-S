@@ -1,34 +1,29 @@
-import { apiFetch } from './client';
+/**
+ * Listings API — proxies the real Laravel endpoints at https://vmphuthinhland.com/api/v1
+ * and adapts the response into our local `Listing` shape so all existing UI keeps working.
+ */
+import { realFetch } from './realClient';
+import {
+  mapApiListing,
+  mapFilterToApi,
+  mapPaginated,
+  type LaravelListing,
+  type LaravelPaginated,
+} from './laravelAdapter';
 import type { ApiResponse, Listing, ListingFilter, PaginatedResponse } from '@/types';
 
-function filterToQuery(f: ListingFilter): Record<string, string | number | boolean | undefined> {
-  return {
-    q: f.q,
-    categoryId: f.categoryId,
-    transactionType: f.transactionType,
-    propertyType: f.propertyType,
-    cityCode: f.cityCode,
-    districtCode: f.districtCode,
-    priceMin: f.priceMin,
-    priceMax: f.priceMax,
-    areaMin: f.areaMin,
-    areaMax: f.areaMax,
-    bedrooms: f.bedrooms,
-    direction: f.direction,
-    furnish: f.furnish,
-    vipOnly: f.vipOnly || undefined,
-    sort: f.sort,
-    page: f.page,
-    pageSize: f.pageSize,
-  };
-}
-
 export const listingApi = {
-  list(filter: ListingFilter = {}): Promise<PaginatedResponse<Listing>> {
-    return apiFetch<PaginatedResponse<Listing>>('/listings', { query: filterToQuery(filter) });
+  async list(filter: ListingFilter = {}): Promise<PaginatedResponse<Listing>> {
+    const query = mapFilterToApi(filter) as unknown as Record<
+      string,
+      string | number | boolean | undefined | null
+    >;
+    const res = await realFetch<LaravelPaginated<LaravelListing>>('/listings', { query });
+    return mapPaginated(res);
   },
 
-  get(id: string): Promise<ApiResponse<Listing>> {
-    return apiFetch<ApiResponse<Listing>>(`/listings/${id}`);
+  async get(idOrCode: string): Promise<ApiResponse<Listing>> {
+    const res = await realFetch<{ data: LaravelListing }>(`/listings/${idOrCode}`);
+    return { data: mapApiListing(res.data) };
   },
 };

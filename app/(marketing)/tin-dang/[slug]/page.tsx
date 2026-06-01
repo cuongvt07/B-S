@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MapPin, Maximize2, BedDouble, Bath, Compass, Sofa, Eye, Calendar } from 'lucide-react';
 import { getListing, listListings } from '@/lib/server-data';
@@ -51,9 +52,14 @@ export default async function ListingDetailPage({ params }: PageProps) {
   const similar = await listListings({
     propertyType: l.propertyType,
     cityCode: l.cityCode,
-    pageSize: 3,
+    pageSize: 4,
   });
   const relatedListings = similar.data.filter((s) => s.id !== l.id).slice(0, 3);
+
+  const ownerListingsResult = await listListings({ pageSize: 100 });
+  const ownerListings = ownerListingsResult.data
+    .filter((s) => s.ownerId === l.ownerId && s.id !== l.id)
+    .slice(0, 4);
 
   const url = `${SITE.url}/tin-dang/${l.slug}`;
 
@@ -167,13 +173,29 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
           {l.lat && l.lng && (
             <section>
-              <h2 className="mb-3 text-lg font-semibold">Vị trí</h2>
+              <h2 className="mb-3 text-lg font-semibold">Vị trí trên bản đồ</h2>
               <div className="aspect-[16/9] overflow-hidden rounded-md border border-brdr">
                 <iframe
                   title="Vị trí trên bản đồ"
                   src={`https://www.google.com/maps?q=${l.lat},${l.lng}&z=15&output=embed`}
                   className="h-full w-full border-0"
                   loading="lazy"
+                />
+              </div>
+            </section>
+          )}
+
+          {l.videoUrl && (
+            <section>
+              <h2 className="mb-3 text-lg font-semibold">Video liên quan</h2>
+              <div className="aspect-[16/9] overflow-hidden rounded-md border border-brdr bg-black">
+                <iframe
+                  title="Video tin đăng"
+                  src={l.videoUrl}
+                  className="h-full w-full border-0"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
                 />
               </div>
             </section>
@@ -197,6 +219,30 @@ export default async function ListingDetailPage({ params }: PageProps) {
           <ContactSidebar listing={l} />
         </div>
       </div>
+
+      {ownerListings.length > 0 && (
+        <section className="mt-12">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">Tin khác của {l.contact.name}</h2>
+              <p className="mt-1 text-sm text-ink-muted">
+                {ownerListingsResult.data.filter((s) => s.ownerId === l.ownerId).length} tin từ người này
+              </p>
+            </div>
+            <Link
+              href={`/nguoi-dang/${l.ownerId}`}
+              className="unstyled inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-hover"
+            >
+              Xem tất cả →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {ownerListings.map((r) => (
+              <ListingCard key={r.id} listing={r} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {relatedListings.length > 0 && (
         <section className="mt-12">

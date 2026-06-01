@@ -15,10 +15,16 @@ import {
 } from 'lucide-react';
 import { Modal, Badge, Button } from '@/components/ui';
 import type { Listing } from '@/types';
-import { formatPrice, formatArea, formatTimeAgo, formatNumber } from '@/lib/utils/format';
+import {
+  formatPrice,
+  formatArea,
+  formatTimeAgo,
+  formatNumber,
+} from '@/lib/utils/format';
 import { formatLocation } from '@/mocks/data/cities';
 import { DIRECTION_LABELS, FURNISH_LABELS, PROPERTY_TYPE_LABELS } from '@/lib/constants';
 import { ContactActions } from './ContactActions';
+import { ListingImageCarousel } from './ListingImageCarousel';
 
 interface Props {
   open: boolean;
@@ -27,16 +33,16 @@ interface Props {
 }
 
 export function ListingQuickView({ open, onClose, listing }: Props) {
-  const cover = listing.images.find((i) => i.isPrimary) ?? listing.images[0];
   const href = `/tin-dang/${listing.slug}`;
+  const ownerHref = `/nguoi-dang/${listing.ownerId}`;
 
   const footer = (
-    <div className="flex w-full flex-wrap items-center justify-between gap-3">
+    <>
       <ContactActions contact={listing.contact} size="md" showLabels />
       <Link href={href} onClick={onClose} className="unstyled">
         <Button rightIcon={<ArrowRight size={16} />}>Xem chi tiết</Button>
       </Link>
-    </div>
+    </>
   );
 
   return (
@@ -48,27 +54,15 @@ export function ListingQuickView({ open, onClose, listing }: Props) {
       footer={footer}
     >
       <div className="grid grid-cols-1 gap-5 md:grid-cols-[1.1fr_1fr]">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-brdr">
-          {cover && (
-            <Image
-              src={cover.url}
-              alt={listing.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
-            />
-          )}
+        {/* Gallery with carousel */}
+        <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-brdr group">
+          <ListingImageCarousel images={listing.images} alt={listing.title} sizes="500px" />
           {listing.vipTier !== 'normal' && (
-            <div className="absolute left-3 top-3">
+            <div className="pointer-events-none absolute left-3 top-3 z-10">
               <Badge variant="vip">
                 <Star size={12} fill="currentColor" />
                 VIP {listing.vipTier.replace('vip', '')}
               </Badge>
-            </div>
-          )}
-          {listing.images.length > 1 && (
-            <div className="absolute bottom-3 right-3 rounded-sm bg-black/60 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
-              {listing.images.length} ảnh
             </div>
           )}
         </div>
@@ -128,18 +122,62 @@ export function ListingQuickView({ open, onClose, listing }: Props) {
             </span>
           </p>
 
-          <p className="text-sm leading-relaxed text-ink line-clamp-4">{listing.description}</p>
+          <p className="text-sm leading-relaxed text-ink line-clamp-4">
+            {listing.description}
+          </p>
 
-          <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-brdr pt-3 text-xs text-ink-muted">
-            <span>
-              Đăng bởi <span className="font-semibold text-ink">{listing.contact.name}</span>
-            </span>
-            <span>·</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
             <span>{formatTimeAgo(listing.createdAt)}</span>
             <span>·</span>
             <span className="inline-flex items-center gap-1">
               <Eye size={12} /> {formatNumber(listing.viewCount)} lượt xem
             </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Owner info block */}
+      <div className="mt-5 rounded-md border border-brdr bg-surface-subtle p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {listing.contact.avatarUrl ? (
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-brdr bg-white">
+              <Image
+                src={listing.contact.avatarUrl}
+                alt={listing.contact.name}
+                fill
+                sizes="48px"
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white text-base font-semibold text-ink-muted">
+              {listing.contact.name.charAt(0)}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <Link
+              href={ownerHref}
+              onClick={onClose}
+              className="unstyled font-semibold text-ink hover:text-primary"
+            >
+              {listing.contact.name}
+            </Link>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-ink-muted">
+              <span className="inline-flex items-center gap-1">
+                <span className="inline-block h-2 w-2 rounded-full bg-price" />
+                Đang hoạt động
+              </span>
+              <span>·</span>
+              <span>Phản hồi: 92%</span>
+              <span>·</span>
+              <Link
+                href={ownerHref}
+                onClick={onClose}
+                className="unstyled text-primary hover:underline"
+              >
+                Xem tin khác
+              </Link>
+            </p>
           </div>
         </div>
       </div>
