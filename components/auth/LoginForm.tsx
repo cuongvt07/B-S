@@ -8,8 +8,16 @@ import { useState } from 'react';
 import { Button, Input } from '@/components/ui';
 import { useLogin } from '@/lib/hooks/useAuth';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^0\d{9,10}$/;
+
 const schema = z.object({
-  email: z.string().email('Email không hợp lệ'),
+  identifier: z
+    .string()
+    .min(6, 'Vui lòng nhập email hoặc số điện thoại')
+    .refine((v) => EMAIL_RE.test(v) || PHONE_RE.test(v), {
+      message: 'Email hoặc số điện thoại không hợp lệ',
+    }),
   password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự'),
 });
 type FormValues = z.infer<typeof schema>;
@@ -31,12 +39,15 @@ export function LoginForm({ onSuccess, nextUrl }: Props) {
 
   async function onSubmit(values: FormValues) {
     setServerError(null);
+    const id = values.identifier.trim();
+    const isEmail = EMAIL_RE.test(id);
     try {
-      await login.mutateAsync(values);
+      await login.mutateAsync({
+        password: values.password,
+        ...(isEmail ? { email: id } : { phone: id }),
+      });
       onSuccess?.();
-      if (nextUrl) {
-        router.push(nextUrl);
-      }
+      if (nextUrl) router.push(nextUrl);
       router.refresh();
     } catch (e: unknown) {
       setServerError(e instanceof Error ? e.message : 'Đăng nhập thất bại');
@@ -46,17 +57,18 @@ export function LoginForm({ onSuccess, nextUrl }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <p className="rounded-sm bg-surface-subtle px-3 py-2 text-xs text-ink-muted">
-        Tài khoản demo:{' '}
-        <code className="rounded-sm bg-white px-1 font-mono">an.nguyen@example.com</code> /{' '}
-        <code className="rounded-sm bg-white px-1 font-mono">123456</code>
+        Đăng nhập bằng <strong className="text-ink">email</strong> hoặc{' '}
+        <strong className="text-ink">số điện thoại</strong>. Admin demo:{' '}
+        <code className="rounded-sm bg-white px-1 font-mono">0981847977</code>
       </p>
       <Input
-        label="Email"
-        type="email"
-        autoComplete="email"
+        label="Email hoặc số điện thoại"
+        type="text"
+        autoComplete="username"
         autoFocus
-        {...register('email')}
-        error={errors.email?.message}
+        placeholder="vd: 0981847977 / your@email.com"
+        {...register('identifier')}
+        error={errors.identifier?.message}
       />
       <Input
         label="Mật khẩu"

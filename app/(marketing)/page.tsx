@@ -43,10 +43,10 @@ async function fetchProvinceCount(provinceName: string): Promise<number> {
 
 export default async function HomePage() {
   const [vipResult, newestResult, landResult, blogResult, regionCounts] = await Promise.all([
-    // "Tin nổi bật" → giá cao nhất trước (proxy cho VIP khi API chưa có khái niệm này)
-    listListings({ sort: 'priceDesc', pageSize: 8 }),
-    // Tin mới nhất
-    listListings({ sort: 'newest', pageSize: 8 }),
+    // "Tin nổi bật" → tin mới nhất, trang 1
+    listListings({ sort: 'newest', pageSize: 8, page: 1 }),
+    // "Tin đăng mới nhất" → lấy trang 2 để không trùng với section trên
+    listListings({ sort: 'newest', pageSize: 8, page: 2 }),
     // Đất nền — section bổ sung để test UI
     listListings({ propertyType: 'land', pageSize: 8, sort: 'newest' }),
     listBlogs({ pageSize: 10 }),
@@ -66,10 +66,10 @@ export default async function HomePage() {
       </Reveal>
       <Reveal>
         <FeaturedListingsGrid
-          title="Tin nổi bật"
-          description={`Cập nhật ${vipResult.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị — sắp xếp theo giá cao`}
+          title="Tin đăng nổi bật"
+          description={`${vipResult.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị — cập nhật mới nhất`}
           listings={vipResult.data}
-          href="/tin-dang?sort=priceDesc"
+          href="/tin-dang"
         />
       </Reveal>
       <Reveal direction="scale">
