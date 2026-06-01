@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const REAL_API = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
+
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -13,6 +15,20 @@ const nextConfig = {
       { protocol: 'https', hostname: 's3-hcm5-r1.longvan.net' },
       { protocol: 'https', hostname: '*.longvan.net' },
     ],
+  },
+  // Proxy Laravel API endpoints so browser sees them as same-origin.
+  // Cookie-based Sanctum auth then works without cross-domain CORS gymnastics.
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: `${REAL_API}/api/v1/:path*`,
+      },
+      {
+        source: '/sanctum/:path*',
+        destination: `${REAL_API}/sanctum/:path*`,
+      },
+    ];
   },
 };
 

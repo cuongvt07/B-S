@@ -7,13 +7,19 @@
  */
 import { ApiError, type FetchOptions } from './client';
 
-const HOST = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+const REMOTE_HOST = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
 const PREFIX = '/api/v1';
+
+// In the browser we go through Next.js rewrites (same-origin → cookies work).
+// On the server we hit Laravel directly because rewrites only apply to browser traffic.
+function getHost(): string {
+  return typeof window === 'undefined' ? REMOTE_HOST : '';
+}
 
 function buildUrl(path: string, query?: FetchOptions['query']): string {
   const base = path.startsWith('http')
     ? path
-    : `${HOST}${PREFIX}${path.startsWith('/') ? path : `/${path}`}`;
+    : `${getHost()}${PREFIX}${path.startsWith('/') ? path : `/${path}`}`;
   if (!query) return base;
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(query)) {
@@ -36,7 +42,9 @@ async function ensureCsrf(): Promise<void> {
   if (typeof window === 'undefined') return;
   if (getXsrfToken()) return;
   if (!csrfPromise) {
-    csrfPromise = fetch(`${HOST}/sanctum/csrf-cookie`, {
+    // Always go through same-origin (Next.js rewrites proxy to Laravel) so the
+    // XSRF-TOKEN cookie is set on this origin and is automatically attached.
+    csrfPromise = fetch(`/sanctum/csrf-cookie`, {
       credentials: 'include',
     })
       .then(() => undefined)
@@ -88,4 +96,4 @@ export async function realFetch<T>(path: string, options: FetchOptions = {}): Pr
   return (await res.json()) as T;
 }
 
-export { HOST as REAL_API_HOST };
+export { REMOTE_HOST as REAL_API_HOST };
