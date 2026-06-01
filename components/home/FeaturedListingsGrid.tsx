@@ -1,0 +1,33 @@
+import Link from 'next/link';
+import type { Listing } from '@/types';
+import { ListingGrid } from '@/components/listing';
+import { ArrowRight } from 'lucide-react';
+
+interface Props {
+  title: string;
+  description?: string;
+  listings: Listing[];
+  href?: string;
+}
+
+export function FeaturedListingsGrid({ title, description, listings, href }: Props) {
+  return (
+    <section className="container-app py-8">
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-ink sm:text-2xl">{title}</h2>
+          {description && <p className="mt-1 text-sm text-ink-muted">{description}</p>}
+        </div>
+        {href && (
+          <Link
+            href={href}
+            className="unstyled inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-hover"
+          >
+            Xem tất cả <ArrowRight size={14} />
+          </Link>
+        )}
+      </div>
+      <ListingGrid listings={listings} />
+    </section>
+  );
+}
