@@ -28,8 +28,8 @@ async function realServerFetch<T>(path: string, query?: Record<string, unknown>)
   }
   const res = await fetch(url.toString(), {
     headers: { Accept: 'application/json' },
-    // ISR-friendly cache; tune per route if needed.
-    next: { revalidate: 60 },
+    // No ISR cache on listings for now — always reflect real-time API.
+    cache: 'no-store',
   });
   if (!res.ok) {
     throw new Error(`API ${path} ${res.status} ${res.statusText}`);
@@ -43,10 +43,19 @@ export async function listListings(
   try {
     const query = mapFilterToApi(filter) as unknown as Record<string, unknown>;
     const res = await realServerFetch<LaravelPaginated<LaravelListing>>('/listings', query);
-    return mapPaginated(res);
+    const mapped = mapPaginated(res);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        `[server-data] listListings q=${JSON.stringify(query)} → total=${mapped.meta.total}, items=${mapped.data.length}`
+      );
+    }
+    return mapped;
   } catch (err) {
     console.error('[server-data] listListings failed:', err);
-    return { data: [], meta: { page: 1, pageSize: filter.pageSize ?? 12, total: 0, totalPages: 0 } };
+    return {
+      data: [],
+      meta: { page: 1, pageSize: filter.pageSize ?? 12, total: 0, totalPages: 0 },
+    };
   }
 }
 

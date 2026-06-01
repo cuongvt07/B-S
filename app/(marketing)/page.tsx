@@ -43,11 +43,11 @@ async function fetchProvinceCount(provinceName: string): Promise<number> {
 
 export default async function HomePage() {
   const [vipResult, newestResult, landResult, blogResult, regionCounts] = await Promise.all([
-    // "Tin nổi bật" → tin mới nhất, trang 1
-    listListings({ sort: 'newest', pageSize: 8, page: 1 }),
-    // "Tin đăng mới nhất" → lấy trang 2 để không trùng với section trên
-    listListings({ sort: 'newest', pageSize: 8, page: 2 }),
-    // Đất nền — section bổ sung để test UI
+    // "Tin đăng nổi bật" → 10 tin mới nhất
+    listListings({ sort: 'newest', pageSize: 10 }),
+    // "Tin đăng mới nhất" → trang 2 để không trùng
+    listListings({ sort: 'newest', pageSize: 10, page: 2 }),
+    // Đất nền — section bổ sung
     listListings({ propertyType: 'land', pageSize: 8, sort: 'newest' }),
     listBlogs({ pageSize: 10 }),
     Promise.all(REGION_DEFAULTS.map((r) => fetchProvinceCount(r.provinceName))),
