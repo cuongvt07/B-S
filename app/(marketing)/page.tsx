@@ -13,10 +13,10 @@ import { Reveal } from '@/components/ui';
 import { RecentlyViewed } from '@/components/listing';
 import { listListings, listBlogs } from '@/lib/server-data';
 
-// Render on every request so a build-time fetch failure (Vercel cold/blocked)
-// doesn't freeze the static HTML with empty arrays. Laravel API is ~500ms — cost is OK.
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// ISR: re-render at most every 5 minutes. Navigating away and back within that
+// window serves the cached page instantly — no Laravel round-trip. Listings
+// don't change every second, so 300s is a good freshness/perf tradeoff.
+export const revalidate = 300;
 
 async function fetchProvinceCount(provinceName: string): Promise<number> {
   try {

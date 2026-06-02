@@ -15,6 +15,16 @@ interface Props {
   className?: string;
   /** Blur intensity — default is `md`. */
   blur?: 'sm' | 'md' | 'lg';
+  /**
+   * Layout variant:
+   * - 'overlay' (default): blurred children + centered card with title/desc/buttons.
+   *   Use in roomy areas (sidebar, profile header).
+   * - 'inline': single compact button replaces the children entirely. No card.
+   *   Use in tight footers / table cells.
+   */
+  variant?: 'overlay' | 'inline';
+  /** Compact label shown in `variant="inline"`. */
+  inlineLabel?: string;
 }
 
 /**
@@ -28,6 +38,8 @@ export function AuthGate({
   description = 'Số điện thoại, Zalo, Messenger sẽ hiện sau khi đăng nhập.',
   className,
   blur = 'md',
+  variant = 'overlay',
+  inlineLabel = 'Đăng nhập để liên hệ',
 }: Props) {
   const { data: user, isLoading } = useCurrentUser();
   const openLogin = useAuthModal((s) => s.openLogin);
@@ -45,6 +57,23 @@ export function AuthGate({
 
   if (user) {
     return <div className={className}>{children}</div>;
+  }
+
+  // Compact inline variant — single pill button, no card / no blurred children.
+  if (variant === 'inline') {
+    return (
+      <button
+        type="button"
+        onClick={() => openLogin()}
+        className={cn(
+          'inline-flex items-center gap-1.5 rounded-sm border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-semibold text-primary transition hover:border-primary hover:bg-primary/10',
+          className
+        )}
+      >
+        <Lock size={13} />
+        {inlineLabel}
+      </button>
+    );
   }
 
   const blurClass = blur === 'sm' ? 'blur-[2px]' : blur === 'lg' ? 'blur-md' : 'blur-[4px]';

@@ -53,9 +53,10 @@ async function realServerFetch<T>(path: string, query?: Record<string, unknown>)
       Accept: 'application/json',
       'User-Agent': FETCH_UA,
     },
-    // No cache — page-level revalidate / dynamic controls caching. Avoids stale
-    // empty results staying cached after a build-time fetch failure.
-    cache: 'no-store',
+    // Match the homepage `revalidate = 300`. Any single `cache: 'no-store'` on a
+    // server-side fetch forces the entire page into dynamic mode — by using ISR
+    // here we let `/` stay statically generated and revalidate at most every 5min.
+    next: { revalidate: 300 },
   };
 
   // Try twice — first attempt often fails on cold Vercel functions / DNS hiccups.

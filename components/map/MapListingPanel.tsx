@@ -208,11 +208,7 @@ export function MapListingPanel({ listing, onClose, onPrev, onNext, position }: 
 
       {/* Sticky footer */}
       <div className="border-t border-brdr bg-white p-3 space-y-2">
-        <AuthGate
-          title="Đăng nhập để liên hệ"
-          description="Sau khi đăng nhập bạn có thể gọi, chat Zalo hoặc Messenger với chủ tin."
-          blur="sm"
-        >
+        <AuthGate variant="inline" inlineLabel="Đăng nhập để liên hệ" className="w-full justify-center">
           <ContactActions contact={listing.contact} size="md" fullWidth showLabels />
         </AuthGate>
         <Link href={href} className="unstyled block">

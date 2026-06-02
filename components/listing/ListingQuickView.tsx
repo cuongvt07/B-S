@@ -39,7 +39,7 @@ export function ListingQuickView({ open, onClose, listing }: Props) {
 
   const footer = (
     <>
-      <AuthGate title="Đăng nhập để liên hệ" blur="sm">
+      <AuthGate variant="inline" inlineLabel="Đăng nhập để liên hệ">
         <ContactActions contact={listing.contact} size="md" showLabels />
       </AuthGate>
       <Link href={href} onClick={onClose} className="unstyled">
