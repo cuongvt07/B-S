@@ -16,7 +16,23 @@ import {
   type LaravelPaginated,
 } from './api/laravelAdapter';
 
-const REAL_HOST = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+/**
+ * Resolves the host used for server-side Laravel fetches.
+ *
+ * On Vercel: route through our own deployment so that Next.js rewrites in
+ * next.config.mjs proxy `/api/v1/*` → Laravel. Direct fetches from the
+ * serverless function to vmphuthinhland.com are blocked or unreachable from
+ * Vercel's egress; the rewrite goes via Vercel's edge layer which works.
+ *
+ * Locally / dev: hit Laravel directly via NEXT_PUBLIC_REAL_API_URL.
+ */
+function getRealHost(): string {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+}
+
 const FETCH_TIMEOUT_MS = 10_000;
 const FETCH_UA =
   'Mozilla/5.0 (compatible; BDSBot/1.0; +https://b-s-pink.vercel.app)';
@@ -32,7 +48,8 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeout = FETCH_
 }
 
 async function realServerFetch<T>(path: string, query?: Record<string, unknown>): Promise<T> {
-  const url = new URL(`${REAL_HOST}/api/v1${path.startsWith('/') ? path : `/${path}`}`);
+  const host = getRealHost();
+  const url = new URL(`${host}/api/v1${path.startsWith('/') ? path : `/${path}`}`);
   if (query) {
     for (const [k, v] of Object.entries(query)) {
       if (v === undefined || v === null || v === '') continue;
