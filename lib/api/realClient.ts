@@ -7,7 +7,8 @@
  */
 import { ApiError, type FetchOptions } from './client';
 
-const REMOTE_HOST = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+// `||` not `??` — env var may be the empty string on Vercel, which we must treat as unset.
+const REMOTE_HOST = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
 const PREFIX = '/api/v1';
 
 // In the browser we go through Next.js rewrites (same-origin → cookies work).

@@ -32,7 +32,7 @@ async function fetchProvinceCount(provinceName: string): Promise<number> {
     // ignore
   }
 
-  const REAL = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+  const REAL = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
   try {
     const r = await fetch(
       `${REAL}/api/v1/listings?per_page=1&province=${encodeURIComponent(provinceName)}`,

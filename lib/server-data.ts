@@ -30,7 +30,8 @@ function getRealHost(): string {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  return process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+  // `||` not `??` — env var may be the empty string on Vercel, which we must treat as unset.
+  return process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
 }
 
 const FETCH_TIMEOUT_MS = 10_000;

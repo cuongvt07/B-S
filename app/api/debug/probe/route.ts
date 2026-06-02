@@ -7,7 +7,8 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const REAL_HOST = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+// `||` not `??` — empty-string env vars on Vercel should fall back to default.
+const REAL_HOST = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
 
 interface ProbeResult {
   ok: boolean;
