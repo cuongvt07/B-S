@@ -20,6 +20,7 @@ import type {
 } from '@/components/map/MapLibreMap';
 import { LocationSearch } from '@/components/map/LocationSearch';
 import { MapListingPanel } from '@/components/map/MapListingPanel';
+import { PriceTierLegend } from '@/components/map/PriceTierLegend';
 
 const MapLibreMap = dynamic(
   () => import('@/components/map/MapLibreMap').then((m) => m.MapLibreMap),
@@ -53,6 +54,8 @@ export default function MapPage() {
           title: l.title,
           price: formatPrice(l.price, l.priceUnit),
           priceShort: priceShort(l.price, l.priceUnit),
+          priceVnd: l.price,
+          priceUnit: l.priceUnit,
           slug: l.slug,
           cover: l.images[0]?.url,
           vip: l.vipTier !== 'normal',
@@ -162,15 +165,8 @@ export default function MapPage() {
         </div>
       </header>
 
-      {/* 3-column responsive grid: sidebar 280 | detail panel 360 (only when selected) | map flex */}
-      <div
-        className={cn(
-          'grid h-[calc(100vh-220px)] min-h-[640px] grid-cols-1 gap-3 transition-all duration-300',
-          selectedListing
-            ? 'md:grid-cols-[280px_360px_1fr]'
-            : 'md:grid-cols-[280px_1fr]'
-        )}
-      >
+      {/* 2-column layout: sidebar 280 | map flex. Detail panel floats over map. */}
+      <div className="grid h-[calc(100vh-220px)] min-h-[640px] grid-cols-1 gap-3 md:grid-cols-[280px_1fr]">
         {/* Compact sidebar list */}
         <aside className="hidden md:flex flex-col overflow-hidden rounded-md border border-brdr bg-white shadow-raised">
           <div className="border-b border-brdr bg-surface-subtle p-3">
@@ -274,17 +270,12 @@ export default function MapPage() {
               })
             )}
           </div>
-        </aside>
 
-        {/* Detail panel — only when a listing selected */}
-        {selectedListing && (
-          <div className="hidden md:block">
-            <MapListingPanel
-              listing={selectedListing}
-              onClose={() => setSelectedId(undefined)}
-            />
+          {/* Legend — chú thích icon theo giá */}
+          <div className="border-t border-brdr p-2">
+            <PriceTierLegend />
           </div>
-        )}
+        </aside>
 
         {/* Map */}
         <div className="relative h-full overflow-hidden rounded-md border border-brdr">
@@ -302,8 +293,8 @@ export default function MapPage() {
               onBoundsChange={handleBounds}
               onMapMoved={handleMapMoved}
               flyTo={flyTo}
-              initialCenter={[106.7009, 10.7769]}
-              initialZoom={11}
+              initialCenter={[111, 14]}
+              initialZoom={5.5}
             />
           ) : (
             <Skeleton className="h-full w-full rounded-md" />
@@ -323,9 +314,30 @@ export default function MapPage() {
             <Layers size={12} /> OpenFreeMap + OpenStreetMap
           </div>
 
-          {/* Mobile: floating selected card overlay (panel not shown on mobile) */}
+          {/* Desktop: floating detail panel overlay on top-right of map */}
+          {selectedListing && (() => {
+            const idx = visibleListings.findIndex((l) => l.id === selectedListing.id);
+            const total = visibleListings.length;
+            const prevId = idx > 0 ? visibleListings[idx - 1].id : undefined;
+            const nextId = idx >= 0 && idx < total - 1 ? visibleListings[idx + 1].id : undefined;
+            return (
+              <div className="pointer-events-none absolute right-3 top-3 bottom-3 z-20 hidden w-[360px] md:block">
+                <div className="pointer-events-auto h-full animate-slideInRight">
+                  <MapListingPanel
+                    listing={selectedListing}
+                    onClose={() => setSelectedId(undefined)}
+                    onPrev={prevId ? () => setSelectedId(prevId) : undefined}
+                    onNext={nextId ? () => setSelectedId(nextId) : undefined}
+                    position={idx >= 0 ? { current: idx + 1, total } : undefined}
+                  />
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Mobile: floating selected card at bottom (no panel) */}
           {selectedListing && (
-            <div className="absolute bottom-3 left-3 right-3 z-10 md:hidden">
+            <div className="absolute bottom-3 left-3 right-3 z-20 md:hidden">
               <MobileSelectedCard
                 listing={selectedListing}
                 onClose={() => setSelectedId(undefined)}

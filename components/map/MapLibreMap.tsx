@@ -21,10 +21,44 @@ export interface MapPoint {
   title: string;
   price: string;
   priceShort: string;
+  /** Raw price in VND (for tier classification). */
+  priceVnd?: number;
+  /** 'total' = sale (VND), 'month' = rent (VND/tháng). */
+  priceUnit?: 'total' | 'month';
   slug: string;
   cover?: string;
   vip?: boolean;
 }
+
+// Price tier 1-4 → 4 icons + 4 colour themes
+export type PriceTier = 1 | 2 | 3 | 4;
+
+function getPriceTier(p: MapPoint): PriceTier {
+  const v = p.priceVnd ?? 0;
+  const isRent = p.priceUnit === 'month';
+  if (isRent) {
+    if (v < 5_000_000) return 1;
+    if (v < 15_000_000) return 2;
+    if (v < 50_000_000) return 3;
+    return 4;
+  }
+  if (v < 1_500_000_000) return 1;
+  if (v < 5_000_000_000) return 2;
+  if (v < 15_000_000_000) return 3;
+  return 4;
+}
+
+// SVG icon path-only (24x24 viewBox) per tier
+const TIER_ICON: Record<PriceTier, string> = {
+  // 1 - small house (lucide Home)
+  1: '<path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  // 2 - house with chimney (lucide Home variant)
+  2: '<path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21V12h6v9" fill="none" stroke="currentColor" stroke-width="2"/>',
+  // 3 - building (lucide Building)
+  3: '<path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-4h4v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  // 4 - skyscraper / premium tower (lucide Building2)
+  4: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18M2 22h20M10 6h4M10 10h4M10 14h4M10 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+};
 
 export type LayerMode = 'cluster' | 'heatmap';
 export type StyleId = 'liberty' | 'bright' | 'positron';
@@ -94,13 +128,26 @@ function buildPopupHTML(p: MapPoint) {
 }
 
 function makeMarkerElement(p: MapPoint): HTMLDivElement {
+  const tier = getPriceTier(p);
   const el = document.createElement('div');
   el.className = 'bds-marker';
   el.dataset.id = p.id;
   el.dataset.vip = p.vip ? '1' : '0';
+  el.dataset.tier = String(tier);
   el.setAttribute('role', 'button');
   el.setAttribute('aria-label', `Tin đăng giá ${p.price}`);
-  el.textContent = p.priceShort;
+  // SVG must have xmlns when inserted via innerHTML or it parses as unknown element.
+  // Use DOMParser to create the SVG node properly, then append the price span.
+  const svgWrap = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svgWrap.setAttribute('viewBox', '0 0 24 24');
+  svgWrap.setAttribute('width', '14');
+  svgWrap.setAttribute('height', '14');
+  svgWrap.setAttribute('aria-hidden', 'true');
+  svgWrap.innerHTML = TIER_ICON[tier];
+  el.appendChild(svgWrap);
+  const txt = document.createElement('span');
+  txt.textContent = p.priceShort;
+  el.appendChild(txt);
   return el;
 }
 
@@ -236,6 +283,80 @@ export function MapLibreMap({
 
   function addLayers(map: MaplibreMap) {
     if (map.getSource('listings')) return;
+
+    // Vietnam-sovereign archipelagos overlay — always visible at every zoom.
+    // OpenFreeMap/OSM thường không hiển thị 2 quần đảo này; ta luôn vẽ overlay.
+    if (!map.getSource('vn-archipelagos')) {
+      map.addSource('vn-archipelagos', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [111.92, 16.5] },
+              // Newline trong property string → MapLibre render thành 2 dòng
+              properties: { name: 'QUẦN ĐẢO HOÀNG SA\n(Việt Nam)' },
+            },
+            {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [114.0, 10.5] },
+              properties: { name: 'QUẦN ĐẢO TRƯỜNG SA\n(Việt Nam)' },
+            },
+          ],
+        },
+      });
+
+      // Halo glow đỏ — vùng chủ quyền (luôn dưới label)
+      map.addLayer({
+        id: 'vn-arch-halo',
+        type: 'circle',
+        source: 'vn-archipelagos',
+        paint: {
+          'circle-color': '#DC2626',
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 16, 6, 28, 10, 40],
+          'circle-opacity': 0.18,
+          'circle-blur': 0.4,
+        },
+      });
+
+      // Dot chính
+      map.addLayer({
+        id: 'vn-arch-dot',
+        type: 'circle',
+        source: 'vn-archipelagos',
+        paint: {
+          'circle-color': '#DC2626',
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 4, 6, 7, 10, 10],
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#fff',
+        },
+      });
+
+      // Label — đỏ đậm, halo trắng dày, luôn hiển thị
+      map.addLayer({
+        id: 'vn-arch-label',
+        type: 'symbol',
+        source: 'vn-archipelagos',
+        layout: {
+          'text-field': '{name}',
+          'text-font': ['Noto Sans Bold'],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 3, 11, 6, 13, 10, 15],
+          'text-anchor': 'top',
+          'text-offset': [0, 1],
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
+          'text-letter-spacing': 0.05,
+          'text-line-height': 1.1,
+        },
+        paint: {
+          'text-color': '#DC2626',
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 2.5,
+          'text-halo-blur': 0.3,
+        },
+      });
+    }
 
     map.addSource('listings', {
       type: 'geojson',

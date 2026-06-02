@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import {
   X,
@@ -12,6 +13,8 @@ import {
   ArrowRight,
   Eye,
   Star,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Badge, Button } from '@/components/ui';
 import { ListingImageCarousel, ContactActions } from '@/components/listing';
@@ -19,22 +22,79 @@ import type { Listing } from '@/types';
 import { formatPrice, formatArea, formatTimeAgo, formatNumber } from '@/lib/utils/format';
 import { formatLocation } from '@/mocks/data/cities';
 import { DIRECTION_LABELS, FURNISH_LABELS, PROPERTY_TYPE_LABELS } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 
 interface Props {
   listing: Listing;
   onClose: () => void;
+  /** Optional pagination through a list (vd các tin trong vùng map). */
+  onPrev?: () => void;
+  onNext?: () => void;
+  /** Vị trí hiện tại trong list (1-based). */
+  position?: { current: number; total: number };
 }
 
-export function MapListingPanel({ listing, onClose }: Props) {
+export function MapListingPanel({ listing, onClose, onPrev, onNext, position }: Props) {
   const href = `/tin-dang/${listing.slug}`;
+  const canPrev = !!onPrev;
+  const canNext = !!onNext;
+
+  // Keyboard nav: ArrowLeft/Right while panel is open
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+      if (e.key === 'ArrowLeft' && canPrev) {
+        e.preventDefault();
+        onPrev?.();
+      } else if (e.key === 'ArrowRight' && canNext) {
+        e.preventDefault();
+        onNext?.();
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onPrev, onNext, onClose, canPrev, canNext]);
 
   return (
-    <aside className="flex h-full flex-col overflow-hidden rounded-md border border-brdr bg-white shadow-elevated animate-slideInLeft">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-2 border-b border-brdr px-3 py-2">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
-          Chi tiết tin đăng
-        </p>
+    <aside
+      key={listing.id}
+      className="flex h-full flex-col overflow-hidden rounded-md border border-brdr bg-white shadow-elevated animate-slideInLeft"
+    >
+      {/* Header with prev/next + close */}
+      <div className="flex items-center justify-between gap-2 border-b border-brdr bg-white px-3 py-2">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={onPrev}
+            disabled={!canPrev}
+            aria-label="Tin trước"
+            className={cn(
+              'grid h-7 w-7 place-items-center rounded-full border border-brdr text-ink transition',
+              canPrev ? 'hover:border-primary hover:text-primary' : 'opacity-40 cursor-not-allowed'
+            )}
+          >
+            <ChevronLeft size={14} />
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            disabled={!canNext}
+            aria-label="Tin sau"
+            className={cn(
+              'grid h-7 w-7 place-items-center rounded-full border border-brdr text-ink transition',
+              canNext ? 'hover:border-primary hover:text-primary' : 'opacity-40 cursor-not-allowed'
+            )}
+          >
+            <ChevronRight size={14} />
+          </button>
+          {position && (
+            <span className="ml-1 text-xs text-ink-muted">
+              <strong className="text-ink">{position.current}</strong> / {position.total}
+            </span>
+          )}
+        </div>
         <button
           type="button"
           onClick={onClose}

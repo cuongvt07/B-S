@@ -85,20 +85,20 @@
   background: #b8b8b8;
 }
 
-/* Map pill markers (Airbnb-style) */
+/* Map pill markers — icon + price, color tier 1-4 by price level */
 .bds-marker {
   cursor: pointer;
   user-select: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 3px 8px 3px 6px;
   background: #fff;
-  border: 2px solid #0000ee;
+  border: 2px solid #059669; /* default tier 1 */
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
-  color: #0000ee;
+  color: #059669;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   transition: transform 0.18s ease, background 0.18s, color 0.18s, border-color 0.18s,
     box-shadow 0.18s;
@@ -106,12 +106,38 @@
   transform-origin: bottom center;
   will-change: transform;
 }
+.bds-marker svg {
+  flex-shrink: 0;
+}
 .bds-marker:hover,
 .bds-marker.is-hovered {
-  transform: scale(1.18);
-  box-shadow: 0 4px 14px rgba(0, 0, 238, 0.25);
+  transform: scale(1.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   z-index: 5;
 }
+
+/* Tier 1 — low (default emerald) */
+.bds-marker[data-tier='1'] {
+  border-color: #059669;
+  color: #059669;
+}
+/* Tier 2 — mid (primary blue) */
+.bds-marker[data-tier='2'] {
+  border-color: #0000ee;
+  color: #0000ee;
+}
+/* Tier 3 — high (vip amber) */
+.bds-marker[data-tier='3'] {
+  border-color: #d97706;
+  color: #d97706;
+}
+/* Tier 4 — premium (danger red) */
+.bds-marker[data-tier='4'] {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+/* VIP override — solid fill regardless of tier */
 .bds-marker[data-vip='1'] {
   background: #d97706;
   border-color: #d97706;
@@ -121,10 +147,21 @@
 .bds-marker[data-vip='1'].is-hovered {
   box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
 }
+
+/* Selected — invert: solid colored fill matching tier */
 .bds-marker.is-selected {
   background: #0000ee;
   color: #fff;
-  transform: scale(1.18);
+  transform: scale(1.2);
+}
+.bds-marker[data-tier='1'].is-selected {
+  background: #059669;
+}
+.bds-marker[data-tier='3'].is-selected {
+  background: #d97706;
+}
+.bds-marker[data-tier='4'].is-selected {
+  background: #dc2626;
 }
 .bds-marker[data-vip='1'].is-selected {
   background: #b45309;
