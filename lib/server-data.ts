@@ -17,6 +17,19 @@ import {
 } from './api/laravelAdapter';
 
 const REAL_HOST = process.env.NEXT_PUBLIC_REAL_API_URL ?? 'https://vmphuthinhland.com';
+const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_UA =
+  'Mozilla/5.0 (compatible; BDSBot/1.0; +https://b-s-pink.vercel.app)';
+
+async function fetchWithTimeout(url: string, init: RequestInit, timeout = FETCH_TIMEOUT_MS): Promise<Response> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeout);
+  try {
+    return await fetch(url, { ...init, signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 async function realServerFetch<T>(path: string, query?: Record<string, unknown>): Promise<T> {
   const url = new URL(`${REAL_HOST}/api/v1${path.startsWith('/') ? path : `/${path}`}`);
@@ -26,16 +39,35 @@ async function realServerFetch<T>(path: string, query?: Record<string, unknown>)
       url.searchParams.append(k, String(v));
     }
   }
-  const res = await fetch(url.toString(), {
-    headers: { Accept: 'application/json' },
-    // ISR: cache 60s on the edge so back-to-back homepage hits don't re-fetch Laravel.
-    // Listings change relatively infrequently; 60s is a good compromise.
-    next: { revalidate: 60 },
-  });
-  if (!res.ok) {
-    throw new Error(`API ${path} ${res.status} ${res.statusText}`);
+
+  const init: RequestInit = {
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': FETCH_UA,
+    },
+    // No cache — page-level revalidate / dynamic controls caching. Avoids stale
+    // empty results staying cached after a build-time fetch failure.
+    cache: 'no-store',
+  };
+
+  // Try twice — first attempt often fails on cold Vercel functions / DNS hiccups.
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetchWithTimeout(url.toString(), init);
+      if (!res.ok) {
+        throw new Error(`API ${path} ${res.status} ${res.statusText}`);
+      }
+      return (await res.json()) as T;
+    } catch (err) {
+      lastErr = err;
+      if (attempt === 0) {
+        // brief backoff before retry
+        await new Promise((r) => setTimeout(r, 300));
+      }
+    }
   }
-  return (await res.json()) as T;
+  throw lastErr;
 }
 
 export async function listListings(
