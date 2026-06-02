@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Badge, Button } from '@/components/ui';
 import { ListingImageCarousel, ContactActions } from '@/components/listing';
+import { AuthGate } from '@/components/auth';
 import type { Listing } from '@/types';
 import { formatPrice, formatArea, formatTimeAgo, formatNumber } from '@/lib/utils/format';
 import { formatLocation } from '@/mocks/data/cities';
@@ -207,7 +208,13 @@ export function MapListingPanel({ listing, onClose, onPrev, onNext, position }: 
 
       {/* Sticky footer */}
       <div className="border-t border-brdr bg-white p-3 space-y-2">
-        <ContactActions contact={listing.contact} size="md" fullWidth showLabels />
+        <AuthGate
+          title="Đăng nhập để liên hệ"
+          description="Sau khi đăng nhập bạn có thể gọi, chat Zalo hoặc Messenger với chủ tin."
+          blur="sm"
+        >
+          <ContactActions contact={listing.contact} size="md" fullWidth showLabels />
+        </AuthGate>
         <Link href={href} className="unstyled block">
           <Button fullWidth rightIcon={<ArrowRight size={16} />}>
             Xem chi tiết

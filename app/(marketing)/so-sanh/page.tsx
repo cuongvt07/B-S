@@ -21,6 +21,8 @@ import {
   FURNISH_LABELS,
 } from '@/lib/constants';
 import type { Listing } from '@/types';
+import { useCurrentUser } from '@/lib/hooks/useAuth';
+import { useAuthModal } from '@/lib/hooks/useAuthModal';
 
 export default function ComparePage() {
   const ids = useCompare((s) => s.ids);
@@ -89,11 +91,7 @@ export default function ComparePage() {
     { label: 'Người đăng', render: (l) => l.contact.name },
     {
       label: 'Liên hệ',
-      render: (l) => (
-        <a href={`tel:${l.contact.phone}`} className="text-primary">
-          {l.contact.phone}
-        </a>
-      ),
+      render: (l) => <ComparePhoneCell phone={l.contact.phone} />,
     },
     { label: 'Đăng cách đây', render: (l) => formatTimeAgo(l.createdAt) },
     {
@@ -202,5 +200,27 @@ export default function ComparePage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+function ComparePhoneCell({ phone }: { phone: string }) {
+  const { data: user } = useCurrentUser();
+  const openLogin = useAuthModal((s) => s.openLogin);
+  if (user) {
+    return (
+      <a href={`tel:${phone}`} className="text-primary">
+        {phone}
+      </a>
+    );
+  }
+  const masked = phone.replace(/\d{3}(?=\d{3}$)/, '***');
+  return (
+    <button
+      type="button"
+      onClick={() => openLogin()}
+      className="text-primary underline decoration-dotted underline-offset-2 hover:text-primary-hover"
+    >
+      {masked} · Đăng nhập
+    </button>
   );
 }

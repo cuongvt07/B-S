@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { SearchSuggestions } from './SearchSuggestions';
+import { cn } from '@/lib/utils';
 
 const HINTS = [
   'Tìm theo địa điểm, dự án, đường...',
@@ -18,7 +19,6 @@ const ERASE_SPEED = 28;
 const HOLD_FULL = 1400;
 const HOLD_EMPTY = 320;
 
-/** Infinite typewriter for the placeholder. Uses RAF-friendly setTimeout chain. */
 function useTypewriter(active: boolean) {
   const [text, setText] = useState('');
   const idxRef = useRef(0);
@@ -33,7 +33,6 @@ function useTypewriter(active: boolean) {
     function tick() {
       if (cancelled) return;
       const phrase = HINTS[idxRef.current % HINTS.length];
-
       if (phase === 'typing') {
         cursor++;
         setText(phrase.slice(0, cursor));
@@ -83,7 +82,6 @@ export function HeaderSearch({ placeholder }: { placeholder?: string }) {
   const [q, setQ] = useState('');
   const [focused, setFocused] = useState(false);
   const blurTimer = useRef<number | undefined>(undefined);
-  // Animate only when input is empty + not focused (so user can read what they typed)
   const animatePlaceholder = q.length === 0 && !focused;
   const typed = useTypewriter(animatePlaceholder && !placeholder);
 
@@ -99,9 +97,14 @@ export function HeaderSearch({ placeholder }: { placeholder?: string }) {
     <form
       onSubmit={onSubmit}
       role="search"
-      className="relative hidden min-w-0 max-w-2xl flex-1 md:flex"
+      className="relative hidden min-w-0 max-w-xl flex-1 md:flex"
     >
-      <div className="flex w-full items-center rounded-sm border border-brdr bg-white py-1.5 pl-3 pr-1 focus-within:border-primary">
+      <div
+        className={cn(
+          'flex w-full items-center rounded-sm border bg-white py-1.5 pl-3 pr-1 transition-colors',
+          focused ? 'border-primary' : 'border-brdr hover:border-ink-muted/40'
+        )}
+      >
         <Search size={16} className="shrink-0 text-ink-muted" />
         <div className="relative ml-2 flex-1 min-w-0">
           <input
@@ -119,7 +122,6 @@ export function HeaderSearch({ placeholder }: { placeholder?: string }) {
             className="w-full min-w-0 bg-transparent text-sm text-ink placeholder:text-ink-muted focus:outline-none"
             aria-label="Tìm kiếm tin đăng"
           />
-          {/* Animated placeholder overlay (only when input empty + unfocused) */}
           {animatePlaceholder && !placeholder && (
             <span
               aria-hidden
@@ -132,7 +134,7 @@ export function HeaderSearch({ placeholder }: { placeholder?: string }) {
         </div>
         <button
           type="submit"
-          className="ml-2 inline-flex items-center whitespace-nowrap rounded-sm bg-primary px-4 py-1.5 text-xs font-semibold text-white hover:bg-primary-hover"
+          className="ml-2 inline-flex shrink-0 items-center whitespace-nowrap rounded-sm bg-primary px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover"
         >
           Tìm kiếm
         </button>

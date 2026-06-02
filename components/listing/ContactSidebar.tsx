@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui';
+import { AuthGate } from '@/components/auth';
 import type { Listing } from '@/types';
 import { ContactActions } from './ContactActions';
 import { formatNumber } from '@/lib/utils/format';
@@ -31,25 +32,30 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
         </div>
       </div>
 
-      <div className="mt-3 space-y-2">
-        <Button
-          variant="primary"
-          fullWidth
-          leftIcon={<Phone size={16} />}
-          onClick={() => setReveal(true)}
-        >
-          {reveal ? c.phone : `${masked} · Bấm để xem`}
-        </Button>
+      <AuthGate
+        title="Đăng nhập để xem liên hệ"
+        description="Sau khi đăng nhập, bạn sẽ thấy số điện thoại, Zalo và Messenger của chủ tin."
+      >
+        <div className="mt-3 space-y-2">
+          <Button
+            variant="primary"
+            fullWidth
+            leftIcon={<Phone size={16} />}
+            onClick={() => setReveal(true)}
+          >
+            {reveal ? c.phone : `${masked} · Bấm để xem`}
+          </Button>
 
-        <ContactActions contact={c} size="lg" fullWidth showLabels />
+          <ContactActions contact={c} size="lg" fullWidth showLabels />
 
-        <a
-          href={`mailto:?subject=${encodeURIComponent('Quan tâm tin đăng: ' + listing.title)}`}
-          className="unstyled inline-flex w-full items-center justify-center gap-2 rounded-sm border border-brdr px-4 py-3 text-sm font-semibold text-ink hover:border-primary hover:text-primary"
-        >
-          <Mail size={16} /> Gửi email yêu cầu
-        </a>
-      </div>
+          <a
+            href={`mailto:?subject=${encodeURIComponent('Quan tâm tin đăng: ' + listing.title)}`}
+            className="unstyled inline-flex w-full items-center justify-center gap-2 rounded-sm border border-brdr px-4 py-3 text-sm font-semibold text-ink hover:border-primary hover:text-primary"
+          >
+            <Mail size={16} /> Gửi email yêu cầu
+          </a>
+        </div>
+      </AuthGate>
 
       <p className="mt-3 text-xs text-ink-muted">
         Hãy nói với chủ tin rằng bạn thấy tin trên BDS Việt.

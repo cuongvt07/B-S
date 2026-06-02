@@ -72,6 +72,24 @@
   }
 }
 
+/* "Đăng tin" CTA — solid amber, distinct from the primary blue used elsewhere.
+   Real-estate sites typically reserve the loudest color for the post-listing action. */
+.bds-cta-amber {
+  background: #ea580c;
+}
+.bds-cta-amber:hover {
+  background: #c2410c;
+}
+
+/* Subtle fade-in for menus and overlays */
+@keyframes bds-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: bds-fade-in 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Header row 2 — pure CSS collapse driven by data-hidden, set from scroll handler */
 .header-row2 {
   overflow: hidden;
@@ -150,6 +168,27 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #b8b8b8;
+}
+
+/* MapLibre navigation/geolocate controls — bigger touch targets on mobile.
+   Default sizes are tiny on small screens; bump for finger-friendly tapping. */
+.maplibregl-ctrl-group button {
+  width: 36px;
+  height: 36px;
+}
+@media (max-width: 768px) {
+  .maplibregl-ctrl-group button {
+    width: 44px;
+    height: 44px;
+  }
+  .maplibregl-ctrl-group {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  }
+  /* Slightly larger marker price text on small screens */
+  .bds-marker {
+    font-size: 12.5px;
+    padding: 4px 9px 4px 7px;
+  }
 }
 
 /* Map pill markers — icon + price, color tier 1-4 by price level */

@@ -176,6 +176,7 @@ export function MapLibreMap({
   const dataRef = useRef<GeoJSON.FeatureCollection>({ type: 'FeatureCollection', features: [] });
   const pointsRef = useRef<MapPoint[]>([]);
   const styleLoadedRef = useRef(false);
+  const didAutoFitRef = useRef(false);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onSelectRef = useRef(onSelect);
   const onHoverRef = useRef(onHover);
@@ -531,6 +532,27 @@ export function MapLibreMap({
       if (src) src.setData(fc);
       syncMarkers(map);
       updateMarkerVisibility(map);
+
+      // Auto-fit on the first non-empty data load so the map opens zoomed
+      // to where the listings actually are (rather than the whole country).
+      // Critical on mobile where the default 5.5 zoom is too far out to read detail.
+      if (!didAutoFitRef.current && points.length > 0) {
+        didAutoFitRef.current = true;
+        let west = Infinity, east = -Infinity, south = Infinity, north = -Infinity;
+        for (const p of points) {
+          if (p.lng < west) west = p.lng;
+          if (p.lng > east) east = p.lng;
+          if (p.lat < south) south = p.lat;
+          if (p.lat > north) north = p.lat;
+        }
+        if (Number.isFinite(west) && Number.isFinite(east)) {
+          const isMobile = window.innerWidth < 768;
+          map.fitBounds(
+            [[west, south], [east, north]],
+            { padding: isMobile ? 60 : 80, maxZoom: 14, duration: 600 }
+          );
+        }
+      }
     };
     if (styleLoadedRef.current) apply();
     else map.once('load', apply);

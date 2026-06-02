@@ -166,7 +166,7 @@ export default function MapPage() {
       </header>
 
       {/* 2-column layout: sidebar 280 | map flex. Detail panel floats over map. */}
-      <div className="grid h-[calc(100vh-220px)] min-h-[640px] grid-cols-1 gap-3 md:grid-cols-[280px_1fr]">
+      <div className="grid h-[calc(100vh-180px)] min-h-[520px] grid-cols-1 gap-3 md:h-[calc(100vh-220px)] md:min-h-[640px] md:grid-cols-[280px_1fr]">
         {/* Compact sidebar list */}
         <aside className="hidden md:flex flex-col overflow-hidden rounded-md border border-brdr bg-white shadow-raised">
           <div className="border-b border-brdr bg-surface-subtle p-3">

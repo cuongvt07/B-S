@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -45,57 +46,93 @@ const SIMPLE_LINKS = [
   { label: 'Gói môi giới', href: '/goi-moi-gioi' },
 ];
 
+function isActive(pathname: string, href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(href + '/');
+}
+
 export function MegaMenu() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const pathname = usePathname() || '';
 
   return (
     <nav
-      className="hidden lg:flex items-center justify-center gap-2 whitespace-nowrap"
+      className="hidden lg:flex items-center justify-center gap-1 whitespace-nowrap"
       aria-label="Danh mục"
     >
-      {MENU.map((group, idx) => (
-        <div
-          key={group.title}
-          className="relative shrink-0"
-          onMouseEnter={() => setOpenIdx(idx)}
-          onMouseLeave={() => setOpenIdx(null)}
-        >
+      {MENU.map((group, idx) => {
+        const active = isActive(pathname, group.href);
+        return (
+          <div
+            key={group.title}
+            className="relative shrink-0"
+            onMouseEnter={() => setOpenIdx(idx)}
+            onMouseLeave={() => setOpenIdx(null)}
+          >
+            <Link
+              href={group.href}
+              className={cn(
+                'unstyled relative inline-flex items-center gap-1 px-3.5 py-3 text-sm font-semibold whitespace-nowrap transition-colors',
+                active ? 'text-primary' : 'text-ink hover:text-primary'
+              )}
+            >
+              {group.title}
+              <ChevronDown
+                size={14}
+                className={cn(
+                  'text-ink-muted transition-transform',
+                  openIdx === idx && 'rotate-180'
+                )}
+              />
+              {active && (
+                <span className="absolute inset-x-3.5 -bottom-px h-0.5 rounded-full bg-primary" />
+              )}
+            </Link>
+            {openIdx === idx && (
+              <div className="absolute left-0 top-full z-50 min-w-[260px] pt-1">
+                <div className="rounded-md border border-brdr bg-white py-2 shadow-elevated animate-fadeIn">
+                  {group.children.map((c) => {
+                    const childActive = isActive(pathname, c.href);
+                    return (
+                      <Link
+                        key={c.href}
+                        href={c.href}
+                        className={cn(
+                          'unstyled block px-4 py-2 text-sm whitespace-nowrap transition-colors',
+                          childActive
+                            ? 'bg-primary/5 text-primary font-semibold'
+                            : 'text-ink hover:bg-surface-subtle hover:text-primary'
+                        )}
+                      >
+                        {c.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {SIMPLE_LINKS.map((link) => {
+        const active = isActive(pathname, link.href);
+        return (
           <Link
-            href={group.href}
+            key={link.href}
+            href={link.href}
             className={cn(
-              'unstyled inline-flex items-center gap-1.5 px-4 py-3.5 text-base font-semibold text-ink whitespace-nowrap',
-              'hover:text-primary'
+              'unstyled relative inline-flex items-center px-3.5 py-3 text-sm font-semibold whitespace-nowrap transition-colors',
+              active ? 'text-primary' : 'text-ink hover:text-primary'
             )}
           >
-            {group.title}
-            <ChevronDown size={16} className="text-ink-muted" />
+            {link.label}
+            {active && (
+              <span className="absolute inset-x-3.5 -bottom-px h-0.5 rounded-full bg-primary" />
+            )}
           </Link>
-          {openIdx === idx && (
-            <div className="absolute left-0 top-full z-50 min-w-[260px]">
-              <div className="rounded-md border border-brdr bg-white py-2 shadow-elevated">
-                {group.children.map((c) => (
-                  <Link
-                    key={c.href}
-                    href={c.href}
-                    className="unstyled block px-4 py-2 text-sm text-ink hover:bg-surface-subtle hover:text-primary whitespace-nowrap"
-                  >
-                    {c.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
-      {SIMPLE_LINKS.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="unstyled shrink-0 px-4 py-3.5 text-base font-semibold text-ink hover:text-primary whitespace-nowrap"
-        >
-          {link.label}
-        </Link>
-      ))}
+        );
+      })}
     </nav>
   );
 }

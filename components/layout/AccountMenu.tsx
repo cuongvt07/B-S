@@ -49,18 +49,18 @@ export function AccountMenu() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'inline-flex items-center gap-2 rounded-full border border-brdr bg-white px-2 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary',
-          open && 'border-primary text-primary'
+          'inline-flex h-10 items-center gap-2 rounded-full border border-brdr bg-white pl-1 pr-3 text-sm font-semibold text-ink transition-all hover:border-primary hover:text-primary hover:shadow-raised',
+          open && 'border-primary text-primary shadow-raised'
         )}
         aria-haspopup="menu"
         aria-expanded={open}
       >
         {isAuthed && user?.avatarUrl ? (
-          <span className="relative h-7 w-7 overflow-hidden rounded-full">
-            <Image src={user.avatarUrl} alt={user.name} fill sizes="28px" className="object-cover" />
+          <span className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-white">
+            <Image src={user.avatarUrl} alt={user.name} fill sizes="32px" className="object-cover" />
           </span>
         ) : (
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-surface-subtle">
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-primary/15 to-primary/5 text-primary">
             <UserIcon size={16} />
           </span>
         )}

@@ -23,6 +23,7 @@ import {
 } from '@/lib/utils/format';
 import { formatLocation } from '@/mocks/data/cities';
 import { DIRECTION_LABELS, FURNISH_LABELS, PROPERTY_TYPE_LABELS } from '@/lib/constants';
+import { AuthGate } from '@/components/auth';
 import { ContactActions } from './ContactActions';
 import { ListingImageCarousel } from './ListingImageCarousel';
 
@@ -38,7 +39,9 @@ export function ListingQuickView({ open, onClose, listing }: Props) {
 
   const footer = (
     <>
-      <ContactActions contact={listing.contact} size="md" showLabels />
+      <AuthGate title="Đăng nhập để liên hệ" blur="sm">
+        <ContactActions contact={listing.contact} size="md" showLabels />
+      </AuthGate>
       <Link href={href} onClick={onClose} className="unstyled">
         <Button rightIcon={<ArrowRight size={16} />}>Xem chi tiết</Button>
       </Link>

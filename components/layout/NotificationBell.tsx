@@ -110,11 +110,11 @@ export function NotificationBell() {
         type="button"
         aria-label="Thông báo"
         onClick={() => setOpen((v) => !v)}
-        className="relative grid h-9 w-9 place-items-center rounded-full text-ink hover:bg-surface-subtle"
+        className="relative grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-surface-subtle hover:text-primary"
       >
-        <Bell size={20} />
+        <Bell size={20} strokeWidth={2.1} />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
+          <span className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white ring-2 ring-white">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}

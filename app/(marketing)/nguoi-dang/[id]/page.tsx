@@ -13,6 +13,7 @@ import {
 import { Breadcrumbs } from '@/components/seo';
 import { Badge, Button } from '@/components/ui';
 import { ListingCard, ContactActions } from '@/components/listing';
+import { AuthGate } from '@/components/auth';
 import { listListings } from '@/lib/server-data';
 import { userById } from '@/mocks/data/users';
 import { formatNumber } from '@/lib/utils/format';
@@ -113,12 +114,18 @@ export default async function OwnerProfilePage({ params }: PageProps) {
               </span>
               <span>·</span>
               <span className="inline-flex items-center gap-1">
-                <Phone size={12} /> {user.phone}
+                <Phone size={12} /> {user.phone.replace(/\d{3}(?=\d{3}$)/, '***')}
               </span>
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <ContactActions contact={contact} size="md" showLabels />
+              <AuthGate
+                title="Đăng nhập để liên hệ"
+                description="Đăng nhập để xem số điện thoại đầy đủ và liên hệ Zalo / Messenger."
+                blur="sm"
+              >
+                <ContactActions contact={contact} size="md" showLabels />
+              </AuthGate>
               <Button variant="outline" size="sm" leftIcon={<Share2 size={14} />}>
                 Chia sẻ
               </Button>
