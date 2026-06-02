@@ -12,7 +12,14 @@ import { ListingQuickView } from './ListingQuickView';
 import { AddToCompareButton } from './AddToCompareButton';
 import { ListingImageCarousel } from './ListingImageCarousel';
 
-export function ListingCard({ listing }: { listing: Listing }) {
+export function ListingCard({
+  listing,
+  priority,
+}: {
+  listing: Listing;
+  /** Hint to load image eagerly (above-the-fold). */
+  priority?: boolean;
+}) {
   const isVip = listing.vipTier !== 'normal';
   const href = `/tin-dang/${listing.slug}`;
   const [quickOpen, setQuickOpen] = useState(false);
@@ -33,7 +40,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           aria-label={listing.title}
           className="unstyled relative block aspect-[4/3] overflow-hidden"
         >
-          <ListingImageCarousel images={listing.images} alt={listing.title} />
+          <ListingImageCarousel images={listing.images} alt={listing.title} priority={priority} />
 
           {isVip && (
             <div className="pointer-events-none absolute left-2 top-2 z-10">

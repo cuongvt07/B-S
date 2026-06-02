@@ -9,43 +9,54 @@ import { HeaderSearch } from './HeaderSearch';
 import { MobileDrawer } from './MobileDrawer';
 import { NotificationBell } from './NotificationBell';
 import { AccountMenu } from './AccountMenu';
-import { cn } from '@/lib/utils';
 
 const TOP_THRESHOLD = 120;
-const DELTA = 16; // ignore noise / small movements
+const DELTA = 24; // ignore tiny scroll noise
 
+/**
+ * Header — sticky on scroll. Row 2 (MegaMenu) collapses on scroll down,
+ * re-appears on scroll up. To avoid jitter, scroll handler mutates the DOM
+ * directly via `data-hidden` (no React re-render per scroll tick).
+ */
 export function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [hideMenu, setHideMenu] = useState(false);
+  const rowRef = useRef<HTMLDivElement | null>(null);
   const lastYRef = useRef(0);
-  const rafRef = useRef<number | null>(null);
+  const tickingRef = useRef(false);
 
   useEffect(() => {
-    function onScroll() {
-      if (rafRef.current !== null) return;
-      rafRef.current = requestAnimationFrame(() => {
-        rafRef.current = null;
-        const y = window.scrollY;
-        const last = lastYRef.current;
-        const delta = y - last;
+    const row = rowRef.current;
+    if (!row) return;
 
-        if (y < TOP_THRESHOLD) {
-          setHideMenu((prev) => (prev ? false : prev));
-        } else if (delta > DELTA) {
-          setHideMenu((prev) => (prev ? prev : true));
-          lastYRef.current = y;
-        } else if (delta < -DELTA) {
-          setHideMenu((prev) => (prev ? false : prev));
-          lastYRef.current = y;
-        }
-        // else: ignore small movements (don't update lastY either, prevents drift)
-      });
+    function update() {
+      tickingRef.current = false;
+      const r = rowRef.current;
+      if (!r) return;
+      const y = window.scrollY;
+      const last = lastYRef.current;
+      const delta = y - last;
+
+      if (y < TOP_THRESHOLD) {
+        if (r.dataset.hidden !== 'false') r.dataset.hidden = 'false';
+        lastYRef.current = y;
+      } else if (delta > DELTA) {
+        if (r.dataset.hidden !== 'true') r.dataset.hidden = 'true';
+        lastYRef.current = y;
+      } else if (delta < -DELTA) {
+        if (r.dataset.hidden !== 'false') r.dataset.hidden = 'false';
+        lastYRef.current = y;
+      }
     }
+
+    function onScroll() {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+      requestAnimationFrame(update);
+    }
+
+    row.dataset.hidden = 'false';
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
@@ -74,7 +85,7 @@ export function Header() {
             </span>
             <Link
               href="/tai-khoan/dang-tin"
-              className="unstyled inline-flex items-center gap-1 rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover"
+              className="unstyled inline-flex items-center gap-1 rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white shadow-raised transition hover:bg-primary-hover"
             >
               <PlusCircle size={16} />
               <span className="hidden sm:inline">Đăng tin</span>
@@ -82,15 +93,13 @@ export function Header() {
           </div>
         </div>
 
-        {/* Row 2: Mega menu — uses grid-template-rows for smooth collapse (no max-h jitter) */}
+        {/* Row 2: Mega menu — pure-CSS collapse via data-hidden, no React re-render on scroll */}
         <div
-          className={cn(
-            'hidden lg:grid border-t border-brdr bg-white transition-[grid-template-rows,opacity] duration-300 ease-out',
-            hideMenu ? 'grid-rows-[0fr] opacity-0 pointer-events-none' : 'grid-rows-[1fr] opacity-100'
-          )}
-          aria-hidden={hideMenu}
+          ref={rowRef}
+          data-hidden="false"
+          className="header-row2 hidden lg:block border-t border-brdr bg-white"
         >
-          <div className="overflow-hidden">
+          <div className="header-row2-inner">
             <div className="container-app">
               <MegaMenu />
             </div>

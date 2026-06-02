@@ -7,9 +7,17 @@ interface Props {
   loading?: boolean;
   skeletonCount?: number;
   empty?: React.ReactNode;
+  /** Number of cards to load with `priority` (above-the-fold). Default 0. */
+  priorityCount?: number;
 }
 
-export function ListingGrid({ listings, loading, skeletonCount = 6, empty }: Props) {
+export function ListingGrid({
+  listings,
+  loading,
+  skeletonCount = 6,
+  empty,
+  priorityCount = 0,
+}: Props) {
   if (loading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -28,8 +36,8 @@ export function ListingGrid({ listings, loading, skeletonCount = 6, empty }: Pro
   }
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {listings.map((l) => (
-        <ListingCard key={l.id} listing={l} />
+      {listings.map((l, i) => (
+        <ListingCard key={l.id} listing={l} priority={i < priorityCount} />
       ))}
     </div>
   );

@@ -11,9 +11,11 @@ interface Props {
   alt: string;
   sizes?: string;
   className?: string;
+  /** Pass true for above-the-fold cards to skip lazy loading. */
+  priority?: boolean;
 }
 
-export function ListingImageCarousel({ images, alt, sizes, className }: Props) {
+export function ListingImageCarousel({ images, alt, sizes, className, priority }: Props) {
   const [idx, setIdx] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
@@ -65,6 +67,9 @@ export function ListingImageCarousel({ images, alt, sizes, className }: Props) {
         fill
         sizes={sizes ?? '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
         className="object-cover transition-transform duration-300 group-hover:scale-105"
+        priority={priority && safeIdx === 0}
+        loading={priority ? 'eager' : 'lazy'}
+        quality={70}
       />
 
       {total > 1 && (

@@ -28,8 +28,9 @@ async function realServerFetch<T>(path: string, query?: Record<string, unknown>)
   }
   const res = await fetch(url.toString(), {
     headers: { Accept: 'application/json' },
-    // No ISR cache on listings for now — always reflect real-time API.
-    cache: 'no-store',
+    // ISR: cache 60s on the edge so back-to-back homepage hits don't re-fetch Laravel.
+    // Listings change relatively infrequently; 60s is a good compromise.
+    next: { revalidate: 60 },
   });
   if (!res.ok) {
     throw new Error(`API ${path} ${res.status} ${res.statusText}`);

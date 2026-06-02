@@ -8,9 +8,11 @@ interface Props {
   description?: string;
   listings: Listing[];
   href?: string;
+  /** Hint to load first N images eagerly (only for the top-most section above the fold). */
+  priorityCount?: number;
 }
 
-export function FeaturedListingsGrid({ title, description, listings, href }: Props) {
+export function FeaturedListingsGrid({ title, description, listings, href, priorityCount }: Props) {
   return (
     <section className="container-app py-8">
       <div className="mb-4 flex items-end justify-between gap-4">
@@ -27,7 +29,7 @@ export function FeaturedListingsGrid({ title, description, listings, href }: Pro
           </Link>
         )}
       </div>
-      <ListingGrid listings={listings} />
+      <ListingGrid listings={listings} priorityCount={priorityCount} />
     </section>
   );
 }

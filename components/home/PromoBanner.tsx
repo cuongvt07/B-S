@@ -27,6 +27,7 @@ interface Slide {
   image: string;
   imageBadge: string;
   imageBadgeIcon: typeof ShieldCheck;
+  accent: string; // accent color for slide
 }
 
 const SLIDES: Slide[] = [
@@ -45,9 +46,10 @@ const SLIDES: Slide[] = [
     ctaPrimary: { label: 'Xác thực ngay', href: '/tai-khoan/dang-tin' },
     ctaSecondary: { label: 'Tìm hiểu thêm', href: '/quy-che' },
     image:
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=720&q=80',
     imageBadge: 'ĐÃ XÁC THỰC',
     imageBadgeIcon: ShieldCheck,
+    accent: '#10b981',
   },
   {
     badge: 'Tin VIP',
@@ -64,9 +66,10 @@ const SLIDES: Slide[] = [
     ctaPrimary: { label: 'Đăng tin VIP', href: '/tai-khoan/dang-tin' },
     ctaSecondary: { label: 'Xem bảng giá', href: '/quy-che' },
     image:
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=720&q=80',
     imageBadge: 'VIP 3',
     imageBadgeIcon: Rocket,
+    accent: '#f59e0b',
   },
   {
     badge: 'Gói môi giới',
@@ -83,9 +86,10 @@ const SLIDES: Slide[] = [
     ctaPrimary: { label: 'Đăng ký môi giới', href: '/dang-ky' },
     ctaSecondary: { label: 'So sánh gói', href: '/quy-che' },
     image:
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=720&q=80',
     imageBadge: 'PRO',
     imageBadgeIcon: Briefcase,
+    accent: '#3b82f6',
   },
   {
     badge: 'Báo cáo thị trường',
@@ -102,9 +106,10 @@ const SLIDES: Slide[] = [
     ctaPrimary: { label: 'Xem báo cáo', href: '/blog?tag=Phân%20tích' },
     ctaSecondary: { label: 'Đăng ký nhận tin', href: '/dang-ky' },
     image:
-      'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=600&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=720&q=80',
     imageBadge: 'BÁO CÁO',
     imageBadgeIcon: BarChart3,
+    accent: '#ef4444',
   },
 ];
 
@@ -167,12 +172,18 @@ export function PromoBanner() {
               >
                 {/* Left content */}
                 <div className="space-y-4">
-                  <span className="inline-flex items-center gap-1 rounded-sm border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide backdrop-blur-sm">
+                  <span
+                    className="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+                    style={{ background: slide.accent }}
+                  >
                     <BadgeIcon size={14} /> {slide.badge}
                   </span>
                   <h3 className="text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
                     {slide.titleMain}{' '}
-                    <span className="font-semibold text-white/95 underline decoration-white/40 decoration-2 underline-offset-4">
+                    <span
+                      className="font-semibold underline decoration-2 underline-offset-4"
+                      style={{ color: slide.accent, textDecorationColor: `${slide.accent}99` }}
+                    >
                       {slide.titleAccent}
                     </span>
                   </h3>
@@ -180,14 +191,14 @@ export function PromoBanner() {
                   <ul className="grid grid-cols-1 gap-2 text-sm text-white/85 sm:grid-cols-2">
                     {slide.features.map((f) => (
                       <li key={f} className="inline-flex items-center gap-2">
-                        <CheckCircle2 size={16} className="shrink-0 text-white/70" /> {f}
+                        <CheckCircle2 size={16} className="shrink-0" style={{ color: slide.accent }} /> {f}
                       </li>
                     ))}
                   </ul>
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                     <Link
                       href={slide.ctaPrimary.href}
-                      className="unstyled inline-flex items-center gap-2 rounded-sm bg-white px-5 py-3 text-sm font-semibold text-ink-strong shadow-elevated transition hover:bg-white/90"
+                      className="unstyled inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-3 text-sm font-semibold text-white shadow-elevated transition hover:bg-primary-hover"
                     >
                       {slide.ctaPrimary.label}
                       <ArrowRight size={16} />
@@ -195,7 +206,7 @@ export function PromoBanner() {
                     {slide.ctaSecondary && (
                       <Link
                         href={slide.ctaSecondary.href}
-                        className="unstyled text-sm text-white/85 underline-offset-4 hover:text-white hover:underline"
+                        className="unstyled inline-flex items-center gap-2 rounded-sm border border-white/30 px-5 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
                       >
                         {slide.ctaSecondary.label}
                       </Link>
@@ -205,17 +216,27 @@ export function PromoBanner() {
 
                 {/* Right image */}
                 <div className="relative hidden md:block">
-                  <div className="relative mx-auto aspect-[3/4] max-w-[260px] rotate-3 overflow-hidden rounded-md border-4 border-white/15 shadow-deep">
+                  <div
+                    className="relative mx-auto aspect-[3/4] max-w-[260px] rotate-3 overflow-hidden rounded-md border-4 border-white/15 shadow-deep"
+                    style={{ background: `linear-gradient(135deg, ${slide.accent}33, ${slide.accent}11)` }}
+                  >
                     <Image
                       src={slide.image}
                       alt={slide.badge}
                       fill
                       sizes="260px"
                       className="object-cover"
+                      loading="lazy"
+                      unoptimized
                     />
-                    <div className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-sm bg-white/95 px-2 py-1 text-xs font-semibold text-ink-strong">
+                    <div
+                      className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs font-semibold text-white shadow-raised"
+                      style={{ background: slide.accent }}
+                    >
                       <ImgBadgeIcon size={12} /> {slide.imageBadge}
                     </div>
+                    {/* subtle gradient overlay for legibility */}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   </div>
                 </div>
               </div>

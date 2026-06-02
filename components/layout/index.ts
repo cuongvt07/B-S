@@ -4,3 +4,4 @@ export * from './Logo';
 export * from './SearchSuggestions';
 export * from './NotificationBell';
 export * from './AccountMenu';
+export * from './FloatingContacts';

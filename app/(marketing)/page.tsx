@@ -70,6 +70,7 @@ export default async function HomePage() {
           description={`${vipResult.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị — cập nhật mới nhất`}
           listings={vipResult.data}
           href="/tin-dang"
+          priorityCount={4}
         />
       </Reveal>
       <Reveal direction="scale">
