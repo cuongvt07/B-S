@@ -18,19 +18,9 @@ import {
 
 /**
  * Resolves the host used for server-side Laravel fetches.
- *
- * On Vercel: route through our own deployment so that Next.js rewrites in
- * next.config.mjs proxy `/api/v1/*` → Laravel. Direct fetches from the
- * serverless function to vmphuthinhland.com are blocked or unreachable from
- * Vercel's egress; the rewrite goes via Vercel's edge layer which works.
- *
- * Locally / dev: hit Laravel directly via NEXT_PUBLIC_REAL_API_URL.
+ * `||` (not `??`) — empty-string env vars must also fall back to the default.
  */
 function getRealHost(): string {
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  // `||` not `??` — env var may be the empty string on Vercel, which we must treat as unset.
   return process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
 }
 
