@@ -21,7 +21,16 @@ import {
  * `||` (not `??`) — empty-string env vars must also fall back to the default.
  */
 function getRealHost(): string {
-  return process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
+  const configured = process.env.NEXT_PUBLIC_REAL_API_URL || '';
+  try {
+    const host = new URL(configured).host;
+    if (host.endsWith('vercel.app')) {
+      return 'https://vmphuthinhland.com';
+    }
+  } catch {
+    // Invalid or empty env var falls back to production API below.
+  }
+  return configured || 'https://vmphuthinhland.com';
 }
 
 const FETCH_TIMEOUT_MS = 10_000;
@@ -112,6 +121,53 @@ export async function getListing(idOrCode: string): Promise<ApiResponse<Listing>
 }
 
 // ── Blogs (mock — Laravel chưa có) ──
+export interface HomepageSection {
+  key: string;
+  title: string;
+  description?: string | null;
+  sectionType: 'listings' | 'regions' | 'tools' | 'recently_viewed' | 'blogs' | 'feature_descriptions' | 'promo';
+  sourceType: string;
+  href?: string | null;
+  limit: number;
+  sortOrderIndex: number;
+  meta: { total: number };
+  listings: Listing[];
+}
+
+interface ApiHomepageSection {
+  key: string;
+  title: string;
+  description?: string | null;
+  section_type: HomepageSection['sectionType'];
+  source_type: string;
+  href?: string | null;
+  limit?: number;
+  sort_order_index?: number;
+  meta?: { total?: number };
+  items?: LaravelListing[];
+}
+
+export async function getHomepageSections(): Promise<HomepageSection[]> {
+  try {
+    const res = await realServerFetch<{ data: ApiHomepageSection[] }>('/homepage');
+    return (res.data ?? []).map((section) => ({
+      key: section.key,
+      title: section.title,
+      description: section.description,
+      sectionType: section.section_type,
+      sourceType: section.source_type,
+      href: section.href,
+      limit: section.limit ?? 0,
+      sortOrderIndex: section.sort_order_index ?? 0,
+      meta: { total: section.meta?.total ?? 0 },
+      listings: (section.items ?? []).map(mapApiListing),
+    }));
+  } catch (err) {
+    console.error('[server-data] getHomepageSections failed:', err);
+    return [];
+  }
+}
+
 export async function listBlogs(
   params: { tag?: string; page?: number; pageSize?: number } = {}
 ): Promise<PaginatedResponse<Blog>> {

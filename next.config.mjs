@@ -1,5 +1,16 @@
 /** @type {import('next').NextConfig} */
-const REAL_API = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
+function resolveRealApi() {
+  const configured = process.env.NEXT_PUBLIC_REAL_API_URL || '';
+  try {
+    const host = new URL(configured).host;
+    if (host.endsWith('vercel.app')) return 'https://vmphuthinhland.com';
+  } catch {
+    // ignore invalid or empty env
+  }
+  return configured || 'https://vmphuthinhland.com';
+}
+
+const REAL_API = resolveRealApi();
 
 const nextConfig = {
   reactStrictMode: true,

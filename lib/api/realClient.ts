@@ -8,7 +8,18 @@
 import { ApiError, type FetchOptions } from './client';
 
 // `||` not `??` — env var may be the empty string on Vercel, which we must treat as unset.
-const REMOTE_HOST = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
+function resolveRemoteHost(): string {
+  const configured = process.env.NEXT_PUBLIC_REAL_API_URL || '';
+  try {
+    const host = new URL(configured).host;
+    if (host.endsWith('vercel.app')) return 'https://vmphuthinhland.com';
+  } catch {
+    // ignore invalid or empty env
+  }
+  return configured || 'https://vmphuthinhland.com';
+}
+
+const REMOTE_HOST = resolveRemoteHost();
 const PREFIX = '/api/v1';
 const TOKEN_KEY = 'bds:api-token';
 
