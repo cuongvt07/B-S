@@ -10,6 +10,7 @@ import {
   ListingCard,
   TrackRecentlyViewed,
   RecentlyViewed,
+  FavoriteButton,
 } from '@/components/listing';
 import { Badge } from '@/components/ui';
 import { Breadcrumbs, JsonLd, listingSchema, breadcrumbSchema } from '@/components/seo';
@@ -21,6 +22,13 @@ import { DIRECTION_LABELS, FURNISH_LABELS, PROPERTY_TYPE_LABELS, SITE } from '@/
 interface PageProps {
   params: { slug: string };
 }
+
+const STATUS_LABELS = {
+  active: 'Dang hien thi',
+  pending: 'Cho duyet',
+  expired: 'Het han',
+  sold: 'Da giao dich',
+} as const;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const id = extractIdFromSlug(params.slug);
@@ -62,6 +70,9 @@ export default async function ListingDetailPage({ params }: PageProps) {
     .slice(0, 4);
 
   const url = `${SITE.url}/tin-dang/${l.slug}`;
+  const hasCoords = typeof l.lat === 'number' && typeof l.lng === 'number';
+  const locationText = `${l.addressLine}, ${formatLocation(l.cityCode, l.districtCode, l.wardName)}`;
+  const mapQuery = hasCoords ? `${l.lat},${l.lng}` : encodeURIComponent(locationText);
 
   return (
     <div className="container-app py-6">
@@ -85,9 +96,19 @@ export default async function ListingDetailPage({ params }: PageProps) {
                 <Badge variant="vip">VIP {l.vipTier.replace('vip', '')}</Badge>
               )}
               <Badge variant="outline">{PROPERTY_TYPE_LABELS[l.propertyType]}</Badge>
+              <Badge variant={l.status === 'active' ? 'success' : l.status === 'sold' ? 'danger' : 'outline'}>
+                {STATUS_LABELS[l.status]}
+              </Badge>
               <Badge variant="outline">{l.transactionType === 'rent' ? 'Cho thuê' : 'Mua bán'}</Badge>
             </div>
-            <h1 className="text-xl font-semibold text-ink sm:text-2xl">{l.title}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-xl font-semibold text-ink sm:text-2xl">{l.title}</h1>
+              <FavoriteButton
+                listingId={l.id}
+                initialActive={l.isFavorited}
+                className="static h-10 w-10 flex-shrink-0 border border-brdr"
+              />
+            </div>
             <p className="inline-flex items-start gap-1 text-sm text-ink-muted">
               <MapPin size={14} className="mt-0.5" />
               {l.addressLine}, {formatLocation(l.cityCode, l.districtCode, l.wardName)}
@@ -171,17 +192,34 @@ export default async function ListingDetailPage({ params }: PageProps) {
             </section>
           )}
 
-          {l.lat && l.lng && (
+          {hasCoords && (
             <section>
               <h2 className="mb-3 text-lg font-semibold">Vị trí trên bản đồ</h2>
               <div className="aspect-[16/9] overflow-hidden rounded-md border border-brdr">
                 <iframe
                   title="Vị trí trên bản đồ"
-                  src={`https://www.google.com/maps?q=${l.lat},${l.lng}&z=15&output=embed`}
+                  src={`https://www.google.com/maps?q=${mapQuery}&z=15&output=embed`}
                   className="h-full w-full border-0"
                   loading="lazy"
                 />
               </div>
+            </section>
+          )}
+
+          {!hasCoords && (
+            <section>
+              <h2 className="mb-3 text-lg font-semibold">Vi tri tren ban do</h2>
+              <div className="aspect-[16/9] overflow-hidden rounded-md border border-brdr">
+                <iframe
+                  title="Vi tri tren ban do"
+                  src={`https://www.google.com/maps?q=${mapQuery}&z=13&output=embed`}
+                  className="h-full w-full border-0"
+                  loading="lazy"
+                />
+              </div>
+              <p className="mt-2 text-xs text-ink-muted">
+                Tin nay chua co toa do chi tiet, ban do dang hien thi theo dia chi khu vuc.
+              </p>
             </section>
           )}
 

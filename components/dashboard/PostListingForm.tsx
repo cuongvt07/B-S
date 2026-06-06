@@ -1,53 +1,108 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button, Input, Select } from '@/components/ui';
 import { meApi } from '@/lib/api/auth';
-import { cities, cityByCode } from '@/mocks/data/cities';
-import { categories } from '@/mocks/data/categories';
+import { listingApi } from '@/lib/api/listings';
+import { categoryApi } from '@/lib/api/categories';
+import { locationApi } from '@/lib/api/locations';
+import { cities as mockCities } from '@/mocks/data/cities';
+import { categories as mockCategories } from '@/mocks/data/categories';
 import { AMENITIES, PROPERTY_TYPE_LABELS, DIRECTION_LABELS, FURNISH_LABELS } from '@/lib/constants';
 import type { Listing, PropertyType, TransactionType, Direction, FurnishLevel } from '@/types';
 
 const schema = z.object({
   transactionType: z.enum(['rent', 'sale']),
   propertyType: z.enum(['apartment', 'room', 'house', 'office', 'land', 'shared']),
-  categoryId: z.string().min(1, 'Chọn danh mục'),
-  title: z.string().min(15, 'Tiêu đề tối thiểu 15 ký tự').max(120, 'Tối đa 120 ký tự'),
-  description: z.string().min(50, 'Mô tả tối thiểu 50 ký tự'),
-  price: z.coerce.number().positive('Giá phải lớn hơn 0'),
+  categoryId: z.string().min(1, 'Chon danh muc'),
+  title: z.string().min(15, 'Tieu de toi thieu 15 ky tu').max(120, 'Toi da 120 ky tu'),
+  contactPhone: z.string().regex(/^0\d{9,10}$/, 'So dien thoai khong hop le'),
+  description: z.string().min(50, 'Mo ta toi thieu 50 ky tu'),
+  price: z.coerce.number().positive('Gia phai lon hon 0'),
   priceUnit: z.enum(['month', 'total']),
-  area: z.coerce.number().positive('Diện tích phải lớn hơn 0'),
+  area: z.coerce.number().positive('Dien tich phai lon hon 0'),
   bedrooms: z.coerce.number().optional(),
   bathrooms: z.coerce.number().optional(),
   direction: z.enum(['east', 'west', 'south', 'north', 'ne', 'nw', 'se', 'sw']).optional().or(z.literal('')),
   furnish: z.enum(['none', 'basic', 'full']).optional().or(z.literal('')),
-  cityCode: z.string().min(1, 'Chọn tỉnh / thành phố'),
-  districtCode: z.string().min(1, 'Chọn quận / huyện'),
+  cityCode: z.string().min(1, 'Chon tinh / thanh pho'),
+  districtCode: z.string().min(1, 'Chon quan / huyen'),
   wardName: z.string().optional(),
-  addressLine: z.string().min(5, 'Địa chỉ tối thiểu 5 ký tự'),
-  imageUrls: z.string().min(1, 'Cần ít nhất 1 ảnh').default(''),
+  addressLine: z.string().min(5, 'Dia chi toi thieu 5 ky tu'),
+  imageUrls: z.string().min(1, 'Can it nhat 1 anh').default(''),
   amenities: z.array(z.string()).default([]),
   tags: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-export function PostListingForm() {
+function formValuesFromListing(listing: Listing): FormValues {
+  return {
+    transactionType: listing.transactionType,
+    propertyType: listing.propertyType,
+    categoryId: listing.categoryId,
+    title: listing.title,
+    contactPhone: listing.contact.phone,
+    description: listing.description,
+    price: listing.price,
+    priceUnit: listing.priceUnit,
+    area: listing.area,
+    bedrooms: listing.bedrooms,
+    bathrooms: listing.bathrooms,
+    direction: listing.direction ?? '',
+    furnish: listing.furnish ?? '',
+    cityCode: listing.cityCode,
+    districtCode: listing.districtCode,
+    wardName: listing.wardName ?? '',
+    addressLine: listing.addressLine,
+    imageUrls: listing.images.map((image) => image.url).join('\n'),
+    amenities: listing.amenities,
+    tags: listing.tags.join(', '),
+  };
+}
+
+export function PostListingForm({ editId }: { editId?: string }) {
   const router = useRouter();
   const qc = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
+  const isEditing = Boolean(editId);
 
-  const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const categoryQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => categoryApi.list(),
+    retry: 1,
+  });
+  const cityQuery = useQuery({
+    queryKey: ['locations'],
+    queryFn: () => locationApi.cities(),
+    retry: 1,
+  });
+  const editQuery = useQuery({
+    queryKey: ['listing', editId],
+    queryFn: () => listingApi.get(editId as string),
+    enabled: isEditing,
+    retry: 1,
+  });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       transactionType: 'rent',
       propertyType: 'apartment',
       categoryId: '',
+      contactPhone: '',
       priceUnit: 'month',
       cityCode: '',
       districtCode: '',
@@ -56,14 +111,27 @@ export function PostListingForm() {
     },
   });
 
+  useEffect(() => {
+    if (editQuery.data?.data) {
+      reset(formValuesFromListing(editQuery.data.data));
+    }
+  }, [editQuery.data, reset]);
+
+  const cities = cityQuery.data?.data?.length ? cityQuery.data.data : mockCities;
+  const categories = categoryQuery.data?.data?.length ? categoryQuery.data.data : mockCategories;
+  const cityByCode = useMemo(() => new Map(cities.map((city) => [city.code, city])), [cities]);
+
   const watchedCity = watch('cityCode');
   const watchedAmenities = watch('amenities');
+  const watchedTransactionType = watch('transactionType');
   const districtOptions = (watchedCity ? cityByCode.get(watchedCity)?.districts : undefined) ?? [];
 
-  const create = useMutation({
-    mutationFn: (payload: Partial<Listing>) => meApi.createListing(payload),
+  const save = useMutation({
+    mutationFn: (payload: Partial<Listing>) =>
+      editId ? meApi.updateListing(editId, payload) : meApi.createListing(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['me', 'listings'] });
+      qc.invalidateQueries({ queryKey: ['listing', editId] });
     },
   });
 
@@ -87,8 +155,8 @@ export function PostListingForm() {
       price: values.price,
       priceUnit: values.priceUnit,
       area: values.area,
-      bedrooms: values.bedrooms,
-      bathrooms: values.bathrooms,
+      bedrooms: values.bedrooms || undefined,
+      bathrooms: values.bathrooms || undefined,
       direction: (values.direction || undefined) as Direction | undefined,
       furnish: (values.furnish || undefined) as FurnishLevel | undefined,
       cityCode: values.cityCode,
@@ -102,14 +170,18 @@ export function PostListingForm() {
       })),
       amenities: values.amenities,
       tags,
+      contact: {
+        name: editQuery.data?.data.contact.name ?? '',
+        phone: values.contactPhone,
+      },
     };
 
     try {
-      await create.mutateAsync(payload);
+      await save.mutateAsync(payload);
       router.push('/tai-khoan/tin-cua-toi');
       router.refresh();
     } catch (e: unknown) {
-      setServerError(e instanceof Error ? e.message : 'Đăng tin thất bại');
+      setServerError(e instanceof Error ? e.message : isEditing ? 'Cap nhat tin that bai' : 'Dang tin that bai');
     }
   }
 
@@ -119,94 +191,118 @@ export function PostListingForm() {
   }
 
   const filteredCategories = categories.filter((c) =>
-    c.transactionType === 'both' || c.transactionType === watch('transactionType')
+    c.transactionType === 'both' || c.transactionType === watchedTransactionType
   );
+
+  if (editQuery.isLoading) {
+    return (
+      <div className="rounded-md border border-brdr bg-white p-6 text-sm text-ink-muted">
+        Dang tai du lieu tin dang...
+      </div>
+    );
+  }
+
+  if (isEditing && editQuery.isError) {
+    return (
+      <div className="rounded-md border border-danger bg-danger-soft p-4 text-sm text-danger">
+        Khong tai duoc tin dang can sua. Vui long kiem tra dang nhap va thu lai.
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Section title="1. Thông tin cơ bản">
+      <Section title="1. Thong tin co ban">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
-            label="Loại giao dịch"
+            label="Loai giao dich"
             options={[
-              { value: 'rent', label: 'Cho thuê' },
-              { value: 'sale', label: 'Mua bán' },
+              { value: 'rent', label: 'Cho thue' },
+              { value: 'sale', label: 'Mua ban' },
             ]}
             {...register('transactionType')}
             error={errors.transactionType?.message}
           />
           <Select
-            label="Loại bất động sản"
+            label="Loai bat dong san"
             options={Object.entries(PROPERTY_TYPE_LABELS).map(([v, l]) => ({ value: v, label: l }))}
             {...register('propertyType')}
             error={errors.propertyType?.message}
           />
           <Select
-            label="Danh mục"
+            label="Danh muc"
             options={filteredCategories.map((c) => ({ value: c.id, label: c.name }))}
-            placeholder="Chọn danh mục"
+            placeholder="Chon danh muc"
             {...register('categoryId')}
             error={errors.categoryId?.message}
           />
         </div>
       </Section>
 
-      <Section title="2. Tiêu đề & mô tả">
+      <Section title="2. Tieu de va mo ta">
         <Input
-          label="Tiêu đề tin"
-          placeholder="VD: Căn hộ 2PN Vinhomes Central Park view sông, full nội thất"
+          label="Tieu de tin"
+          placeholder="VD: Can ho 2PN Vinhomes Central Park view song, full noi that"
           {...register('title')}
           error={errors.title?.message}
         />
+        <Input
+          label="So lien he"
+          type="tel"
+          placeholder="09xxxxxxxx"
+          autoComplete="tel"
+          {...register('contactPhone')}
+          error={errors.contactPhone?.message}
+        />
         <div>
-          <label className="mb-1 block text-sm font-semibold">Mô tả chi tiết</label>
+          <label className="mb-1 block text-sm font-semibold">Mo ta chi tiet</label>
           <textarea
             rows={6}
             className="w-full rounded-sm border border-brdr px-3 py-2 text-sm focus:outline-none focus:border-primary"
-            placeholder="Mô tả chi tiết về căn hộ, tiện ích, vị trí..."
+            placeholder="Mo ta chi tiet ve can ho, tien ich, vi tri..."
             {...register('description')}
           />
           {errors.description && <p className="mt-1 text-xs text-danger">{errors.description.message}</p>}
         </div>
       </Section>
 
-      <Section title="3. Giá & diện tích">
+      <Section title="3. Gia va dien tich">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Input
-            label="Giá (VNĐ)"
+            label="Gia (VND)"
             type="number"
             placeholder="VD: 5000000"
             {...register('price')}
             error={errors.price?.message}
           />
           <Select
-            label="Đơn vị giá"
+            label="Don vi gia"
             options={[
-              { value: 'month', label: '/ tháng' },
-              { value: 'total', label: 'Tổng giá' },
+              { value: 'month', label: '/ thang' },
+              { value: 'total', label: 'Tong gia' },
             ]}
             {...register('priceUnit')}
           />
           <Input
-            label="Diện tích (m²)"
+            label="Dien tich (m2)"
             type="number"
             {...register('area')}
             error={errors.area?.message}
           />
-          <Input label="Phòng ngủ" type="number" {...register('bedrooms')} />
-          <Input label="Phòng tắm" type="number" {...register('bathrooms')} />
+          <Input label="Phong ngu" type="number" {...register('bedrooms')} />
+          <Input label="Phong tam" type="number" {...register('bathrooms')} />
           <Select
-            label="Hướng"
+            label="Huong"
             options={[
-              { value: '', label: '— Không xác định —' },
+              { value: '', label: 'Khong xac dinh' },
               ...Object.entries(DIRECTION_LABELS).map(([v, l]) => ({ value: v, label: l })),
             ]}
             {...register('direction')}
           />
           <Select
-            label="Nội thất"
+            label="Noi that"
             options={[
-              { value: '', label: '— Không xác định —' },
+              { value: '', label: 'Khong xac dinh' },
               ...Object.entries(FURNISH_LABELS).map(([v, l]) => ({ value: v, label: l })),
             ]}
             {...register('furnish')}
@@ -214,35 +310,35 @@ export function PostListingForm() {
         </div>
       </Section>
 
-      <Section title="4. Vị trí">
+      <Section title="4. Vi tri">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
-            label="Tỉnh / Thành phố"
+            label="Tinh / Thanh pho"
             options={cities.map((c) => ({ value: c.code, label: c.name }))}
-            placeholder="Chọn tỉnh / thành"
+            placeholder="Chon tinh / thanh"
             {...register('cityCode')}
             error={errors.cityCode?.message}
           />
           <Select
-            label="Quận / Huyện"
+            label="Quan / Huyen"
             options={districtOptions.map((d) => ({ value: d.code, label: d.name }))}
-            placeholder="Chọn quận / huyện"
+            placeholder="Chon quan / huyen"
             {...register('districtCode')}
             error={errors.districtCode?.message}
           />
-          <Input label="Phường / Xã (tuỳ chọn)" {...register('wardName')} />
+          <Input label="Phuong / Xa (tuy chon)" {...register('wardName')} />
           <Input
-            label="Địa chỉ chi tiết"
-            placeholder="Số nhà, đường"
+            label="Dia chi chi tiet"
+            placeholder="So nha, duong"
             {...register('addressLine')}
             error={errors.addressLine?.message}
           />
         </div>
       </Section>
 
-      <Section title="5. Hình ảnh & tiện ích">
+      <Section title="5. Hinh anh va tien ich">
         <div>
-          <label className="mb-1 block text-sm font-semibold">URL hình ảnh (mỗi URL 1 dòng)</label>
+          <label className="mb-1 block text-sm font-semibold">URL hinh anh (moi URL 1 dong)</label>
           <textarea
             rows={3}
             className="w-full rounded-sm border border-brdr px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary"
@@ -251,11 +347,11 @@ export function PostListingForm() {
           />
           {errors.imageUrls && <p className="mt-1 text-xs text-danger">{errors.imageUrls.message}</p>}
           <p className="mt-1 text-xs text-ink-muted">
-            Demo: dùng link Unsplash hoặc bất kỳ URL public nào.
+            Tam thoi dung URL public; API upload file rieng co the bo sung sau khi BE co storage endpoint.
           </p>
         </div>
         <div>
-          <label className="mb-2 block text-sm font-semibold">Tiện ích</label>
+          <label className="mb-2 block text-sm font-semibold">Tien ich</label>
           <div className="flex flex-wrap gap-2">
             {AMENITIES.map((a) => {
               const active = watchedAmenities?.includes(a.value);
@@ -275,8 +371,8 @@ export function PostListingForm() {
           </div>
         </div>
         <Input
-          label="Tags (cách nhau dấu phẩy)"
-          placeholder="VD: view sông, full nội thất, tầng cao"
+          label="Tags (cach nhau dau phay)"
+          placeholder="VD: view song, full noi that, tang cao"
           {...register('tags')}
         />
       </Section>
@@ -287,10 +383,10 @@ export function PostListingForm() {
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={() => router.back()}>
-          Huỷ
+          Huy
         </Button>
-        <Button type="submit" loading={isSubmitting || create.isPending}>
-          Đăng tin
+        <Button type="submit" loading={isSubmitting || save.isPending}>
+          {isEditing ? 'Cap nhat tin' : 'Dang tin'}
         </Button>
       </div>
     </form>

@@ -1,25 +1,57 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { meApi } from '@/lib/api/auth';
 
-export function FavoriteButton({ listingId, className }: { listingId: string; className?: string }) {
-  const [active, setActive] = useState(false);
+export function FavoriteButton({
+  listingId,
+  initialActive = false,
+  className,
+}: {
+  listingId: string;
+  initialActive?: boolean;
+  className?: string;
+}) {
+  const [active, setActive] = useState(initialActive);
+  const [pending, setPending] = useState(false);
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    setActive(initialActive);
+  }, [initialActive]);
+
   return (
     <button
       type="button"
-      aria-label={active ? 'Bỏ yêu thích' : 'Yêu thích'}
+      aria-label={active ? 'Bo yeu thich' : 'Yeu thich'}
+      disabled={pending}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        setActive((v) => !v);
-        // TODO: mutate favorites API when auth wired (P5)
-        void listingId;
+        if (pending) return;
+        const next = !active;
+        setActive(next);
+        setPending(true);
+        meApi
+          .toggleFavorite(listingId)
+          .then((res) => {
+            setActive(res.data.favorited);
+            qc.invalidateQueries({ queryKey: ['me', 'favorites'] });
+          })
+          .catch(() => {
+            setActive(!next);
+          })
+          .finally(() => {
+            setPending(false);
+          });
       }}
       className={cn(
-        'grid h-8 w-8 place-items-center rounded-full bg-white/90 shadow-raised hover:text-danger',
+        'grid h-8 w-8 place-items-center rounded-full bg-white/90 shadow-raised hover:text-danger disabled:cursor-wait',
         active ? 'text-danger' : 'text-ink',
+        pending && 'opacity-70',
         className
       )}
     >

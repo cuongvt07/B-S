@@ -10,6 +10,7 @@ import { ApiError, type FetchOptions } from './client';
 // `||` not `??` — env var may be the empty string on Vercel, which we must treat as unset.
 const REMOTE_HOST = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
 const PREFIX = '/api/v1';
+const TOKEN_KEY = 'bds:api-token';
 
 // In the browser we go through Next.js rewrites (same-origin → cookies work).
 // On the server we hit Laravel directly because rewrites only apply to browser traffic.
@@ -35,6 +36,25 @@ function getXsrfToken(): string | null {
   if (typeof document === 'undefined') return null;
   const m = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
   return m ? decodeURIComponent(m[1]) : null;
+}
+
+export function getApiToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setApiToken(token: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token) window.localStorage.setItem(TOKEN_KEY, token);
+    else window.localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    // ignore storage errors
+  }
 }
 
 let csrfPromise: Promise<void> | null = null;
@@ -74,6 +94,8 @@ export async function realFetch<T>(path: string, options: FetchOptions = {}): Pr
     const token = getXsrfToken();
     if (token) finalHeaders['X-XSRF-TOKEN'] = token;
   }
+  const apiToken = getApiToken();
+  if (apiToken) finalHeaders.Authorization = `Bearer ${apiToken}`;
 
   const res = await fetch(url, {
     credentials: 'include',

@@ -1,8 +1,8 @@
-import { apiFetch } from './client';
+import { realFetch } from './realClient';
 import type { ApiResponse, Category } from '@/types';
 
 export const categoryApi = {
   list(): Promise<ApiResponse<Category[]>> {
-    return apiFetch<ApiResponse<Category[]>>('/categories');
+    return realFetch<ApiResponse<Category[]>>('/categories');
   },
 };

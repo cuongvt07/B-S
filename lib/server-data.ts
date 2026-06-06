@@ -115,6 +115,12 @@ export async function getListing(idOrCode: string): Promise<ApiResponse<Listing>
 export async function listBlogs(
   params: { tag?: string; page?: number; pageSize?: number } = {}
 ): Promise<PaginatedResponse<Blog>> {
+  try {
+    return await realServerFetch<PaginatedResponse<Blog>>('/blogs', params);
+  } catch (err) {
+    console.error('[server-data] listBlogs failed:', err);
+  }
+
   let filtered = [...blogsData];
   if (params.tag) {
     const tag = params.tag.toLowerCase();
@@ -127,6 +133,12 @@ export async function listBlogs(
 }
 
 export async function getBlog(slug: string): Promise<ApiResponse<Blog> | null> {
+  try {
+    return await realServerFetch<ApiResponse<Blog>>(`/blogs/${slug}`);
+  } catch (err) {
+    console.error('[server-data] getBlog failed:', err);
+  }
+
   const blog = blogBySlug.get(slug);
   if (!blog) return null;
   return { data: blog };

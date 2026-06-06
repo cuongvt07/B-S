@@ -1,50 +1,84 @@
-/**
- * Adapter mapping between MediaBDS (Laravel) shapes and our local UI types.
- * UI components depend on the local `Listing` shape, so this adapter shields
- * them from the actual API response differences.
- */
 import type {
-  Listing,
-  ListingImage,
-  TransactionType,
-  PropertyType,
   Direction,
+  Listing,
+  ListingFilter,
+  ListingImage,
   PaginatedResponse,
+  PropertyType,
+  TransactionType,
+  VipTier,
 } from '@/types';
 import { cities } from '@/mocks/data/cities';
 import { buildListingSlug } from '@/lib/utils/slugify';
 
-// ── Laravel API types (subset we care about) ──
-// NOTE: production API returns several numeric fields as STRINGS (e.g. price="1000000000.00").
-// We accept both number and string and coerce via toNum().
 export interface LaravelListing {
   id: number;
-  code: string;
+  code: string | null;
+  slug?: string | null;
   title: string;
+  description?: string | null;
   type: string;
+  transaction_type?: TransactionType;
   property_type: string | null;
+  property_type_code?: number | null;
+  property_kind?: PropertyType | null;
+  category_id?: string | null;
   price: number | string;
   price_unit: string | number;
+  price_vnd?: number | string | null;
+  price_unit_normalized?: 'month' | 'total' | null;
   area: number | string;
   address: string | null;
+  ward_id?: string | null;
   ward_name: string | null;
+  district_id?: string | null;
   district_name: string | null;
+  province_id?: string | null;
   province_name: string | null;
+  lat?: number | string | null;
+  lng?: number | string | null;
   floors: number | string | null;
   bedrooms: number | string | null;
   toilets: number | string | null;
   direction: string | null;
+  furnish?: string | null;
   front_width: number | string | null;
   road_width: number | string | null;
   avatar: string | null;
   images: string[];
+  amenities?: string[] | null;
+  tags?: string[] | null;
+  video_url?: string | null;
+  vip_tier?: VipTier | null;
+  status?: 'active' | 'pending' | 'expired' | 'sold' | null;
+  is_favorited?: boolean | null;
   is_sold: boolean;
+  view_count?: number | string | null;
   created_at: string;
   updated_at: string;
+  expires_at?: string | null;
   can_view_phone: boolean;
+  contact_name?: string | null;
   contact_phone: string | null;
   contact_phones: string[];
-  description?: string | null;
+  contact_avatar?: string | null;
+  owner?: {
+    id: number;
+    name: string | null;
+    phone: string | null;
+    avatar: string | null;
+  } | null;
+}
+
+export interface LaravelPaginated<T> {
+  data: T[];
+  links?: { first: string; last: string; prev: string | null; next: string | null };
+  meta: {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+  };
 }
 
 function toNum(v: number | string | null | undefined): number {
@@ -61,48 +95,6 @@ function toOptInt(v: number | string | null | undefined): number | undefined {
   return n;
 }
 
-export interface LaravelPaginated<T> {
-  data: T[];
-  links?: { first: string; last: string; prev: string | null; next: string | null };
-  meta: {
-    current_page: number;
-    per_page: number;
-    total: number;
-    last_page: number;
-  };
-}
-
-// ── Transaction type mapping ──
-const TX_MAP_TO_LOCAL: Record<string, TransactionType> = {
-  'Cần bán': 'sale',
-  'Cho thuê': 'rent',
-  'Cần mua': 'sale',
-};
-const TX_MAP_TO_API: Record<TransactionType, string> = {
-  sale: 'Cần bán',
-  rent: 'Cho thuê',
-};
-
-// ── Property type mapping ──
-// Laravel codes: 102 Biệt thự · 103 Căn hộ–chung cư · 104 Đất · 105 Đất nền dự án ·
-// 106 Mặt tiền · 107 Nhà mặt phố · 108 Nhà riêng · 109 Trang trại · 110 BĐS khác ·
-// 111 Nhà mặt phố LG 4M-5M · 112 Khách sạn · 113 Nhà nghỉ · 114 Homestay · 115 Nhà trọ
-const PROPERTY_LABEL_TO_LOCAL: Record<string, PropertyType> = {
-  'Căn hộ chung cư': 'apartment',
-  'Căn hộ-chung cư': 'apartment',
-  'Chung cư': 'apartment',
-  'Nhà trọ': 'room',
-  'Nhà riêng': 'house',
-  'Biệt thự': 'house',
-  'Nhà mặt phố': 'house',
-  'Mặt tiền': 'office',
-  'Khách sạn': 'office',
-  'Homestay': 'house',
-  'Đất': 'land',
-  'Đất nền dự án': 'land',
-  'Trang trại': 'land',
-  'BĐS khác': 'house',
-};
 const PROPERTY_LOCAL_TO_CODE: Record<PropertyType, number> = {
   apartment: 103,
   room: 115,
@@ -112,17 +104,27 @@ const PROPERTY_LOCAL_TO_CODE: Record<PropertyType, number> = {
   shared: 115,
 };
 
-// ── Direction mapping ──
-const DIRECTION_TO_LOCAL: Record<string, Direction> = {
-  Đông: 'east',
-  Tây: 'west',
-  Nam: 'south',
-  Bắc: 'north',
-  'Đông Bắc': 'ne',
-  'Tây Bắc': 'nw',
-  'Đông Nam': 'se',
-  'Tây Nam': 'sw',
+const PROPERTY_CODE_TO_LOCAL: Record<number, PropertyType> = {
+  102: 'house',
+  103: 'apartment',
+  104: 'land',
+  105: 'land',
+  106: 'office',
+  107: 'office',
+  108: 'house',
+  109: 'land',
+  111: 'office',
+  112: 'office',
+  113: 'office',
+  114: 'house',
+  115: 'room',
 };
+
+const TX_MAP_TO_API: Record<TransactionType, string> = {
+  sale: 'Cần bán',
+  rent: 'Cho thuê',
+};
+
 const DIRECTION_TO_API: Record<Direction, string> = {
   east: 'Đông',
   west: 'Tây',
@@ -134,80 +136,113 @@ const DIRECTION_TO_API: Record<Direction, string> = {
   sw: 'Tây Nam',
 };
 
-// ── Price normalization ──
-// Production API returns `price` as raw VND (string), `price_unit` as numeric code.
-// Docs originally listed enum text. Handle both gracefully.
-function priceToVND(
-  rawPrice: number | string,
-  rawUnit: string | number
-): { price: number; priceUnit: 'month' | 'total' } {
-  const p = toNum(rawPrice);
-  const u = typeof rawUnit === 'string' ? rawUnit.trim() : String(rawUnit);
-
-  // If price already large (≥ 1 triệu) → treat as raw VND
-  if (p >= 1_000_000) {
-    const isMonthly = u === 'VNĐ/tháng' || u === '3' || u === 'month';
-    return { price: p, priceUnit: isMonthly ? 'month' : 'total' };
-  }
-
-  // Otherwise interpret unit as multiplier
-  switch (u) {
-    case 'Tỷ':
-    case '1':
-      return { price: p * 1_000_000_000, priceUnit: 'total' };
-    case 'Triệu':
-    case '2':
-      return { price: p * 1_000_000, priceUnit: 'total' };
-    case 'VNĐ/tháng':
-    case '3':
-      return { price: p, priceUnit: 'month' };
-    default:
-      return { price: p, priceUnit: 'total' };
-  }
+function normalizeText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd');
 }
 
-// Province name → cityCode lookup (loose match)
-function findCityCode(provinceName: string | null | undefined): string {
-  if (!provinceName) return '';
-  const n = provinceName.toLowerCase();
-  const found = cities.find((c) => c.name.toLowerCase().includes(n) || n.includes(c.name.toLowerCase().replace(/^tp\.\s*/, '')));
+function transactionType(api: LaravelListing): TransactionType {
+  if (api.transaction_type === 'rent' || api.transaction_type === 'sale') return api.transaction_type;
+  return normalizeText(api.type).includes('thue') ? 'rent' : 'sale';
+}
+
+function propertyType(api: LaravelListing): PropertyType {
+  if (api.property_kind) return api.property_kind;
+  if (api.property_type_code && PROPERTY_CODE_TO_LOCAL[api.property_type_code]) {
+    return PROPERTY_CODE_TO_LOCAL[api.property_type_code];
+  }
+  const label = normalizeText(api.property_type ?? '');
+  if (label.includes('can ho') || label.includes('chung cu')) return 'apartment';
+  if (label.includes('tro')) return 'room';
+  if (label.includes('dat') || label.includes('trang trai')) return 'land';
+  if (label.includes('mat tien') || label.includes('van phong') || label.includes('khach san')) {
+    return 'office';
+  }
+  return 'house';
+}
+
+function direction(apiDirection: string | null): Direction | undefined {
+  if (!apiDirection) return undefined;
+  const d = normalizeText(apiDirection);
+  if (d.includes('dong') && d.includes('bac')) return 'ne';
+  if (d.includes('dong') && d.includes('nam')) return 'se';
+  if (d.includes('tay') && d.includes('bac')) return 'nw';
+  if (d.includes('tay') && d.includes('nam')) return 'sw';
+  if (d.includes('dong')) return 'east';
+  if (d.includes('tay')) return 'west';
+  if (d.includes('nam')) return 'south';
+  if (d.includes('bac')) return 'north';
+  return undefined;
+}
+
+function priceToVND(api: LaravelListing): { price: number; priceUnit: 'month' | 'total' } {
+  if (api.price_vnd !== undefined && api.price_vnd !== null) {
+    return {
+      price: toNum(api.price_vnd),
+      priceUnit: api.price_unit_normalized === 'month' ? 'month' : 'total',
+    };
+  }
+
+  const p = toNum(api.price);
+  const unit = String(api.price_unit).trim();
+  if (p >= 1_000_000) {
+    return { price: p, priceUnit: unit.includes('tháng') || unit === '3' ? 'month' : 'total' };
+  }
+  if (unit === 'Tỷ' || unit === 'Tỉ' || unit === '1') return { price: p * 1_000_000_000, priceUnit: 'total' };
+  if (unit === 'Triệu' || unit === '2') return { price: p * 1_000_000, priceUnit: 'total' };
+  return { price: p, priceUnit: unit.includes('tháng') || unit === '3' ? 'month' : 'total' };
+}
+
+function findCityCode(api: LaravelListing): string {
+  if (api.province_id && cities.some((c) => c.code === api.province_id)) return api.province_id;
+  if (!api.province_name) return '';
+  const n = normalizeText(api.province_name);
+  const found = cities.find((c) => {
+    const city = normalizeText(c.name).replace(/^tp\.\s*/, '');
+    return city.includes(n) || n.includes(city);
+  });
   return found?.code ?? '';
 }
 
-function findDistrictCode(cityCode: string, districtName: string | null | undefined): string {
-  if (!districtName || !cityCode) return '';
+function findDistrictCode(cityCode: string, api: LaravelListing): string {
+  if (!cityCode) return '';
   const city = cities.find((c) => c.code === cityCode);
   if (!city) return '';
-  const n = districtName.toLowerCase();
-  const found = city.districts.find((d) => d.name.toLowerCase().includes(n) || n.includes(d.name.toLowerCase()));
+  if (api.district_id && city.districts.some((d) => d.code === api.district_id)) return api.district_id;
+  if (!api.district_name) return '';
+  const n = normalizeText(api.district_name);
+  const found = city.districts.find((d) => {
+    const district = normalizeText(d.name);
+    return district.includes(n) || n.includes(district);
+  });
   return found?.code ?? '';
 }
 
-// ── Image mapping ──
-function mapImages(urls: string[], avatar: string | null): ListingImage[] {
-  const list: ListingImage[] = [];
-  if (avatar) list.push({ id: 'avatar', url: avatar, isPrimary: true });
+function mapImages(urls: string[] = [], avatar: string | null): ListingImage[] {
+  const seen = new Set<string>();
+  const out: ListingImage[] = [];
+  if (avatar) {
+    seen.add(avatar);
+    out.push({ id: 'avatar', url: avatar, isPrimary: true });
+  }
   urls.forEach((url, i) => {
-    list.push({ id: `img-${i}`, url, isPrimary: !avatar && i === 0 });
+    if (!url || seen.has(url)) return;
+    seen.add(url);
+    out.push({ id: `img-${i}`, url, isPrimary: !avatar && out.length === 0 });
   });
-  return list;
+  return out;
 }
 
-// ── Main adapter ──
 export function mapApiListing(api: LaravelListing): Listing {
   const id = String(api.id);
-  const slug = buildListingSlug(api.title || `tin-${api.code}`, id);
-  const transactionType: TransactionType = TX_MAP_TO_LOCAL[api.type] ?? 'sale';
-  const propertyType: PropertyType =
-    (api.property_type ? PROPERTY_LABEL_TO_LOCAL[api.property_type] : undefined) ?? 'house';
-  const { price, priceUnit } = priceToVND(api.price, api.price_unit);
-  const cityCode = findCityCode(api.province_name);
-  const districtCode = findDistrictCode(cityCode, api.district_name);
-  const direction =
-    api.direction && DIRECTION_TO_LOCAL[api.direction]
-      ? DIRECTION_TO_LOCAL[api.direction]
-      : undefined;
-  const images = mapImages(api.images ?? [], api.avatar);
+  const slug = api.slug || buildListingSlug(api.title || `tin-${api.code ?? id}`, id);
+  const { price, priceUnit } = priceToVND(api);
+  const cityCode = findCityCode(api);
+  const districtCode = findDistrictCode(cityCode, api);
+  const ownerId = api.owner?.id ? String(api.owner.id) : api.code ?? id;
 
   return {
     id,
@@ -219,35 +254,34 @@ export function mapApiListing(api: LaravelListing): Listing {
     area: toNum(api.area),
     bedrooms: toOptInt(api.bedrooms),
     bathrooms: toOptInt(api.toilets),
-    direction,
-    furnish: undefined,
-    transactionType,
-    propertyType,
-    categoryId: '',
+    direction: direction(api.direction),
+    furnish: api.furnish === 'none' || api.furnish === 'basic' || api.furnish === 'full' ? api.furnish : undefined,
+    transactionType: transactionType(api),
+    propertyType: propertyType(api),
+    categoryId: api.category_id ?? '',
     cityCode,
     districtCode,
     wardName: api.ward_name ?? undefined,
     addressLine: api.address ?? '',
-    lat: undefined,
-    lng: undefined,
-    images,
-    videoUrl: undefined,
-    amenities: [],
-    tags: [],
-    vipTier: 'normal',
-    status: api.is_sold ? 'sold' : 'active',
+    lat: api.lat === null || api.lat === undefined ? undefined : toNum(api.lat),
+    lng: api.lng === null || api.lng === undefined ? undefined : toNum(api.lng),
+    images: mapImages(api.images ?? [], api.avatar),
+    videoUrl: api.video_url ?? undefined,
+    amenities: api.amenities ?? [],
+    tags: api.tags ?? [],
+    vipTier: api.vip_tier ?? 'normal',
+    status: api.is_sold ? 'sold' : api.status ?? 'active',
+    isFavorited: Boolean(api.is_favorited),
     contact: {
-      name: '',
-      phone: api.contact_phone ?? '',
-      zalo: undefined,
-      messengerId: undefined,
-      avatarUrl: undefined,
+      name: api.contact_name ?? api.owner?.name ?? '',
+      phone: api.contact_phone ?? api.owner?.phone ?? '',
+      avatarUrl: api.contact_avatar ?? api.owner?.avatar ?? undefined,
     },
-    ownerId: api.code,
-    viewCount: 0,
+    ownerId,
+    viewCount: toNum(api.view_count),
     createdAt: api.created_at,
     updatedAt: api.updated_at,
-    expiresAt: api.updated_at,
+    expiresAt: api.expires_at ?? api.updated_at,
   };
 }
 
@@ -265,10 +299,11 @@ export function mapPaginated<T extends LaravelListing>(
   };
 }
 
-// ── Filter mapping ──
 export interface LaravelListingQuery {
   per_page?: number;
   page?: number;
+  q?: string;
+  category_id?: string;
   type?: string;
   property_type?: number;
   province?: string;
@@ -276,20 +311,22 @@ export interface LaravelListingQuery {
   ward?: string;
   bedrooms?: number;
   direction?: string;
+  furnish?: string;
+  vip_only?: boolean;
   min_area?: number;
   max_area?: number;
   min_price?: number;
   max_price?: number;
-  sort_by?: 'created_at' | 'price' | 'area';
+  sort_by?: 'created_at' | 'price' | 'area' | 'view_count';
   sort_order?: 'asc' | 'desc';
 }
-
-import type { ListingFilter } from '@/types';
 
 export function mapFilterToApi(f: ListingFilter): LaravelListingQuery {
   const out: LaravelListingQuery = {};
   if (f.pageSize) out.per_page = Math.min(f.pageSize, 30);
   if (f.page) out.page = f.page;
+  if (f.q) out.q = f.q;
+  if (f.categoryId) out.category_id = f.categoryId;
   if (f.transactionType) out.type = TX_MAP_TO_API[f.transactionType];
   if (f.propertyType) out.property_type = PROPERTY_LOCAL_TO_CODE[f.propertyType];
   if (f.cityCode) {
@@ -298,14 +335,15 @@ export function mapFilterToApi(f: ListingFilter): LaravelListingQuery {
   }
   if (f.districtCode && f.cityCode) {
     const city = cities.find((c) => c.code === f.cityCode);
-    const d = city?.districts.find((x) => x.code === f.districtCode);
-    if (d) out.district = d.name;
+    const district = city?.districts.find((d) => d.code === f.districtCode);
+    if (district) out.district = district.name;
   }
   if (f.bedrooms !== undefined) out.bedrooms = f.bedrooms;
   if (f.direction) out.direction = DIRECTION_TO_API[f.direction];
+  if (f.furnish) out.furnish = f.furnish;
+  if (f.vipOnly) out.vip_only = true;
   if (f.areaMin !== undefined) out.min_area = f.areaMin;
   if (f.areaMax !== undefined) out.max_area = f.areaMax;
-  // API min/max price is in TỶ (billions)
   if (f.priceMin !== undefined) out.min_price = f.priceMin / 1_000_000_000;
   if (f.priceMax !== undefined) out.max_price = f.priceMax / 1_000_000_000;
   if (f.sort) {

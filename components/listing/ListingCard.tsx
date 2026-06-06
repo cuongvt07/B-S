@@ -12,6 +12,13 @@ import { ListingQuickView } from './ListingQuickView';
 import { AddToCompareButton } from './AddToCompareButton';
 import { ListingImageCarousel } from './ListingImageCarousel';
 
+const STATUS_LABELS: Record<Listing['status'], string> = {
+  active: 'Dang hien thi',
+  pending: 'Cho duyet',
+  expired: 'Het han',
+  sold: 'Da giao dich',
+};
+
 export function ListingCard({
   listing,
   priority,
@@ -50,8 +57,19 @@ export function ListingCard({
               </Badge>
             </div>
           )}
-          <FavoriteButton listingId={listing.id} className="absolute right-2 top-2 z-10" />
+          <FavoriteButton
+            listingId={listing.id}
+            initialActive={listing.isFavorited}
+            className="absolute right-2 top-2 z-10"
+          />
           <AddToCompareButton listingId={listing.id} className="absolute right-12 top-2 z-10" />
+          {listing.status !== 'active' && (
+            <div className="pointer-events-none absolute left-2 bottom-2 z-10">
+              <Badge variant={listing.status === 'sold' ? 'danger' : 'outline'} className="bg-white/90">
+                {STATUS_LABELS[listing.status]}
+              </Badge>
+            </div>
+          )}
           {hasMultipleImages && (
             <div className="pointer-events-none absolute right-2 top-12 z-10 rounded-sm bg-black/60 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
               {listing.images.length} ảnh

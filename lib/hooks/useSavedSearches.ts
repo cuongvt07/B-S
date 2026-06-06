@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { realFetch } from '@/lib/api/realClient';
 
 const KEY = 'bds:saved-searches';
 
@@ -50,6 +51,12 @@ export function useSavedSearches(): {
   useEffect(() => {
     setItems(readStorage());
     setHydrated(true);
+    realFetch<{ data: SavedSearch[] }>('/me/saved-searches')
+      .then((res) => {
+        setItems(res.data);
+        writeStorage(res.data);
+      })
+      .catch(() => undefined);
   }, []);
 
   const save = useCallback((label: string, params: Record<string, string>): SavedSearch => {
@@ -64,6 +71,18 @@ export function useSavedSearches(): {
       writeStorage(next);
       return next;
     });
+    realFetch<{ data: SavedSearch }>('/me/saved-searches', {
+      method: 'POST',
+      body: JSON.stringify({ label, params }),
+    })
+      .then((res) => {
+        setItems((prev) => {
+          const next = [res.data, ...prev.filter((it) => it.id !== entry.id)];
+          writeStorage(next);
+          return next;
+        });
+      })
+      .catch(() => undefined);
     return entry;
   }, []);
 
@@ -73,6 +92,7 @@ export function useSavedSearches(): {
       writeStorage(next);
       return next;
     });
+    realFetch(`/me/saved-searches/${id}`, { method: 'DELETE' }).catch(() => undefined);
   }, []);
 
   return { items, save, remove, hydrated };

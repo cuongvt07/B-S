@@ -1,17 +1,16 @@
 /**
- * Auth + Me API — calls the real Laravel endpoints (Sanctum SPA flow).
+ * Auth + Me API backed by the MediaBDS Laravel API.
  */
-import { realFetch } from './realClient';
-import { apiFetch } from './client';
+import { realFetch, setApiToken } from './realClient';
 import {
   mapApiListing,
   mapPaginated,
   type LaravelListing,
   type LaravelPaginated,
 } from './laravelAdapter';
-import type { ApiResponse, Listing, User } from '@/types';
+import { cities, getDistrict } from '@/mocks/data/cities';
+import type { ApiResponse, Direction, Listing, PropertyType, User } from '@/types';
 
-// ── Laravel User envelope ──
 interface ApiUser {
   id: number;
   name: string;
@@ -24,6 +23,17 @@ interface ApiUser {
   created_at: string;
   trial_ends_at: string | null;
   license_expires_at: string | null;
+}
+
+interface AuthPayload {
+  user: ApiUser;
+  token: string;
+}
+
+interface Envelope<T> {
+  success?: boolean;
+  data: T;
+  message?: string;
 }
 
 function mapUser(u: ApiUser): User {
@@ -39,23 +49,77 @@ function mapUser(u: ApiUser): User {
   };
 }
 
-interface UserEnvelope {
-  success?: boolean;
-  data: ApiUser;
-  message?: string;
+const PROPERTY_TO_CODE: Record<PropertyType, number> = {
+  apartment: 103,
+  room: 115,
+  house: 108,
+  office: 107,
+  land: 104,
+  shared: 115,
+};
+
+const DIRECTION_TO_API: Record<Direction, string> = {
+  east: 'Đông',
+  west: 'Tây',
+  south: 'Nam',
+  north: 'Bắc',
+  ne: 'Đông Bắc',
+  nw: 'Tây Bắc',
+  se: 'Đông Nam',
+  sw: 'Tây Nam',
+};
+
+function listingPayload(payload: Partial<Listing>) {
+  const city = payload.cityCode ? cities.find((c) => c.code === payload.cityCode) : undefined;
+  const district =
+    payload.cityCode && payload.districtCode
+      ? getDistrict(payload.cityCode, payload.districtCode)
+      : undefined;
+  const imageUrls = payload.images?.map((image) => image.url).filter(Boolean) ?? [];
+  const isRent = payload.transactionType === 'rent';
+  const isMonthly = payload.priceUnit === 'month';
+
+  return {
+    title: payload.title ?? '',
+    type: isRent ? 'Cho thuê' : 'Cần bán',
+    property_type: PROPERTY_TO_CODE[payload.propertyType ?? 'house'],
+    category_id: payload.categoryId,
+    price: isMonthly ? payload.price ?? 0 : (payload.price ?? 0) / 1_000_000_000,
+    price_unit: isMonthly ? 'VNĐ/tháng' : 'Tỷ',
+    area: payload.area ?? 0,
+    contact_phone: payload.contact?.phone ?? '',
+    contact_name: payload.contact?.name,
+    address: payload.addressLine ?? '',
+    province_id: payload.cityCode,
+    district_id: payload.districtCode,
+    ward_name: payload.wardName,
+    province_name: city?.name,
+    district_name: district?.name,
+    description: payload.description ?? '',
+    bedrooms: payload.bedrooms,
+    toilets: payload.bathrooms,
+    direction: payload.direction ? DIRECTION_TO_API[payload.direction] : undefined,
+    furnish: payload.furnish,
+    images: imageUrls,
+    avatar: imageUrls[0],
+    amenities: payload.amenities ?? [],
+    tags: payload.tags ?? [],
+    lat: payload.lat,
+    lng: payload.lng,
+  };
 }
 
 export const authApi = {
   async login(input: { email?: string; phone?: string; password: string }): Promise<
     ApiResponse<{ user: User; token: string }>
   > {
-    // Laravel API uses `phone`. If caller passes email, fall back to it as-is.
     const phone = input.phone ?? input.email ?? '';
-    const res = await realFetch<UserEnvelope>('/auth/login', {
+    const res = await realFetch<Envelope<AuthPayload>>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ phone, password: input.password }),
     });
-    return { data: { user: mapUser(res.data), token: 'sanctum-cookie' } };
+    setApiToken(res.data.token);
+    return { data: { user: mapUser(res.data.user), token: res.data.token } };
   },
 
   async register(input: {
@@ -66,7 +130,7 @@ export const authApi = {
     inviteCode?: string;
   }): Promise<ApiResponse<{ user: User; token: string }>> {
     const phone = input.phone ?? input.email ?? '';
-    const res = await realFetch<UserEnvelope>('/auth/register', {
+    const res = await realFetch<Envelope<AuthPayload>>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({
         name: input.name,
@@ -76,18 +140,22 @@ export const authApi = {
         ...(input.inviteCode ? { invite_code: input.inviteCode } : {}),
       }),
     });
-    return { data: { user: mapUser(res.data), token: 'sanctum-cookie' } };
+    setApiToken(res.data.token);
+    return { data: { user: mapUser(res.data.user), token: res.data.token } };
   },
 
   async logout(): Promise<ApiResponse<{ ok: boolean }>> {
-    await realFetch('/auth/logout', { method: 'POST' });
+    try {
+      await realFetch('/auth/logout', { method: 'POST' });
+    } finally {
+      setApiToken(null);
+    }
     return { data: { ok: true } };
   },
 
   async me(): Promise<ApiResponse<User>> {
-    const res = await realFetch<UserEnvelope | { data: ApiUser }>('/auth/me');
-    const data = 'success' in res ? res.data : res.data;
-    return { data: mapUser(data) };
+    const res = await realFetch<Envelope<ApiUser>>('/auth/me');
+    return { data: mapUser(res.data) };
   },
 };
 
@@ -100,40 +168,17 @@ export const meApi = {
   },
 
   async createListing(payload: Partial<Listing>): Promise<ApiResponse<Listing>> {
-    // Map a tiny subset (local Listing → Laravel ListingInput).
-    const body = {
-      title: payload.title ?? '',
-      type: payload.transactionType === 'rent' ? 'Cho thuê' : 'Cần bán',
-      property_type: 108, // Nhà riêng (default) — could be mapped from propertyType
-      price: payload.price ? payload.price / 1_000_000_000 : 0,
-      price_unit: payload.priceUnit === 'month' ? 'VNĐ/tháng' : 'Tỷ',
-      area: payload.area ?? 0,
-      contact_phone: payload.contact?.phone ?? '',
-      address: payload.addressLine ?? '',
-      description: payload.description ?? '',
-      bedrooms: payload.bedrooms ?? undefined,
-      toilets: payload.bathrooms ?? undefined,
-    };
-    const res = await realFetch<{ data: LaravelListing }>('/listings', {
+    const res = await realFetch<Envelope<LaravelListing>>('/listings', {
       method: 'POST',
-      body: JSON.stringify(body),
+      body: JSON.stringify(listingPayload(payload)),
     });
     return { data: mapApiListing(res.data) };
   },
 
   async updateListing(id: string, payload: Partial<Listing>): Promise<ApiResponse<Listing>> {
-    const body = {
-      title: payload.title ?? '',
-      type: payload.transactionType === 'rent' ? 'Cho thuê' : 'Cần bán',
-      property_type: 108,
-      price: payload.price ? payload.price / 1_000_000_000 : 0,
-      price_unit: payload.priceUnit === 'month' ? 'VNĐ/tháng' : 'Tỷ',
-      area: payload.area ?? 0,
-      contact_phone: payload.contact?.phone ?? '',
-    };
-    const res = await realFetch<{ data: LaravelListing }>(`/listings/${id}`, {
+    const res = await realFetch<Envelope<LaravelListing>>(`/listings/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(body),
+      body: JSON.stringify(listingPayload(payload)),
     });
     return { data: mapApiListing(res.data) };
   },
@@ -142,18 +187,28 @@ export const meApi = {
     await realFetch(`/listings/${id}`, { method: 'DELETE' });
   },
 
-  // Favorites endpoint isn't available on Laravel yet — fall back to local mock.
   async listFavorites(): Promise<ApiResponse<Listing[]>> {
-    return apiFetch<ApiResponse<Listing[]>>('/me/favorites');
+    const res = await realFetch<{ data: LaravelListing[] }>('/me/favorites');
+    return { data: res.data.map(mapApiListing) };
   },
 
   async toggleFavorite(listingId: string): Promise<
     ApiResponse<{ listingId: string; favorited: boolean }>
   > {
-    return apiFetch('/me/favorites', {
+    const res = await realFetch<Envelope<{
+      listingId?: string;
+      listing_id?: string | number;
+      favorited: boolean;
+    }>>('/me/favorites', {
       method: 'POST',
-      body: JSON.stringify({ listingId }),
+      body: JSON.stringify({ listing_id: listingId, listingId }),
     });
+    return {
+      data: {
+        listingId: String(res.data.listingId ?? res.data.listing_id ?? listingId),
+        favorited: res.data.favorited,
+      },
+    };
   },
 
   async stats(): Promise<{

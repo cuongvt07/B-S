@@ -66,6 +66,7 @@ export interface Listing {
   tags: string[];
   vipTier: VipTier;
   status: ListingStatus;
+  isFavorited?: boolean;
   contact: ListingContact;
   ownerId: string;
   viewCount: number;
