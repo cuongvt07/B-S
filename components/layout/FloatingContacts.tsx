@@ -1,9 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Facebook, FilePlus2, MessageCircle, Phone, ShieldCheck, X } from 'lucide-react';
-import { Button, Modal } from '@/components/ui';
+import { Facebook, FilePlus2, LogIn, MessageCircle, Phone, UserPlus, X } from 'lucide-react';
+import { PostListingForm } from '@/components/dashboard';
+import { Button, Modal, Spinner } from '@/components/ui';
+import { useAuthModal } from '@/lib/hooks/useAuthModal';
+import { useCurrentUser } from '@/lib/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const ITEMS = [
@@ -38,16 +40,50 @@ const ITEMS = [
   },
 ];
 
+function currentUrl() {
+  if (typeof window === 'undefined') return undefined;
+  return `${window.location.pathname}${window.location.search}`;
+}
+
 export function FloatingContacts() {
   const [open, setOpen] = useState(false);
   const [postOpen, setPostOpen] = useState(false);
+  const [reopenPostAfterAuth, setReopenPostAfterAuth] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { data: user, isLoading } = useCurrentUser();
+  const openLogin = useAuthModal((s) => s.openLogin);
+  const openRegister = useAuthModal((s) => s.openRegister);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (!user || !reopenPostAfterAuth) return;
+    setReopenPostAfterAuth(false);
+    setPostOpen(true);
+  }, [reopenPostAfterAuth, user]);
+
   if (!mounted) return null;
+
+  function openPostPopup() {
+    setOpen(false);
+    setPostOpen(true);
+  }
+
+  function startLogin() {
+    setPostOpen(false);
+    setReopenPostAfterAuth(true);
+    openLogin(currentUrl());
+  }
+
+  function startRegister() {
+    setPostOpen(false);
+    setReopenPostAfterAuth(true);
+    openRegister(currentUrl());
+  }
+
+  const canPost = Boolean(user);
 
   return (
     <div
@@ -89,7 +125,7 @@ export function FloatingContacts() {
 
       <button
         type="button"
-        onClick={() => setPostOpen(true)}
+        onClick={openPostPopup}
         aria-label="Mở popup đăng tin"
         className="unstyled inline-flex h-12 items-center gap-2 rounded-full bg-danger px-4 text-sm font-bold text-white shadow-elevated transition-transform hover:scale-105 active:scale-95 sm:h-[52px] sm:px-5"
       >
@@ -113,49 +149,44 @@ export function FloatingContacts() {
       <Modal
         open={postOpen}
         onClose={() => setPostOpen(false)}
-        title="Đăng tin bất động sản"
-        description="Tạo tin đăng mới và quản lý trạng thái hiển thị ngay trong tài khoản của bạn."
-        size="sm"
-        footer={
-          <div className="flex w-full flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button type="button" variant="outline" onClick={() => setPostOpen(false)}>
-              Để sau
-            </Button>
-            <Link
-              href="/tai-khoan/dang-tin"
-              className="unstyled inline-flex min-h-[44px] items-center justify-center gap-2 rounded-sm bg-danger px-4 py-3 text-base text-white transition-opacity hover:opacity-90"
-              onClick={() => setPostOpen(false)}
-            >
-              <FilePlus2 size={16} />
-              <span>Đăng tin ngay</span>
-            </Link>
-          </div>
+        title={canPost ? 'Đăng tin mới' : 'Đăng nhập để đăng tin'}
+        description={
+          canPost
+            ? 'Nhập thông tin BĐS, upload ảnh và gửi tin ngay tại popup này.'
+            : 'Bạn cần đăng nhập hoặc tạo tài khoản trước khi đăng tin.'
         }
+        size={canPost ? 'xl' : 'sm'}
       >
-        <div className="space-y-3 text-sm text-ink-muted">
-          <div className="flex gap-3 rounded-md border border-brdr bg-surface-subtle p-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-danger-soft text-danger">
-              <FilePlus2 size={18} />
-            </span>
-            <div>
-              <p className="font-semibold text-ink">Đăng tin mới</p>
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-3 rounded-md border border-brdr bg-white p-10 text-sm text-ink-muted">
+            <Spinner />
+            <span>Đang kiểm tra đăng nhập...</span>
+          </div>
+        ) : canPost ? (
+          <PostListingForm />
+        ) : (
+          <div className="space-y-4">
+            <div className="rounded-md border border-brdr bg-surface-subtle p-4 text-sm text-ink-muted">
+              <p className="font-semibold text-ink">Đăng tin trực tiếp trong popup</p>
               <p className="mt-1">
-                Nhập thông tin BĐS, upload ảnh đã tối ưu và gửi tin lên hệ thống quản trị website.
+                Sau khi đăng nhập, bấm lại nút Đăng tin để mở form ngay trên trang hiện tại.
               </p>
             </div>
-          </div>
-          <div className="flex gap-3 rounded-md border border-brdr bg-white p-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
-              <ShieldCheck size={18} />
-            </span>
-            <div>
-              <p className="font-semibold text-ink">Theo dõi sau khi đăng</p>
-              <p className="mt-1">
-                Tin sẽ xuất hiện trong mục Tin của tôi và đồng bộ sang CMS website để duyệt, ẩn/hiện hoặc nâng VIP.
-              </p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <Button type="button" leftIcon={<LogIn size={16} />} onClick={startLogin}>
+                Đăng nhập
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                leftIcon={<UserPlus size={16} />}
+                onClick={startRegister}
+              >
+                Đăng ký
+              </Button>
             </div>
           </div>
-        </div>
+        )}
       </Modal>
     </div>
   );
