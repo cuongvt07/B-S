@@ -11,7 +11,7 @@ export default function ProfilePage() {
     return (
       <div className="flex items-center justify-center gap-3 rounded-md border border-brdr bg-white p-10 text-sm text-ink-muted">
         <Spinner />
-        <span>Dang tai thong tin tai khoan...</span>
+        <span>Đang tải thông tin tài khoản...</span>
       </div>
     );
   }
@@ -19,9 +19,9 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-ink">Thong tin ca nhan</h1>
+        <h1 className="text-2xl font-semibold text-ink">Thông tin cá nhân</h1>
         <p className="mt-1 text-sm text-ink-muted">
-          Cap nhat thong tin tai khoan va doi mat khau cua ban.
+          Cập nhật thông tin tài khoản và đổi mật khẩu của bạn.
         </p>
       </header>
       <ProfileEditForm user={user} />

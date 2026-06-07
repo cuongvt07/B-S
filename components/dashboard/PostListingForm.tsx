@@ -21,22 +21,22 @@ import type { Listing, PropertyType, TransactionType, Direction, FurnishLevel } 
 const schema = z.object({
   transactionType: z.enum(['rent', 'sale']),
   propertyType: z.enum(['apartment', 'room', 'house', 'office', 'land', 'shared']),
-  categoryId: z.string().min(1, 'Chon danh muc'),
-  title: z.string().min(15, 'Tieu de toi thieu 15 ky tu').max(120, 'Toi da 120 ky tu'),
-  contactPhone: z.string().regex(/^0\d{9,10}$/, 'So dien thoai khong hop le'),
-  description: z.string().min(50, 'Mo ta toi thieu 50 ky tu'),
-  price: z.coerce.number().positive('Gia phai lon hon 0'),
+  categoryId: z.string().min(1, 'Chọn danh mục'),
+  title: z.string().min(15, 'Tiêu đề tối thiểu 15 ký tự').max(120, 'Tối đa 120 ký tự'),
+  contactPhone: z.string().regex(/^0\d{9,10}$/, 'Số điện thoại không hợp lệ'),
+  description: z.string().min(50, 'Mô tả tối thiểu 50 ký tự'),
+  price: z.coerce.number().positive('Giá phải lớn hơn 0'),
   priceUnit: z.enum(['month', 'total']),
-  area: z.coerce.number().positive('Dien tich phai lon hon 0'),
+  area: z.coerce.number().positive('Diện tích phải lớn hơn 0'),
   bedrooms: z.coerce.number().optional(),
   bathrooms: z.coerce.number().optional(),
   direction: z.enum(['east', 'west', 'south', 'north', 'ne', 'nw', 'se', 'sw']).optional().or(z.literal('')),
   furnish: z.enum(['none', 'basic', 'full']).optional().or(z.literal('')),
-  cityCode: z.string().min(1, 'Chon tinh / thanh pho'),
-  districtCode: z.string().min(1, 'Chon quan / huyen'),
+  cityCode: z.string().min(1, 'Chọn tỉnh / thành phố'),
+  districtCode: z.string().min(1, 'Chọn quận / huyện'),
   wardName: z.string().optional(),
-  addressLine: z.string().min(5, 'Dia chi toi thieu 5 ky tu'),
-  imageUrls: z.string().min(1, 'Can it nhat 1 anh').default(''),
+  addressLine: z.string().min(5, 'Địa chỉ tối thiểu 5 ký tự'),
+  imageUrls: z.string().min(1, 'Cần ít nhất 1 ảnh').default(''),
   amenities: z.array(z.string()).default([]),
   tags: z.string().optional(),
 });
@@ -178,11 +178,11 @@ export function PostListingForm({ editId }: { editId?: string }) {
   async function onSubmit(values: FormValues) {
     setServerError(null);
     if (imageItems.some((item) => item.status === 'optimizing' || item.status === 'uploading')) {
-      setServerError('Anh dang upload, vui long doi hoan tat truoc khi luu tin.');
+      setServerError('Ảnh đang upload, vui lòng đợi hoàn tất trước khi lưu tin.');
       return;
     }
     if (imageItems.some((item) => item.status === 'error')) {
-      setServerError('Co anh upload loi. Vui long xoa anh loi hoac upload lai.');
+      setServerError('Có ảnh upload lỗi. Vui lòng xóa ảnh lỗi hoặc upload lại.');
       return;
     }
     const imageUrls = values.imageUrls
@@ -229,7 +229,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
       router.push('/tai-khoan/tin-cua-toi');
       router.refresh();
     } catch (e: unknown) {
-      setServerError(e instanceof Error ? e.message : isEditing ? 'Cap nhat tin that bai' : 'Dang tin that bai');
+      setServerError(e instanceof Error ? e.message : isEditing ? 'Cập nhật tin thất bại' : 'Đăng tin thất bại');
     }
   }
 
@@ -300,7 +300,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
             ? {
                 ...item,
                 status: 'error',
-                error: error instanceof Error ? error.message : 'Upload that bai',
+                error: error instanceof Error ? error.message : 'Upload thất bại',
               }
             : item
         )
@@ -332,7 +332,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
   if (editQuery.isLoading) {
     return (
       <div className="rounded-md border border-brdr bg-white p-6 text-sm text-ink-muted">
-        Dang tai du lieu tin dang...
+        Đang tải dữ liệu tin đăng...
       </div>
     );
   }
@@ -340,49 +340,49 @@ export function PostListingForm({ editId }: { editId?: string }) {
   if (isEditing && editQuery.isError) {
     return (
       <div className="rounded-md border border-danger bg-danger-soft p-4 text-sm text-danger">
-        Khong tai duoc tin dang can sua. Vui long kiem tra dang nhap va thu lai.
+        Không tải được tin đăng cần sửa. Vui lòng kiểm tra đăng nhập và thử lại.
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Section title="1. Thong tin co ban">
+      <Section title="1. Thông tin cơ bản">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
-            label="Loai giao dich"
+            label="Loại giao dịch"
             options={[
-              { value: 'rent', label: 'Cho thue' },
-              { value: 'sale', label: 'Mua ban' },
+              { value: 'rent', label: 'Cho thuê' },
+              { value: 'sale', label: 'Mua bán' },
             ]}
             {...register('transactionType')}
             error={errors.transactionType?.message}
           />
           <Select
-            label="Loai bat dong san"
+            label="Loại bất động sản"
             options={Object.entries(PROPERTY_TYPE_LABELS).map(([v, l]) => ({ value: v, label: l }))}
             {...register('propertyType')}
             error={errors.propertyType?.message}
           />
           <Select
-            label="Danh muc"
+            label="Danh mục"
             options={filteredCategories.map((c) => ({ value: c.id, label: c.name }))}
-            placeholder="Chon danh muc"
+            placeholder="Chọn danh mục"
             {...register('categoryId')}
             error={errors.categoryId?.message}
           />
         </div>
       </Section>
 
-      <Section title="2. Tieu de va mo ta">
+      <Section title="2. Tiêu đề và mô tả">
         <Input
-          label="Tieu de tin"
-          placeholder="VD: Can ho 2PN Vinhomes Central Park view song, full noi that"
+          label="Tiêu đề tin"
+          placeholder="VD: Căn hộ 2PN Vinhomes Central Park view sông, full nội thất"
           {...register('title')}
           error={errors.title?.message}
         />
         <Input
-          label="So lien he"
+          label="Số liên hệ"
           type="tel"
           placeholder="09xxxxxxxx"
           autoComplete="tel"
@@ -390,54 +390,54 @@ export function PostListingForm({ editId }: { editId?: string }) {
           error={errors.contactPhone?.message}
         />
         <div>
-          <label className="mb-1 block text-sm font-semibold">Mo ta chi tiet</label>
+          <label className="mb-1 block text-sm font-semibold">Mô tả chi tiết</label>
           <textarea
             rows={6}
             className="w-full rounded-sm border border-brdr px-3 py-2 text-sm focus:outline-none focus:border-primary"
-            placeholder="Mo ta chi tiet ve can ho, tien ich, vi tri..."
+            placeholder="Mô tả chi tiết về căn hộ, tiện ích, vị trí..."
             {...register('description')}
           />
           {errors.description && <p className="mt-1 text-xs text-danger">{errors.description.message}</p>}
         </div>
       </Section>
 
-      <Section title="3. Gia va dien tich">
+      <Section title="3. Giá và diện tích">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Input
-            label="Gia (VND)"
+            label="Giá (VND)"
             type="number"
             placeholder="VD: 5000000"
             {...register('price')}
             error={errors.price?.message}
           />
           <Select
-            label="Don vi gia"
+            label="Đơn vị giá"
             options={[
-              { value: 'month', label: '/ thang' },
-              { value: 'total', label: 'Tong gia' },
+              { value: 'month', label: '/ tháng' },
+              { value: 'total', label: 'Tổng giá' },
             ]}
             {...register('priceUnit')}
           />
           <Input
-            label="Dien tich (m2)"
+            label="Diện tích (m2)"
             type="number"
             {...register('area')}
             error={errors.area?.message}
           />
-          <Input label="Phong ngu" type="number" {...register('bedrooms')} />
-          <Input label="Phong tam" type="number" {...register('bathrooms')} />
+          <Input label="Phòng ngủ" type="number" {...register('bedrooms')} />
+          <Input label="Phòng tắm" type="number" {...register('bathrooms')} />
           <Select
-            label="Huong"
+            label="Hướng"
             options={[
-              { value: '', label: 'Khong xac dinh' },
+              { value: '', label: 'Không xác định' },
               ...Object.entries(DIRECTION_LABELS).map(([v, l]) => ({ value: v, label: l })),
             ]}
             {...register('direction')}
           />
           <Select
-            label="Noi that"
+            label="Nội thất"
             options={[
-              { value: '', label: 'Khong xac dinh' },
+              { value: '', label: 'Không xác định' },
               ...Object.entries(FURNISH_LABELS).map(([v, l]) => ({ value: v, label: l })),
             ]}
             {...register('furnish')}
@@ -445,40 +445,40 @@ export function PostListingForm({ editId }: { editId?: string }) {
         </div>
       </Section>
 
-      <Section title="4. Vi tri">
+      <Section title="4. Vị trí">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
-            label="Tinh / Thanh pho"
+            label="Tỉnh / Thành phố"
             options={cities.map((c) => ({ value: c.code, label: c.name }))}
-            placeholder="Chon tinh / thanh"
+            placeholder="Chọn tỉnh / thành"
             {...register('cityCode')}
             error={errors.cityCode?.message}
           />
           <Select
-            label="Quan / Huyen"
+            label="Quận / Huyện"
             options={districtOptions.map((d) => ({ value: d.code, label: d.name }))}
-            placeholder="Chon quan / huyen"
+            placeholder="Chọn quận / huyện"
             {...register('districtCode')}
             error={errors.districtCode?.message}
           />
-          <Input label="Phuong / Xa (tuy chon)" {...register('wardName')} />
+          <Input label="Phường / Xã (tùy chọn)" {...register('wardName')} />
           <Input
-            label="Dia chi chi tiet"
-            placeholder="So nha, duong"
+            label="Địa chỉ chi tiết"
+            placeholder="Số nhà, đường"
             {...register('addressLine')}
             error={errors.addressLine?.message}
           />
         </div>
       </Section>
 
-      <Section title="5. Hinh anh va tien ich">
+      <Section title="5. Hình ảnh và tiện ích">
         <div>
-          <label className="mb-2 block text-sm font-semibold">Upload hinh anh</label>
+          <label className="mb-2 block text-sm font-semibold">Upload hình ảnh</label>
           <label className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-brdr bg-surface-subtle px-4 py-6 text-center transition hover:border-primary hover:bg-primary/5">
             <UploadCloud size={28} className="text-primary" />
-            <span className="mt-2 text-sm font-semibold text-ink">Chon anh tu may</span>
+            <span className="mt-2 text-sm font-semibold text-ink">Chọn ảnh từ máy</span>
             <span className="mt-1 text-xs text-ink-muted">
-              Tu dong tao preview, nen anh ve toi da 1800px va upload S3 truoc khi luu tin.
+              Tự động tạo preview, nén ảnh về tối đa 1800px và upload S3 trước khi lưu tin.
             </span>
             <input
               type="file"
@@ -507,13 +507,13 @@ export function PostListingForm({ editId }: { editId?: string }) {
                       type="button"
                       onClick={() => removeImage(item.id)}
                       className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white hover:bg-danger"
-                      aria-label="Xoa anh"
+                      aria-label="Xóa ảnh"
                     >
                       <X size={14} />
                     </button>
                     {index === 0 && item.status === 'done' && (
                       <span className="absolute left-1.5 top-1.5 rounded-sm bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                        Anh dai dien
+                        Ảnh đại diện
                       </span>
                     )}
                   </div>
@@ -537,7 +537,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
           )}
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">URL hinh anh (moi URL 1 dong)</label>
+          <label className="mb-1 block text-sm font-semibold">URL hình ảnh (mỗi URL 1 dòng)</label>
           <textarea
             rows={3}
             className="w-full rounded-sm border border-brdr px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary"
@@ -546,11 +546,11 @@ export function PostListingForm({ editId }: { editId?: string }) {
           />
           {errors.imageUrls && <p className="mt-1 text-xs text-danger">{errors.imageUrls.message}</p>}
           <p className="mt-1 text-xs text-ink-muted">
-            Co the dan URL public thu cong. Neu upload anh o tren, danh sach URL se tu dong cap nhat.
+            Có thể dán URL public thủ công. Nếu upload ảnh ở trên, danh sách URL sẽ tự động cập nhật.
           </p>
         </div>
         <div>
-          <label className="mb-2 block text-sm font-semibold">Tien ich</label>
+          <label className="mb-2 block text-sm font-semibold">Tiện ích</label>
           <div className="flex flex-wrap gap-2">
             {AMENITIES.map((a) => {
               const active = watchedAmenities?.includes(a.value);
@@ -570,8 +570,8 @@ export function PostListingForm({ editId }: { editId?: string }) {
           </div>
         </div>
         <Input
-          label="Tags (cach nhau dau phay)"
-          placeholder="VD: view song, full noi that, tang cao"
+          label="Tags (cách nhau dấu phẩy)"
+          placeholder="VD: view sông, full nội thất, tầng cao"
           {...register('tags')}
         />
       </Section>
@@ -582,10 +582,10 @@ export function PostListingForm({ editId }: { editId?: string }) {
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={() => router.back()}>
-          Huy
+          Hủy
         </Button>
         <Button type="submit" loading={isSubmitting || save.isPending}>
-          {isEditing ? 'Cap nhat tin' : 'Dang tin'}
+          {isEditing ? 'Cập nhật tin' : 'Đăng tin'}
         </Button>
       </div>
     </form>
@@ -603,11 +603,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function ImageStatus({ status }: { status: ImageUploadStatus }) {
   const labels: Record<ImageUploadStatus, string> = {
-    ready: 'San sang',
-    optimizing: 'Dang nen',
-    uploading: 'Dang upload',
+    ready: 'Sẵn sàng',
+    optimizing: 'Đang nén',
+    uploading: 'Đang upload',
     done: 'Xong',
-    error: 'Loi',
+    error: 'Lỗi',
   };
 
   return (

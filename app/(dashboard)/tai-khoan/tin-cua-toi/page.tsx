@@ -20,30 +20,30 @@ export default function MyListingsPage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-ink">Tin cua toi</h1>
+          <h1 className="text-2xl font-semibold text-ink">Tin của tôi</h1>
           <p className="mt-1 text-sm text-ink-muted">
-            {listings.isLoading ? 'Dang tai...' : `${myListings.length} tin dang`}
+            {listings.isLoading ? 'Đang tải...' : `${myListings.length} tin đăng`}
           </p>
         </div>
         <Link href="/tai-khoan/dang-tin" className="unstyled">
-          <Button leftIcon={<PlusCircle size={16} />}>Dang tin moi</Button>
+          <Button leftIcon={<PlusCircle size={16} />}>Đăng tin mới</Button>
         </Link>
       </header>
 
       {listings.isLoading ? (
         <div className="flex items-center justify-center gap-3 rounded-md border border-brdr bg-white p-10 text-sm text-ink-muted">
           <Spinner />
-          <span>Dang tai tin cua ban...</span>
+          <span>Đang tải tin của bạn...</span>
         </div>
       ) : listings.isError ? (
         <Card padded className="!p-0">
           <EmptyState
             icon={FileText}
-            title="Khong tai duoc tin cua ban"
-            description="Vui long kiem tra dang nhap hoac ket noi API."
+            title="Không tải được tin của bạn"
+            description="Vui lòng kiểm tra đăng nhập hoặc kết nối API."
             action={
               <Link href="/tai-khoan/dang-tin" className="unstyled">
-                <Button leftIcon={<PlusCircle size={16} />}>Dang tin moi</Button>
+                <Button leftIcon={<PlusCircle size={16} />}>Đăng tin mới</Button>
               </Link>
             }
           />
@@ -52,11 +52,11 @@ export default function MyListingsPage() {
         <Card padded className="!p-0">
           <EmptyState
             icon={FileText}
-            title="Ban chua co tin dang nao"
-            description="Tao tin dang dau tien de bat dau nhan lien he tu khach hang."
+            title="Bạn chưa có tin đăng nào"
+            description="Tạo tin đăng đầu tiên để bắt đầu nhận liên hệ từ khách hàng."
             action={
               <Link href="/tai-khoan/dang-tin" className="unstyled">
-                <Button leftIcon={<PlusCircle size={16} />}>Dang tin dau tien</Button>
+                <Button leftIcon={<PlusCircle size={16} />}>Đăng tin đầu tiên</Button>
               </Link>
             }
           />

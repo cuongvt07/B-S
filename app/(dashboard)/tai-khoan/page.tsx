@@ -19,7 +19,7 @@ export default function DashboardHome() {
     return (
       <div className="flex items-center justify-center gap-3 rounded-md border border-brdr bg-white p-10 text-sm text-ink-muted">
         <Spinner />
-        <span>Dang tai tong quan...</span>
+        <span>Đang tải tổng quan...</span>
       </div>
     );
   }
@@ -31,24 +31,24 @@ export default function DashboardHome() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-ink">Chao {user.name}</h1>
-        <p className="mt-1 text-sm text-ink-muted">Tong quan hoat dong cua ban tren website.</p>
+        <h1 className="text-2xl font-semibold text-ink">Chào {user.name}</h1>
+        <p className="mt-1 text-sm text-ink-muted">Tổng quan hoạt động của bạn trên website.</p>
       </header>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
-          <p className="text-xs uppercase tracking-wide text-ink-muted">Tin dang hien thi</p>
+          <p className="text-xs uppercase tracking-wide text-ink-muted">Tin đăng hiển thị</p>
           <p className="mt-2 text-2xl font-semibold text-ink">{activeCount}</p>
-          <p className="mt-1 text-xs text-ink-muted">tren tong {myListings.length} tin</p>
+          <p className="mt-1 text-xs text-ink-muted">trên tổng {myListings.length} tin</p>
         </Card>
         <Card>
-          <p className="text-xs uppercase tracking-wide text-ink-muted">Tong luot xem</p>
+          <p className="text-xs uppercase tracking-wide text-ink-muted">Tổng lượt xem</p>
           <p className="mt-2 text-2xl font-semibold text-ink">{totalViews.toLocaleString('vi-VN')}</p>
-          <p className="mt-1 text-xs text-ink-muted">tich luy tu tat ca tin</p>
+          <p className="mt-1 text-xs text-ink-muted">tích lũy từ tất cả tin</p>
         </Card>
         <Card>
-          <p className="text-xs uppercase tracking-wide text-ink-muted">Tai khoan</p>
-          <p className="mt-2 text-base font-semibold text-ink">{user.role === 'broker' ? 'Moi gioi / CTV' : 'Ca nhan'}</p>
+          <p className="text-xs uppercase tracking-wide text-ink-muted">Tài khoản</p>
+          <p className="mt-2 text-base font-semibold text-ink">{user.role === 'broker' ? 'Môi giới / CTV' : 'Cá nhân'}</p>
           <p className="mt-1 text-xs text-ink-muted">{user.email}</p>
         </Card>
       </div>
@@ -57,29 +57,29 @@ export default function DashboardHome() {
         <Link href="/tai-khoan/dang-tin" className="unstyled">
           <Card className="hover:border-primary">
             <PlusCircle size={24} className="text-primary" />
-            <p className="mt-2 font-semibold text-ink">Dang tin moi</p>
-            <p className="mt-1 text-xs text-ink-muted">Bat dau cho thue hoac ban BDS cua ban</p>
+            <p className="mt-2 font-semibold text-ink">Đăng tin mới</p>
+            <p className="mt-1 text-xs text-ink-muted">Bắt đầu cho thuê hoặc bán BĐS của bạn</p>
           </Card>
         </Link>
         <Link href="/tai-khoan/tin-cua-toi" className="unstyled">
           <Card className="hover:border-primary">
             <List size={24} className="text-primary" />
-            <p className="mt-2 font-semibold text-ink">Tin cua toi</p>
-            <p className="mt-1 text-xs text-ink-muted">Sua, xoa va theo doi tin dang</p>
+            <p className="mt-2 font-semibold text-ink">Tin của tôi</p>
+            <p className="mt-1 text-xs text-ink-muted">Sửa, xóa và theo dõi tin đăng</p>
           </Card>
         </Link>
         <Link href="/tai-khoan/yeu-thich" className="unstyled">
           <Card className="hover:border-primary">
             <Heart size={24} className="text-primary" />
-            <p className="mt-2 font-semibold text-ink">Yeu thich</p>
-            <p className="mt-1 text-xs text-ink-muted">Theo doi tin da luu</p>
+            <p className="mt-2 font-semibold text-ink">Yêu thích</p>
+            <p className="mt-1 text-xs text-ink-muted">Theo dõi tin đã lưu</p>
           </Card>
         </Link>
       </div>
 
       {myListings.length > 0 && (
         <section>
-          <h2 className="mb-3 text-lg font-semibold">Hoat dong gan day</h2>
+          <h2 className="mb-3 text-lg font-semibold">Hoạt động gần đây</h2>
           <ul className="space-y-2">
             {myListings.slice(0, 3).map((l) => (
               <li key={l.id}>

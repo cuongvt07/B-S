@@ -22,7 +22,7 @@ export function AuthRequired({ children }: { children: ReactNode }) {
     return (
       <div className="flex items-center justify-center gap-3 rounded-md border border-brdr bg-white p-10 text-sm text-ink-muted">
         <Spinner />
-        <span>Dang kiem tra dang nhap...</span>
+        <span>Đang kiểm tra đăng nhập...</span>
       </div>
     );
   }
@@ -31,7 +31,7 @@ export function AuthRequired({ children }: { children: ReactNode }) {
     return (
       <div className="flex items-center justify-center gap-3 rounded-md border border-brdr bg-white p-10 text-sm text-ink-muted">
         <Spinner />
-        <span>Dang chuyen den trang dang nhap...</span>
+        <span>Đang chuyển đến trang đăng nhập...</span>
       </div>
     );
   }

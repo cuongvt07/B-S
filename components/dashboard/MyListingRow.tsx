@@ -10,10 +10,10 @@ import { meApi } from '@/lib/api/auth';
 import { formatPrice, formatArea, formatTimeAgo } from '@/lib/utils/format';
 
 const STATUS_LABELS: Record<Listing['status'], string> = {
-  active: 'Dang hien thi',
-  pending: 'Cho duyet',
-  expired: 'Het han',
-  sold: 'Da giao dich',
+  active: 'Đang hiển thị',
+  pending: 'Chờ duyệt',
+  expired: 'Hết hạn',
+  sold: 'Đã giao dịch',
 };
 
 export function MyListingRow({ listing }: { listing: Listing }) {
@@ -53,7 +53,7 @@ export function MyListingRow({ listing }: { listing: Listing }) {
           <span className="ml-3 text-ink-muted">{formatArea(listing.area)}</span>
         </p>
         <p className="text-xs text-ink-muted">
-          {listing.viewCount} luot xem - Cap nhat {formatTimeAgo(listing.updatedAt)}
+          {listing.viewCount} lượt xem - Cập nhật {formatTimeAgo(listing.updatedAt)}
         </p>
         <div className="mt-1 flex gap-2">
           <Link
@@ -66,17 +66,17 @@ export function MyListingRow({ listing }: { listing: Listing }) {
             href={`/tai-khoan/dang-tin?edit=${listing.id}`}
             className="unstyled inline-flex items-center gap-1 rounded-sm border border-brdr px-2 py-1 text-xs text-ink hover:border-primary"
           >
-            <Edit3 size={12} /> Sua
+            <Edit3 size={12} /> Sửa
           </Link>
           <button
             type="button"
             onClick={() => {
-              if (confirm('Xoa tin dang nay?')) del.mutate();
+              if (confirm('Xóa tin đăng này?')) del.mutate();
             }}
             disabled={del.isPending}
             className="inline-flex items-center gap-1 rounded-sm border border-brdr px-2 py-1 text-xs text-ink hover:border-danger hover:text-danger disabled:opacity-50"
           >
-            <Trash2 size={12} /> Xoa
+            <Trash2 size={12} /> Xóa
           </button>
         </div>
       </div>

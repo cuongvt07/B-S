@@ -11,12 +11,12 @@ export default function PostListingPage({
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold text-ink">
-          {editId ? 'Cap nhat tin dang' : 'Dang tin moi'}
+          {editId ? 'Cập nhật tin đăng' : 'Đăng tin mới'}
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
           {editId
-            ? 'Kiem tra lai noi dung, hinh anh va thong tin lien he truoc khi cap nhat.'
-            : 'Dien day du thong tin de tin dang cua ban nhan duoc nhieu lien he hon.'}
+            ? 'Kiểm tra lại nội dung, hình ảnh và thông tin liên hệ trước khi cập nhật.'
+            : 'Điền đầy đủ thông tin để tin đăng của bạn nhận được nhiều liên hệ hơn.'}
         </p>
       </header>
       <PostListingForm editId={editId} />
