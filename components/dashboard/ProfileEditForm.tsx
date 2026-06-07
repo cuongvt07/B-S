@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { UploadCloud, X } from 'lucide-react';
 import { Button, Card, Input } from '@/components/ui';
 import { apiFetch } from '@/lib/api/client';
+import { meApi } from '@/lib/api/auth';
+import { formatBytes, prepareListingImage } from '@/lib/utils/imageUpload';
 import type { User } from '@/types';
 
 const profileSchema = z.object({
@@ -33,6 +36,10 @@ export function ProfileEditForm({ user }: { user: User }) {
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
   const [pwdMsg, setPwdMsg] = useState<string | null>(null);
   const [pwdErr, setPwdErr] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState(user.avatarUrl ?? '');
+  const [avatarUploadMsg, setAvatarUploadMsg] = useState<string | null>(null);
+  const [avatarUploadErr, setAvatarUploadErr] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const profileForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -75,6 +82,67 @@ export function ProfileEditForm({ user }: { user: User }) {
     },
   });
 
+  useEffect(() => {
+    return () => {
+      if (avatarPreview.startsWith('blob:')) URL.revokeObjectURL(avatarPreview);
+    };
+  }, [avatarPreview]);
+
+  async function handleAvatarFile(file: File | undefined) {
+    setAvatarUploadErr(null);
+    setAvatarUploadMsg(null);
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setAvatarUploadErr('Vui lòng chọn file ảnh hợp lệ.');
+      return;
+    }
+
+    const localPreview = URL.createObjectURL(file);
+    setAvatarPreview((prev) => {
+      if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+      return localPreview;
+    });
+    setIsUploadingAvatar(true);
+
+    try {
+      const prepared = await prepareListingImage(file);
+      setAvatarUploadMsg(
+        prepared.compressedSize < prepared.originalSize
+          ? `Đã nén ${formatBytes(prepared.originalSize)} -> ${formatBytes(prepared.compressedSize)}, đang upload...`
+          : 'Đang upload ảnh...'
+      );
+      const uploaded = await meApi.uploadListingImages([prepared.file]);
+      const url = uploaded.data[0]?.url;
+      if (!url) throw new Error('Upload ảnh không trả về URL.');
+
+      setAvatarPreview((prev) => {
+        if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+        return url;
+      });
+      profileForm.setValue('avatarUrl', url, { shouldDirty: true, shouldValidate: true });
+      setAvatarUploadMsg('Đã chọn ảnh đại diện mới.');
+    } catch (error) {
+      setAvatarPreview((prev) => {
+        if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+        return profileForm.getValues('avatarUrl') || '';
+      });
+      setAvatarUploadErr(error instanceof Error ? error.message : 'Upload ảnh thất bại.');
+      setAvatarUploadMsg(null);
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  }
+
+  function clearAvatar() {
+    setAvatarPreview((prev) => {
+      if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+      return '';
+    });
+    profileForm.setValue('avatarUrl', '', { shouldDirty: true, shouldValidate: true });
+    setAvatarUploadMsg(null);
+    setAvatarUploadErr(null);
+  }
+
   return (
     <div className="space-y-6">
       <Card padded className="!p-6">
@@ -94,14 +162,59 @@ export function ProfileEditForm({ user }: { user: User }) {
             {...profileForm.register('phone')}
             error={profileForm.formState.errors.phone?.message}
           />
-          <Input
-            label="URL ảnh đại diện (tuỳ chọn)"
-            placeholder="https://..."
-            {...profileForm.register('avatarUrl')}
-            error={profileForm.formState.errors.avatarUrl?.message}
-          />
+          <input type="hidden" {...profileForm.register('avatarUrl')} />
+          <div>
+            <label className="mb-2 block text-sm font-semibold">Ảnh đại diện</label>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative h-20 w-20 overflow-hidden rounded-full border border-brdr bg-surface-subtle">
+                {avatarPreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- blob previews cannot go through next/image
+                  <img src={avatarPreview} alt={user.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="grid h-full w-full place-items-center text-xl font-semibold text-ink-muted">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  <label className="inline-flex min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-sm border border-brdr px-3 py-2 text-sm font-semibold text-ink transition hover:bg-surface-subtle">
+                    <UploadCloud size={16} />
+                    {isUploadingAvatar ? 'Đang upload...' : 'Chọn ảnh'}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                      className="sr-only"
+                      disabled={isUploadingAvatar || profileMutation.isPending}
+                      onChange={(e) => {
+                        void handleAvatarFile(e.target.files?.[0]);
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                  {avatarPreview && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      leftIcon={<X size={14} />}
+                      onClick={clearAvatar}
+                      disabled={isUploadingAvatar || profileMutation.isPending}
+                    >
+                      Xóa ảnh
+                    </Button>
+                  )}
+                </div>
+                {avatarUploadMsg && <p className="text-xs text-price">{avatarUploadMsg}</p>}
+                {avatarUploadErr && <p className="text-xs text-danger">{avatarUploadErr}</p>}
+                {profileForm.formState.errors.avatarUrl && (
+                  <p className="text-xs text-danger">{profileForm.formState.errors.avatarUrl.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
           <div className="flex items-center gap-3">
-            <Button type="submit" loading={profileMutation.isPending}>
+            <Button type="submit" loading={profileMutation.isPending} disabled={isUploadingAvatar}>
               Lưu thay đổi
             </Button>
             {profileMsg && <span className="text-sm text-price">{profileMsg}</span>}
