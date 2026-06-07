@@ -4,6 +4,20 @@ function d(code: string, name: string, slug: string, cityCode: string): District
   return { code, name, slug, cityCode };
 }
 
+const BINH_DINH_DISTRICTS: District[] = [
+  d('540', 'Thành phố Quy Nhơn', 'quy-nhon', '52'),
+  d('542', 'Huyện An Lão', 'an-lao', '52'),
+  d('543', 'Thị xã Hoài Nhơn', 'hoai-nhon', '52'),
+  d('544', 'Huyện Hoài Ân', 'hoai-an', '52'),
+  d('545', 'Huyện Phù Mỹ', 'phu-my', '52'),
+  d('546', 'Huyện Vĩnh Thạnh', 'vinh-thanh', '52'),
+  d('547', 'Huyện Tây Sơn', 'tay-son', '52'),
+  d('548', 'Huyện Phù Cát', 'phu-cat', '52'),
+  d('549', 'Thị xã An Nhơn', 'an-nhon', '52'),
+  d('550', 'Huyện Tuy Phước', 'tuy-phuoc', '52'),
+  d('551', 'Huyện Vân Canh', 'van-canh', '52'),
+];
+
 // Tier 1 — đầy đủ quận/huyện cho 8 tỉnh có lượng tin BĐS lớn nhất
 const HCM_DISTRICTS: District[] = [
   d('q1', 'Quận 1', 'quan-1', 'hcm'),
@@ -149,7 +163,6 @@ const OTHER_PROVINCES: Array<{ code: string; name: string; slug: string }> = [
   { code: 'bg', name: 'Bắc Giang', slug: 'bac-giang' },
   { code: 'bn', name: 'Bắc Ninh', slug: 'bac-ninh' },
   { code: 'btre', name: 'Bến Tre', slug: 'ben-tre' },
-  { code: 'bdh', name: 'Bình Định', slug: 'binh-dinh' },
   { code: 'bp', name: 'Bình Phước', slug: 'binh-phuoc' },
   { code: 'bt', name: 'Bình Thuận', slug: 'binh-thuan' },
   { code: 'cm', name: 'Cà Mau', slug: 'ca-mau' },
@@ -201,6 +214,7 @@ const OTHER_PROVINCES: Array<{ code: string; name: string; slug: string }> = [
 ];
 
 export const cities: City[] = [
+  { code: '52', name: 'Bình Định', slug: 'binh-dinh', districts: BINH_DINH_DISTRICTS },
   { code: 'hcm', name: 'TP. Hồ Chí Minh', slug: 'tphcm', districts: HCM_DISTRICTS },
   { code: 'hn', name: 'Hà Nội', slug: 'ha-noi', districts: HN_DISTRICTS },
   { code: 'dnang', name: 'Đà Nẵng', slug: 'da-nang', districts: DANANG_DISTRICTS },

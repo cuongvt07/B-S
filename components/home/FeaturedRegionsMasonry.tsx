@@ -30,7 +30,7 @@ const REGION_DEFAULTS: Omit<RegionStat, 'count'>[] = [
   {
     name: 'Bình Định',
     provinceName: 'Bình Định',
-    cityCode: 'bdh',
+    cityCode: '52',
     img: 'https://images.unsplash.com/photo-1545987796-200677ee1011?w=600&q=80&auto=format&fit=crop',
     className: '',
   },

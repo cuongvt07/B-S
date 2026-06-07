@@ -3,6 +3,15 @@ export interface District {
   name: string;
   slug: string;
   cityCode: string;
+  wards?: Ward[];
+}
+
+export interface Ward {
+  code: string;
+  name: string;
+  slug?: string;
+  cityCode?: string;
+  districtCode?: string;
 }
 
 export interface City {

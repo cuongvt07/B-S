@@ -15,6 +15,7 @@ import { locationApi } from '@/lib/api/locations';
 import { cities as mockCities } from '@/mocks/data/cities';
 import { categories as mockCategories } from '@/mocks/data/categories';
 import { AMENITIES, PROPERTY_TYPE_LABELS, DIRECTION_LABELS, FURNISH_LABELS } from '@/lib/constants';
+import { DEFAULT_POST_CITY_CODE, ensureDefaultPostCity } from '@/lib/constants/locationDefaults';
 import { formatBytes, prepareListingImage } from '@/lib/utils/imageUpload';
 import type { Listing, PropertyType, TransactionType, Direction, FurnishLevel } from '@/types';
 
@@ -122,7 +123,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
       categoryId: '',
       contactPhone: '',
       priceUnit: 'month',
-      cityCode: '',
+      cityCode: DEFAULT_POST_CITY_CODE,
       districtCode: '',
       amenities: [],
       imageUrls: '',
@@ -157,7 +158,10 @@ export function PostListingForm({ editId }: { editId?: string }) {
     };
   }, []);
 
-  const cities = cityQuery.data?.data?.length ? cityQuery.data.data : mockCities;
+  const cities = useMemo(
+    () => ensureDefaultPostCity(cityQuery.data?.data?.length ? cityQuery.data.data : mockCities),
+    [cityQuery.data?.data]
+  );
   const categories = categoryQuery.data?.data?.length ? categoryQuery.data.data : mockCategories;
   const cityByCode = useMemo(() => new Map(cities.map((city) => [city.code, city])), [cities]);
 
