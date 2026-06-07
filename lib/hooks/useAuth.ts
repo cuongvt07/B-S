@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { authApi } from '@/lib/api/auth';
+import { getApiToken } from '@/lib/api/realClient';
 import type { User } from '@/types';
 
 /**
@@ -17,7 +18,7 @@ const AUTH_HINT_KEY = 'bds:auth-hint';
 function readAuthHint(): boolean {
   if (typeof window === 'undefined') return false;
   try {
-    return window.localStorage.getItem(AUTH_HINT_KEY) === '1';
+    return window.localStorage.getItem(AUTH_HINT_KEY) === '1' || Boolean(getApiToken());
   } catch {
     return false;
   }
