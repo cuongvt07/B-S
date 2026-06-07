@@ -96,11 +96,14 @@ export async function realFetch<T>(path: string, options: FetchOptions = {}): Pr
   if (isWrite) await ensureCsrf();
 
   const url = buildUrl(path, query);
+  const isFormData = typeof FormData !== 'undefined' && init.body instanceof FormData;
   const finalHeaders: Record<string, string> = {
     Accept: 'application/json',
-    'Content-Type': 'application/json',
     ...(headers as Record<string, string> | undefined),
   };
+  if (!isFormData) {
+    finalHeaders['Content-Type'] = 'application/json';
+  }
   if (isWrite) {
     const token = getXsrfToken();
     if (token) finalHeaders['X-XSRF-TOKEN'] = token;

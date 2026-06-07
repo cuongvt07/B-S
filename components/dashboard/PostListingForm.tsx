@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { UploadCloud, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,6 +15,7 @@ import { locationApi } from '@/lib/api/locations';
 import { cities as mockCities } from '@/mocks/data/cities';
 import { categories as mockCategories } from '@/mocks/data/categories';
 import { AMENITIES, PROPERTY_TYPE_LABELS, DIRECTION_LABELS, FURNISH_LABELS } from '@/lib/constants';
+import { formatBytes, prepareListingImage } from '@/lib/utils/imageUpload';
 import type { Listing, PropertyType, TransactionType, Direction, FurnishLevel } from '@/types';
 
 const schema = z.object({
@@ -40,6 +42,20 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
+
+type ImageUploadStatus = 'ready' | 'optimizing' | 'uploading' | 'done' | 'error';
+
+interface ImageUploadItem {
+  id: string;
+  name: string;
+  previewUrl: string;
+  url?: string;
+  status: ImageUploadStatus;
+  originalSize?: number;
+  compressedSize?: number;
+  error?: string;
+  local?: boolean;
+}
 
 function formValuesFromListing(listing: Listing): FormValues {
   return {
@@ -70,6 +86,8 @@ export function PostListingForm({ editId }: { editId?: string }) {
   const router = useRouter();
   const qc = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [imageItems, setImageItems] = useState<ImageUploadItem[]>([]);
+  const imageItemsRef = useRef<ImageUploadItem[]>([]);
   const isEditing = Boolean(editId);
 
   const categoryQuery = useQuery({
@@ -113,9 +131,31 @@ export function PostListingForm({ editId }: { editId?: string }) {
 
   useEffect(() => {
     if (editQuery.data?.data) {
-      reset(formValuesFromListing(editQuery.data.data));
+      const values = formValuesFromListing(editQuery.data.data);
+      reset(values);
+      setImageItems(
+        editQuery.data.data.images.map((image) => ({
+          id: image.id,
+          name: image.alt || image.url.split('/').pop() || image.id,
+          previewUrl: image.url,
+          url: image.url,
+          status: 'done',
+        }))
+      );
     }
   }, [editQuery.data, reset]);
+
+  useEffect(() => {
+    imageItemsRef.current = imageItems;
+  }, [imageItems]);
+
+  useEffect(() => {
+    return () => {
+      imageItemsRef.current.forEach((item) => {
+        if (item.local) URL.revokeObjectURL(item.previewUrl);
+      });
+    };
+  }, []);
 
   const cities = cityQuery.data?.data?.length ? cityQuery.data.data : mockCities;
   const categories = categoryQuery.data?.data?.length ? categoryQuery.data.data : mockCategories;
@@ -137,6 +177,14 @@ export function PostListingForm({ editId }: { editId?: string }) {
 
   async function onSubmit(values: FormValues) {
     setServerError(null);
+    if (imageItems.some((item) => item.status === 'optimizing' || item.status === 'uploading')) {
+      setServerError('Anh dang upload, vui long doi hoan tat truoc khi luu tin.');
+      return;
+    }
+    if (imageItems.some((item) => item.status === 'error')) {
+      setServerError('Co anh upload loi. Vui long xoa anh loi hoac upload lai.');
+      return;
+    }
     const imageUrls = values.imageUrls
       .split('\n')
       .map((u) => u.trim())
@@ -188,6 +236,93 @@ export function PostListingForm({ editId }: { editId?: string }) {
   function toggleAmenity(value: string) {
     const cur = watchedAmenities ?? [];
     setValue('amenities', cur.includes(value) ? cur.filter((a) => a !== value) : [...cur, value]);
+  }
+
+  async function handleImageFiles(files: FileList | null) {
+    if (!files?.length) return;
+    setServerError(null);
+
+    const selected = Array.from(files)
+      .filter((file) => file.type.startsWith('image/'))
+      .slice(0, Math.max(0, 30 - imageItems.length));
+
+    if (!selected.length) return;
+
+    const pendingItems: ImageUploadItem[] = selected.map((file) => ({
+      id: `${Date.now()}-${file.name}-${Math.random().toString(16).slice(2)}`,
+      name: file.name,
+      previewUrl: URL.createObjectURL(file),
+      status: 'optimizing',
+      originalSize: file.size,
+      local: true,
+    }));
+
+    setImageItems((prev) => [...prev, ...pendingItems]);
+
+    try {
+      const prepared = await Promise.all(selected.map((file) => prepareListingImage(file)));
+      const preparedByName = new Map(prepared.map((item, index) => [pendingItems[index].id, item]));
+
+      setImageItems((prev) =>
+        prev.map((item) => {
+          const preparedItem = preparedByName.get(item.id);
+          if (!preparedItem) return item;
+          return {
+            ...item,
+            status: 'uploading',
+            originalSize: preparedItem.originalSize,
+            compressedSize: preparedItem.compressedSize,
+          };
+        })
+      );
+
+      const uploaded = await meApi.uploadListingImages(prepared.map((item) => item.file));
+      const uploadedById = new Map(uploaded.data.map((item, index) => [pendingItems[index].id, item]));
+
+      setImageItems((prev) => {
+        const next = prev.map((item) => {
+          const uploadedItem = uploadedById.get(item.id);
+          if (!uploadedItem) return item;
+          return {
+            ...item,
+            status: 'done' as ImageUploadStatus,
+            url: uploadedItem.url,
+            name: uploadedItem.name || item.name,
+          };
+        });
+        syncImageUrls(next);
+        return next;
+      });
+    } catch (error) {
+      setImageItems((prev) =>
+        prev.map((item) =>
+          pendingItems.some((pending) => pending.id === item.id)
+            ? {
+                ...item,
+                status: 'error',
+                error: error instanceof Error ? error.message : 'Upload that bai',
+              }
+            : item
+        )
+      );
+    }
+  }
+
+  function removeImage(id: string) {
+    setImageItems((prev) => {
+      const removed = prev.find((item) => item.id === id);
+      if (removed?.local) URL.revokeObjectURL(removed.previewUrl);
+      const next = prev.filter((item) => item.id !== id);
+      syncImageUrls(next);
+      return next;
+    });
+  }
+
+  function syncImageUrls(items: ImageUploadItem[]) {
+    const urls = items
+      .map((item) => item.url)
+      .filter((url): url is string => Boolean(url));
+    setValue('imageUrls', urls.join('\n'), { shouldValidate: true });
   }
 
   const filteredCategories = categories.filter((c) =>
@@ -338,6 +473,70 @@ export function PostListingForm({ editId }: { editId?: string }) {
 
       <Section title="5. Hinh anh va tien ich">
         <div>
+          <label className="mb-2 block text-sm font-semibold">Upload hinh anh</label>
+          <label className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-brdr bg-surface-subtle px-4 py-6 text-center transition hover:border-primary hover:bg-primary/5">
+            <UploadCloud size={28} className="text-primary" />
+            <span className="mt-2 text-sm font-semibold text-ink">Chon anh tu may</span>
+            <span className="mt-1 text-xs text-ink-muted">
+              Tu dong tao preview, nen anh ve toi da 1800px va upload S3 truoc khi luu tin.
+            </span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+              multiple
+              className="sr-only"
+              onChange={(e) => {
+                void handleImageFiles(e.target.files);
+                e.target.value = '';
+              }}
+            />
+          </label>
+          {imageItems.length > 0 && (
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {imageItems.map((item, index) => (
+                <div key={item.id} className="relative overflow-hidden rounded-md border border-brdr bg-white">
+                  <div className="relative aspect-[4/3] bg-surface-subtle">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- local blob previews are not served through Next Image */}
+                    <img
+                      src={item.previewUrl}
+                      alt={item.name}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(item.id)}
+                      className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white hover:bg-danger"
+                      aria-label="Xoa anh"
+                    >
+                      <X size={14} />
+                    </button>
+                    {index === 0 && item.status === 'done' && (
+                      <span className="absolute left-1.5 top-1.5 rounded-sm bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                        Anh dai dien
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-1 p-2 text-xs">
+                    <p className="truncate font-semibold text-ink">{item.name}</p>
+                    <div className="flex items-center justify-between gap-2 text-[11px] text-ink-muted">
+                      <span>
+                        {item.compressedSize && item.originalSize
+                          ? `${formatBytes(item.originalSize)} -> ${formatBytes(item.compressedSize)}`
+                          : item.originalSize
+                            ? formatBytes(item.originalSize)
+                            : 'URL'}
+                      </span>
+                      <ImageStatus status={item.status} />
+                    </div>
+                    {item.error && <p className="line-clamp-2 text-[11px] text-danger">{item.error}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div>
           <label className="mb-1 block text-sm font-semibold">URL hinh anh (moi URL 1 dong)</label>
           <textarea
             rows={3}
@@ -347,7 +546,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
           />
           {errors.imageUrls && <p className="mt-1 text-xs text-danger">{errors.imageUrls.message}</p>}
           <p className="mt-1 text-xs text-ink-muted">
-            Tam thoi dung URL public; API upload file rieng co the bo sung sau khi BE co storage endpoint.
+            Co the dan URL public thu cong. Neu upload anh o tren, danh sach URL se tu dong cap nhat.
           </p>
         </div>
         <div>
@@ -399,5 +598,29 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="mb-4 text-base font-semibold">{title}</h2>
       <div className="space-y-4">{children}</div>
     </section>
+  );
+}
+
+function ImageStatus({ status }: { status: ImageUploadStatus }) {
+  const labels: Record<ImageUploadStatus, string> = {
+    ready: 'San sang',
+    optimizing: 'Dang nen',
+    uploading: 'Dang upload',
+    done: 'Xong',
+    error: 'Loi',
+  };
+
+  return (
+    <span
+      className={
+        status === 'done'
+          ? 'font-semibold text-price'
+          : status === 'error'
+            ? 'font-semibold text-danger'
+            : 'font-semibold text-primary'
+      }
+    >
+      {labels[status]}
+    </span>
   );
 }

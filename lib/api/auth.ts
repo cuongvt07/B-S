@@ -36,6 +36,15 @@ interface Envelope<T> {
   message?: string;
 }
 
+export interface UploadedListingImage {
+  url: string;
+  path: string;
+  disk: string;
+  name: string;
+  size: number;
+  mime: string;
+}
+
 function mapUser(u: ApiUser): User {
   return {
     id: String(u.id),
@@ -181,6 +190,18 @@ export const meApi = {
       body: JSON.stringify(listingPayload(payload)),
     });
     return { data: mapApiListing(res.data) };
+  },
+
+  async uploadListingImages(files: File[]): Promise<ApiResponse<UploadedListingImage[]>> {
+    const body = new FormData();
+    files.forEach((file) => {
+      body.append('images[]', file);
+    });
+    const res = await realFetch<Envelope<UploadedListingImage[]>>('/listings/images', {
+      method: 'POST',
+      body,
+    });
+    return { data: res.data };
   },
 
   async deleteListing(id: string): Promise<void> {
