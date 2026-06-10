@@ -24,10 +24,10 @@ interface PageProps {
 }
 
 const STATUS_LABELS = {
-  active: 'Dang hien thi',
-  pending: 'Cho duyet',
-  expired: 'Het han',
-  sold: 'Da giao dich',
+  active: 'Đang hiển thị',
+  pending: 'Chờ duyệt',
+  expired: 'Hết hạn',
+  sold: 'Đã giao dịch',
 } as const;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -208,17 +208,17 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
           {!hasCoords && (
             <section>
-              <h2 className="mb-3 text-lg font-semibold">Vi tri tren ban do</h2>
+              <h2 className="mb-3 text-lg font-semibold">Vị trí trên bản đồ</h2>
               <div className="aspect-[16/9] overflow-hidden rounded-md border border-brdr">
                 <iframe
-                  title="Vi tri tren ban do"
+                  title="Vị trí trên bản đồ"
                   src={`https://www.google.com/maps?q=${mapQuery}&z=13&output=embed`}
                   className="h-full w-full border-0"
                   loading="lazy"
                 />
               </div>
               <p className="mt-2 text-xs text-ink-muted">
-                Tin nay chua co toa do chi tiet, ban do dang hien thi theo dia chi khu vuc.
+                Tin này chưa có tọa độ chi tiết, bản đồ đang hiển thị theo địa chỉ khu vực.
               </p>
             </section>
           )}
@@ -241,7 +241,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
           {l.tags.length > 0 && (
             <section>
-              <h2 className="mb-3 text-lg font-semibold">Tags</h2>
+              <h2 className="mb-3 text-lg font-semibold">Từ khóa</h2>
               <div className="flex flex-wrap gap-2">
                 {l.tags.map((t) => (
                   <Badge key={t} variant="outline">

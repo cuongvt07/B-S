@@ -13,7 +13,7 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
   const [revealed, setRevealed] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [message, setMessage] = useState(`Toi quan tam tin: ${listing.title}`);
+  const [message, setMessage] = useState(`Tôi quan tâm tin: ${listing.title}`);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const lead = useMutation({
@@ -25,13 +25,13 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
         listing_id: Number.isFinite(Number(listing.id)) ? Number(listing.id) : undefined,
       }),
     onSuccess: () => {
-      setFeedback('Da gui yeu cau. Bo phan tu van se lien he lai som.');
+      setFeedback('Đã gửi yêu cầu. Bộ phận tư vấn sẽ liên hệ lại sớm.');
       setName('');
       setPhone('');
-      setMessage(`Toi quan tam tin: ${listing.title}`);
+      setMessage(`Tôi quan tâm tin: ${listing.title}`);
     },
     onError: (error) => {
-      setFeedback(error instanceof Error ? error.message : 'Gui yeu cau that bai');
+      setFeedback(error instanceof Error ? error.message : 'Gửi yêu cầu thất bại');
     },
   });
 
@@ -44,9 +44,9 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
   return (
     <aside className="space-y-4 rounded-md border border-brdr bg-white p-4 shadow-raised">
       <div>
-        <p className="text-xs uppercase tracking-wide text-ink-muted">Lien he nguoi dang</p>
+        <p className="text-xs uppercase tracking-wide text-ink-muted">Liên hệ người đăng</p>
         <p className="mt-1 text-lg font-semibold text-ink">
-          {listing.contact.name || 'Moi gioi / chu nha'}
+          {listing.contact.name || 'Môi giới / chủ nhà'}
         </p>
         <p className="mt-1 text-sm font-semibold text-price">
           {formatPrice(listing.price, listing.priceUnit)}
@@ -60,7 +60,7 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
             className="w-full"
             onClick={() => setRevealed(true)}
           >
-            <Phone size={16} /> {revealed ? listing.contact.phone : 'Hien so dien thoai'}
+            <Phone size={16} /> {revealed ? listing.contact.phone : 'Hiện số điện thoại'}
           </Button>
           {listing.contact.zalo && (
             <a
@@ -76,15 +76,15 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
             href={`tel:${listing.contact.phone}`}
             className="unstyled inline-flex w-full items-center justify-center gap-2 rounded-sm border border-brdr px-4 py-2 text-sm font-semibold text-ink hover:border-primary hover:text-primary"
           >
-            <Phone size={16} /> Goi ngay
+            <Phone size={16} /> Gọi ngay
           </a>
         </div>
       </AuthGate>
 
       <form onSubmit={submitLead} className="space-y-3 border-t border-brdr pt-4">
-        <p className="text-sm font-semibold text-ink">Yeu cau tu van tin nay</p>
+        <p className="text-sm font-semibold text-ink">Yêu cầu tư vấn tin này</p>
         <Input
-          label="Ho ten"
+          label="Họ tên"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -92,7 +92,7 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
           autoComplete="name"
         />
         <Input
-          label="So dien thoai"
+          label="Số điện thoại"
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
@@ -101,7 +101,7 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
           autoComplete="tel"
         />
         <div>
-          <label className="mb-1 block text-sm font-semibold text-ink">Noi dung</label>
+          <label className="mb-1 block text-sm font-semibold text-ink">Nội dung</label>
           <textarea
             rows={3}
             value={message}
@@ -114,7 +114,7 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
           <p className="rounded-sm bg-surface-subtle px-3 py-2 text-xs text-ink-muted">{feedback}</p>
         )}
         <Button type="submit" className="w-full" loading={lead.isPending}>
-          <Send size={16} /> Gui yeu cau
+          <Send size={16} /> Gửi yêu cầu
         </Button>
       </form>
     </aside>

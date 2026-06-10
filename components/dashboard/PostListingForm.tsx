@@ -23,9 +23,9 @@ const schema = z.object({
   transactionType: z.enum(['rent', 'sale']),
   propertyType: z.enum(['apartment', 'room', 'house', 'office', 'land', 'shared']),
   categoryId: z.string().min(1, 'Chọn danh mục'),
-  title: z.string().min(15, 'Tiêu đề tối thiểu 15 ký tự').max(120, 'Tối đa 120 ký tự'),
+  title: z.string().min(5, 'Tiêu đề tối thiểu 5 ký tự').max(120, 'Tối đa 120 ký tự'),
   contactPhone: z.string().regex(/^0\d{9,10}$/, 'Số điện thoại không hợp lệ'),
-  description: z.string().min(50, 'Mô tả tối thiểu 50 ký tự'),
+  description: z.string().min(5, 'Mô tả tối thiểu 5 ký tự'),
   price: z.coerce.number().positive('Giá phải lớn hơn 0'),
   priceUnit: z.enum(['month', 'total']),
   area: z.coerce.number().positive('Diện tích phải lớn hơn 0'),
@@ -51,6 +51,7 @@ interface ImageUploadItem {
   name: string;
   previewUrl: string;
   url?: string;
+  role: 'primary' | 'slider';
   status: ImageUploadStatus;
   originalSize?: number;
   compressedSize?: number;
@@ -135,11 +136,12 @@ export function PostListingForm({ editId }: { editId?: string }) {
       const values = formValuesFromListing(editQuery.data.data);
       reset(values);
       setImageItems(
-        editQuery.data.data.images.map((image) => ({
+        editQuery.data.data.images.map((image, index) => ({
           id: image.id,
           name: image.alt || image.url.split('/').pop() || image.id,
           previewUrl: image.url,
           url: image.url,
+          role: index === 0 ? 'primary' : 'slider',
           status: 'done',
         }))
       );
@@ -242,13 +244,13 @@ export function PostListingForm({ editId }: { editId?: string }) {
     setValue('amenities', cur.includes(value) ? cur.filter((a) => a !== value) : [...cur, value]);
   }
 
-  async function handleImageFiles(files: FileList | null) {
+  async function handleImageFiles(files: FileList | null, mode: 'primary' | 'slider' = 'slider') {
     if (!files?.length) return;
     setServerError(null);
 
     const selected = Array.from(files)
       .filter((file) => file.type.startsWith('image/'))
-      .slice(0, Math.max(0, 30 - imageItems.length));
+      .slice(0, mode === 'primary' ? 1 : Math.max(0, 30 - imageItems.length));
 
     if (!selected.length) return;
 
@@ -256,12 +258,25 @@ export function PostListingForm({ editId }: { editId?: string }) {
       id: `${Date.now()}-${file.name}-${Math.random().toString(16).slice(2)}`,
       name: file.name,
       previewUrl: URL.createObjectURL(file),
+      role: mode,
       status: 'optimizing',
       originalSize: file.size,
       local: true,
     }));
 
-    setImageItems((prev) => [...prev, ...pendingItems]);
+    setImageItems((prev) => {
+      if (mode === 'primary') {
+        const removedPrimary = prev.find((item) => item.role === 'primary');
+        if (removedPrimary?.local) URL.revokeObjectURL(removedPrimary.previewUrl);
+        const next = [pendingItems[0], ...prev.filter((item) => item.role !== 'primary')];
+        syncImageUrls(next);
+        return next;
+      }
+
+      const next = [...prev, ...pendingItems];
+      syncImageUrls(next);
+      return next;
+    });
 
     try {
       const prepared = await Promise.all(selected.map((file) => prepareListingImage(file)));
@@ -323,7 +338,11 @@ export function PostListingForm({ editId }: { editId?: string }) {
   }
 
   function syncImageUrls(items: ImageUploadItem[]) {
-    const urls = items
+    const orderedItems = [
+      ...items.filter((item) => item.role === 'primary'),
+      ...items.filter((item) => item.role === 'slider'),
+    ];
+    const urls = orderedItems
       .map((item) => item.url)
       .filter((url): url is string => Boolean(url));
     setValue('imageUrls', urls.join('\n'), { shouldValidate: true });
@@ -332,6 +351,8 @@ export function PostListingForm({ editId }: { editId?: string }) {
   const filteredCategories = categories.filter((c) =>
     c.transactionType === 'both' || c.transactionType === watchedTransactionType
   );
+  const primaryImage = imageItems.find((item) => item.role === 'primary');
+  const sliderImages = imageItems.filter((item) => item.role === 'slider');
 
   if (editQuery.isLoading) {
     return (
@@ -476,83 +497,56 @@ export function PostListingForm({ editId }: { editId?: string }) {
       </Section>
 
       <Section title="5. Hình ảnh và tiện ích">
-        <div>
-          <label className="mb-2 block text-sm font-semibold">Upload hình ảnh</label>
-          <label className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-brdr bg-surface-subtle px-4 py-6 text-center transition hover:border-primary hover:bg-primary/5">
-            <UploadCloud size={28} className="text-primary" />
-            <span className="mt-2 text-sm font-semibold text-ink">Chọn ảnh từ máy</span>
-            <span className="mt-1 text-xs text-ink-muted">
-              Tự động tạo preview, nén ảnh về tối đa 1800px và upload S3 trước khi lưu tin.
-            </span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-              multiple
-              className="sr-only"
-              onChange={(e) => {
-                void handleImageFiles(e.target.files);
-                e.target.value = '';
-              }}
-            />
-          </label>
-          {imageItems.length > 0 && (
-            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {imageItems.map((item, index) => (
-                <div key={item.id} className="relative overflow-hidden rounded-md border border-brdr bg-white">
-                  <div className="relative aspect-[4/3] bg-surface-subtle">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- local blob previews are not served through Next Image */}
-                    <img
-                      src={item.previewUrl}
-                      alt={item.name}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(item.id)}
-                      className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white hover:bg-danger"
-                      aria-label="Xóa ảnh"
-                    >
-                      <X size={14} />
-                    </button>
-                    {index === 0 && item.status === 'done' && (
-                      <span className="absolute left-1.5 top-1.5 rounded-sm bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                        Ảnh đại diện
-                      </span>
-                    )}
-                  </div>
-                  <div className="space-y-1 p-2 text-xs">
-                    <p className="truncate font-semibold text-ink">{item.name}</p>
-                    <div className="flex items-center justify-between gap-2 text-[11px] text-ink-muted">
-                      <span>
-                        {item.compressedSize && item.originalSize
-                          ? `${formatBytes(item.originalSize)} -> ${formatBytes(item.compressedSize)}`
-                          : item.originalSize
-                            ? formatBytes(item.originalSize)
-                            : 'URL'}
-                      </span>
-                      <ImageStatus status={item.status} />
-                    </div>
-                    {item.error && <p className="line-clamp-2 text-[11px] text-danger">{item.error}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <input type="hidden" {...register('imageUrls')} />
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+          <div>
+            <label className="mb-2 block text-sm font-semibold">Ảnh chính</label>
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-brdr bg-surface-subtle px-4 py-6 text-center transition hover:border-primary hover:bg-primary/5">
+              <UploadCloud size={28} className="text-primary" />
+              <span className="mt-2 text-sm font-semibold text-ink">Chọn ảnh chính</span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                className="sr-only"
+                onChange={(e) => {
+                  void handleImageFiles(e.target.files, 'primary');
+                  e.target.value = '';
+                }}
+              />
+            </label>
+            {primaryImage && (
+              <div className="mt-3">
+                <ImageUploadCard item={primaryImage} badge="Ảnh chính" onRemove={() => removeImage(primaryImage.id)} />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold">Ảnh slider</label>
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-brdr bg-surface-subtle px-4 py-6 text-center transition hover:border-primary hover:bg-primary/5">
+              <UploadCloud size={28} className="text-primary" />
+              <span className="mt-2 text-sm font-semibold text-ink">Chọn ảnh slider</span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                multiple
+                className="sr-only"
+                onChange={(e) => {
+                  void handleImageFiles(e.target.files, 'slider');
+                  e.target.value = '';
+                }}
+              />
+            </label>
+            {sliderImages.length > 0 && (
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {sliderImages.map((item) => (
+                  <ImageUploadCard key={item.id} item={item} onRemove={() => removeImage(item.id)} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-semibold">URL hình ảnh (mỗi URL 1 dòng)</label>
-          <textarea
-            rows={3}
-            className="w-full rounded-sm border border-brdr px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary"
-            placeholder="https://images.unsplash.com/photo-..."
-            {...register('imageUrls')}
-          />
-          {errors.imageUrls && <p className="mt-1 text-xs text-danger">{errors.imageUrls.message}</p>}
-          <p className="mt-1 text-xs text-ink-muted">
-            Có thể dán URL public thủ công. Nếu upload ảnh ở trên, danh sách URL sẽ tự động cập nhật.
-          </p>
-        </div>
+        {errors.imageUrls && <p className="text-xs text-danger">{errors.imageUrls.message}</p>}
         <div>
           <label className="mb-2 block text-sm font-semibold">Tiện ích</label>
           <div className="flex flex-wrap gap-2">
@@ -602,6 +596,57 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="mb-4 text-base font-semibold">{title}</h2>
       <div className="space-y-4">{children}</div>
     </section>
+  );
+}
+
+function ImageUploadCard({
+  item,
+  badge,
+  onRemove,
+}: {
+  item: ImageUploadItem;
+  badge?: string;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-md border border-brdr bg-white">
+      <div className="relative aspect-[4/3] bg-surface-subtle">
+        {/* eslint-disable-next-line @next/next/no-img-element -- local blob previews are not served through Next Image */}
+        <img
+          src={item.previewUrl}
+          alt={item.name}
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <button
+          type="button"
+          onClick={onRemove}
+          className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white hover:bg-danger"
+          aria-label="Xóa ảnh"
+        >
+          <X size={14} />
+        </button>
+        {badge && item.status === 'done' && (
+          <span className="absolute left-1.5 top-1.5 rounded-sm bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+            {badge}
+          </span>
+        )}
+      </div>
+      <div className="space-y-1 p-2 text-xs">
+        <p className="truncate font-semibold text-ink">{item.name}</p>
+        <div className="flex items-center justify-between gap-2 text-[11px] text-ink-muted">
+          <span>
+            {item.compressedSize && item.originalSize
+              ? `${formatBytes(item.originalSize)} -> ${formatBytes(item.compressedSize)}`
+              : item.originalSize
+                ? formatBytes(item.originalSize)
+                : 'URL'}
+          </span>
+          <ImageStatus status={item.status} />
+        </div>
+        {item.error && <p className="line-clamp-2 text-[11px] text-danger">{item.error}</p>}
+      </div>
+    </div>
   );
 }
 

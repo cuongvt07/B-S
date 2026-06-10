@@ -20,9 +20,9 @@ export default function FavoritesPage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-ink">Tin yeu thich</h1>
+          <h1 className="text-2xl font-semibold text-ink">Tin yêu thích</h1>
           <p className="mt-1 text-sm text-ink-muted">
-            Theo doi cac tin dang da luu va lien he lai khi can.
+            Theo dõi các tin đăng đã lưu và liên hệ lại khi cần.
           </p>
         </div>
       </header>
@@ -30,14 +30,14 @@ export default function FavoritesPage() {
       {favorites.isError ? (
         <EmptyState
           icon={Heart}
-          title="Chua tai duoc danh sach yeu thich"
-          description="Hay dang nhap lai hoac kiem tra ket noi voi API."
+          title="Chưa tải được danh sách yêu thích"
+          description="Hãy đăng nhập lại hoặc kiểm tra kết nối với API."
           action={
             <Link
               href="/tin-dang"
               className="unstyled inline-flex items-center justify-center rounded-sm bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover"
             >
-              Xem tin dang
+              Xem tin đăng
             </Link>
           }
         />
@@ -48,14 +48,14 @@ export default function FavoritesPage() {
           empty={
             <EmptyState
               icon={Heart}
-              title="Chua co tin yeu thich"
-              description="Bam bieu tuong trai tim tren tin dang de luu vao day."
+              title="Chưa có tin yêu thích"
+              description="Bấm biểu tượng trái tim trên tin đăng để lưu vào đây."
               action={
                 <Link
                   href="/tin-dang"
                   className="unstyled inline-flex items-center justify-center rounded-sm bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover"
                 >
-                  Tim tin dang
+                  Tìm tin đăng
                 </Link>
               }
               size="sm"

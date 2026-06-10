@@ -13,10 +13,10 @@ import { AddToCompareButton } from './AddToCompareButton';
 import { ListingImageCarousel } from './ListingImageCarousel';
 
 const STATUS_LABELS: Record<Listing['status'], string> = {
-  active: 'Dang hien thi',
-  pending: 'Cho duyet',
-  expired: 'Het han',
-  sold: 'Da giao dich',
+  active: 'Đang hiển thị',
+  pending: 'Chờ duyệt',
+  expired: 'Hết hạn',
+  sold: 'Đã giao dịch',
 };
 
 export function ListingCard({

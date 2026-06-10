@@ -26,7 +26,7 @@ export function FavoriteButton({
   return (
     <button
       type="button"
-      aria-label={active ? 'Bo yeu thich' : 'Yeu thich'}
+      aria-label={active ? 'Bỏ yêu thích' : 'Yêu thích'}
       disabled={pending}
       onClick={(e) => {
         e.preventDefault();

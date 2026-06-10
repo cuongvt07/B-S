@@ -88,7 +88,7 @@ function renderHomeSection(
           title={section.title}
           description={
             section.description ||
-            `${section.meta.total.toLocaleString('vi-VN')} tin dang phu hop voi cau hinh`
+            `${section.meta.total.toLocaleString('vi-VN')} tin đăng phù hợp với cấu hình`
           }
           listings={section.listings}
           href={section.href || '/tin-dang'}
@@ -157,8 +157,8 @@ function fallbackHomeSections(
   const sections: HomepageSection[] = [
     {
       key: 'featured_latest',
-      title: 'Tin dang noi bat',
-      description: `${vipResult.meta.total.toLocaleString('vi-VN')} tin dang dang hien thi`,
+      title: 'Tin đăng nổi bật',
+      description: `${vipResult.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị`,
       sectionType: 'listings',
       sourceType: 'latest',
       href: '/tin-dang',
@@ -169,7 +169,7 @@ function fallbackHomeSections(
     },
     {
       key: 'regions',
-      title: 'Khu vuc noi bat',
+      title: 'Khu vực nổi bật',
       sectionType: 'regions',
       sourceType: 'regions',
       limit: 5,
@@ -189,8 +189,8 @@ function fallbackHomeSections(
     },
     {
       key: 'newest',
-      title: 'Tin dang moi nhat',
-      description: 'Cap nhat lien tuc theo thoi gian thuc',
+      title: 'Tin đăng mới nhất',
+      description: 'Cập nhật liên tục theo thời gian thực',
       sectionType: 'listings',
       sourceType: 'latest',
       href: '/tin-dang',
@@ -201,8 +201,8 @@ function fallbackHomeSections(
     },
     {
       key: 'land_hot',
-      title: 'Ban dat nen hot',
-      description: `${landResult.meta.total.toLocaleString('vi-VN')} tin dat nen dang rao ban`,
+      title: 'Bán đất nền hot',
+      description: `${landResult.meta.total.toLocaleString('vi-VN')} tin đất nền đang rao bán`,
       sectionType: 'listings',
       sourceType: 'property',
       href: '/tin-dang?propertyType=land',
@@ -213,7 +213,7 @@ function fallbackHomeSections(
     },
     {
       key: 'tools',
-      title: 'Tien ich',
+      title: 'Tiện ích',
       sectionType: 'tools',
       sourceType: 'static',
       limit: 0,
@@ -223,7 +223,7 @@ function fallbackHomeSections(
     },
     {
       key: 'recently_viewed',
-      title: 'Da xem gan day',
+      title: 'Đã xem gần đây',
       sectionType: 'recently_viewed',
       sourceType: 'client',
       limit: 0,
@@ -243,7 +243,7 @@ function fallbackHomeSections(
     },
     {
       key: 'feature_descriptions',
-      title: 'Mo ta dich vu',
+      title: 'Mô tả dịch vụ',
       sectionType: 'feature_descriptions',
       sourceType: 'static',
       limit: 0,
