@@ -30,8 +30,19 @@ function buildSuggestedLabel(f: ListingFilter): string {
   return `Tìm kiếm ${pt}${tx ? ' ' + tx : ''}`.replace(/\s+/g, ' ').trim();
 }
 
-export function SearchResults() {
-  const { filter, setFilter } = useFilterParams();
+interface SearchResultsProps {
+  initialFilter?: Partial<ListingFilter>;
+}
+
+export function SearchResults({ initialFilter = {} }: SearchResultsProps) {
+  const { filter: urlFilter, setFilter } = useFilterParams();
+  const filter: ListingFilter = {
+    ...urlFilter,
+    transactionType: urlFilter.transactionType ?? initialFilter.transactionType,
+    propertyType: urlFilter.propertyType ?? initialFilter.propertyType,
+    cityCode: urlFilter.cityCode ?? initialFilter.cityCode,
+    districtCode: urlFilter.districtCode ?? initialFilter.districtCode,
+  };
   const { data, isLoading } = useListings(filter);
   const paramsAsStrings = filterToParams(filter);
   const suggestedLabel = buildSuggestedLabel(filter);

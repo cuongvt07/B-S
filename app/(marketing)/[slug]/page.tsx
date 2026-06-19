@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { parseSeoSlug, isSeoLandingSlug } from '@/lib/utils/seoSlug';
-import { listListings } from '@/lib/server-data';
+import { getHomepageSections, listListings } from '@/lib/server-data';
 import { ListingSlider } from '@/components/listing';
 import { Breadcrumbs } from '@/components/seo';
 import { SearchResults } from '@/components/search/SearchResults';
 import { cityByCode } from '@/mocks/data/cities';
 import { PROPERTY_TYPE_LABELS, SITE } from '@/lib/constants';
-import type { ListingFilter } from '@/types';
+import type { Listing, ListingFilter } from '@/types';
 
 interface PageProps {
   params: { slug: string };
@@ -42,11 +42,25 @@ export default async function SeoLandingPage({ params }: PageProps) {
     transactionType: parsed.transactionType,
     propertyType: parsed.propertyType,
     cityCode: parsed.cityCode,
+    districtCode: parsed.districtCode,
     sort: 'newest',
     pageSize: 12,
   };
 
-  const result = await listListings(filter);
+  const [result, homepageSections] = await Promise.all([
+    listListings(filter),
+    getHomepageSections(),
+  ]);
+  const homepageFeatured =
+    homepageSections.find(
+      (section) => section.sectionType === 'listings' && section.key.includes('featured')
+    )?.listings ?? homepageSections.find((section) => section.sectionType === 'listings')?.listings ?? [];
+  const matchingHomepageFeatured = homepageFeatured.filter((listing) =>
+    matchesCategory(listing, filter)
+  );
+  const categoryListings = mergeListings(matchingHomepageFeatured, result.data);
+  const featuredListings =
+    categoryListings.length > 0 ? categoryListings.slice(0, 12) : homepageFeatured.slice(0, 12);
   const title = buildTitleFromParsed(parsed);
   const city = parsed.cityCode ? cityByCode.get(parsed.cityCode) : undefined;
 
@@ -70,15 +84,35 @@ export default async function SeoLandingPage({ params }: PageProps) {
 
       <section className="mt-6">
         <h2 className="mb-4 text-lg font-semibold">Tin đăng nổi bật</h2>
-        <ListingSlider listings={result.data} />
+        <ListingSlider
+          listings={featuredListings}
+          emptyText="Chưa có tin đăng nổi bật phù hợp với danh mục này."
+        />
       </section>
 
       <section className="mt-10">
         <h2 className="mb-4 text-lg font-semibold">Lọc thêm</h2>
         <Suspense fallback={null}>
-          <SearchResults />
+          <SearchResults initialFilter={filter} />
         </Suspense>
       </section>
     </div>
   );
+}
+
+function matchesCategory(listing: Listing, filter: ListingFilter): boolean {
+  if (filter.transactionType && listing.transactionType !== filter.transactionType) return false;
+  if (filter.propertyType && listing.propertyType !== filter.propertyType) return false;
+  if (filter.cityCode && listing.cityCode !== filter.cityCode) return false;
+  if (filter.districtCode && listing.districtCode !== filter.districtCode) return false;
+  return true;
+}
+
+function mergeListings(primary: Listing[], secondary: Listing[]): Listing[] {
+  const seen = new Set<string>();
+  return [...primary, ...secondary].filter((listing) => {
+    if (seen.has(listing.id)) return false;
+    seen.add(listing.id);
+    return true;
+  });
 }
