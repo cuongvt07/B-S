@@ -20,7 +20,7 @@ interface SectionProps {
   defaultOpen?: boolean;
 }
 
-function Section({ title, children, defaultOpen = false }: SectionProps) {
+function Section({ title, children, defaultOpen = true }: SectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="filter-section">
@@ -72,7 +72,7 @@ interface Props {
 }
 
 export function FilterPanel({ filter, setFilter }: Props) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(true);
   const priceBrackets =
     filter.transactionType === 'sale' ? PRICE_BRACKETS_SALE : PRICE_BRACKETS_RENT;
   const city = filter.cityCode ? cityByCode.get(filter.cityCode) : undefined;
@@ -223,7 +223,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
           </div>
         </Section>
 
-        <Section title="Diện tích" defaultOpen={false}>
+        <Section title="Diện tích">
           <div className="filter-choice-grid">
           <Radio
             name="area"
@@ -243,7 +243,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
           </div>
         </Section>
 
-        <Section title="Số phòng ngủ" defaultOpen={false}>
+        <Section title="Số phòng ngủ">
           <div className="filter-choice-grid">
             <Radio
               name="bedrooms"
@@ -263,7 +263,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
           </div>
         </Section>
 
-        <Section title="Hướng nhà" defaultOpen={false}>
+        <Section title="Hướng nhà">
           <div className="filter-choice-grid">
             <Radio
               name="direction"
@@ -283,7 +283,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
           </div>
         </Section>
 
-        <Section title="Nội thất" defaultOpen={false}>
+        <Section title="Nội thất">
           <div className="filter-choice-grid">
           {(['none', 'basic', 'full'] as const).map((v) => (
             <Radio
@@ -303,7 +303,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
           </div>
         </Section>
 
-        <Section title="Khác" defaultOpen={false}>
+        <Section title="Điều kiện kết hợp">
           <label className="filter-choice">
             <input
               type="checkbox"
@@ -311,7 +311,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
               onChange={(e) => setFilter({ vipOnly: e.target.checked })}
               className="filter-choice__control rounded-[3px]"
             />
-            Chỉ tin VIP
+            Chỉ hiển thị tin VIP
           </label>
         </Section>
         </div>

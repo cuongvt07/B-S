@@ -2,9 +2,8 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import { Search, MapPin, Building2, BadgeDollarSign, ShieldCheck, Megaphone } from 'lucide-react';
-import { Button, SegmentedControl, Select } from '@/components/ui';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Search, MapPin, Building2, BadgeDollarSign, ShieldCheck, Megaphone, ChevronDown } from 'lucide-react';
 import { cities, cityByCode } from '@/mocks/data/cities';
 import {
   PROPERTY_TYPE_LABELS,
@@ -18,14 +17,63 @@ const BANNER_IMAGES = [
   'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85',
 ];
 
+type FilterKey = 'city' | 'district' | 'property' | 'price';
+
+function FilterMenu({
+  name,
+  label,
+  value,
+  icon,
+  open,
+  disabled,
+  onToggle,
+  children,
+  wide = false,
+}: {
+  name: FilterKey;
+  label: string;
+  value?: string;
+  icon: ReactNode;
+  open: boolean;
+  disabled?: boolean;
+  onToggle: (name: FilterKey) => void;
+  children: ReactNode;
+  wide?: boolean;
+}) {
+  return (
+    <div className="home-search__filter">
+      <button
+        type="button"
+        className="home-search__filter-button"
+        aria-expanded={open}
+        disabled={disabled}
+        onClick={() => onToggle(name)}
+      >
+        <span className="home-search__filter-icon">{icon}</span>
+        <span className="min-w-0 flex-1 text-left">
+          <small>{label}</small>
+          <strong>{value || 'Tất cả'}</strong>
+        </span>
+        <ChevronDown size={15} className={open ? 'rotate-180' : ''} />
+      </button>
+      {open && (
+        <div className={`home-search__menu${wide ? ' home-search__menu--wide' : ''}`}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function HeroSearch() {
   const router = useRouter();
-  const [tab, setTab] = useState<'rent' | 'sale'>('rent');
+  const [tab, setTab] = useState<'rent' | 'sale'>('sale');
   const [cityCode, setCityCode] = useState('');
   const [districtCode, setDistrictCode] = useState('');
   const [propertyType, setPropertyType] = useState('');
   const [priceBucket, setPriceBucket] = useState('');
   const [q, setQ] = useState('');
+  const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [bannerIndex, setBannerIndex] = useState(0);
   const priceBrackets = tab === 'sale' ? PRICE_BRACKETS_SALE : PRICE_BRACKETS_RENT;
 
@@ -41,6 +89,15 @@ export function HeroSearch() {
     const city = cityCode ? cityByCode.get(cityCode) : undefined;
     return city ? city.districts.map((d) => ({ value: d.code, label: d.name })) : [];
   }, [cityCode]);
+
+  const selectedCity = cities.find((city) => city.code === cityCode)?.name;
+  const selectedDistrict = districtOptions.find((district) => district.value === districtCode)?.label;
+  const selectedProperty = propertyType ? PROPERTY_TYPE_LABELS[propertyType as keyof typeof PROPERTY_TYPE_LABELS] : undefined;
+  const selectedPrice = priceBucket ? priceBrackets[Number(priceBucket)]?.label : undefined;
+
+  function toggleFilter(name: FilterKey) {
+    setOpenFilter((current) => (current === name ? null : name));
+  }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -100,74 +157,104 @@ export function HeroSearch() {
 
         <form
           onSubmit={onSubmit}
-          className="relative z-10 mx-auto -mt-3 max-w-5xl rounded-xl border border-brdr/80 bg-white/95 p-4 shadow-elevated backdrop-blur-sm animate-slideUp lg:-mt-4"
+          className="home-search animate-slideUp"
           style={{ animationDelay: '120ms' }}
         >
-          <div className="mb-3 flex justify-center">
-            <SegmentedControl
-              options={[
-                { value: 'rent', label: 'Cho thuê' },
-                { value: 'sale', label: 'Mua bán' },
-              ]}
-              value={tab}
-              onChange={(v) => {
-                setTab(v as 'rent' | 'sale');
-                setPriceBucket('');
-              }}
-              accent="primary"
-            />
+          <div className="home-search__tabs" role="tablist" aria-label="Loại giao dịch">
+            {(['sale', 'rent'] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                role="tab"
+                aria-selected={tab === value}
+                onClick={() => {
+                  setTab(value);
+                  setPriceBucket('');
+                  setOpenFilter(null);
+                }}
+              >
+                {value === 'sale' ? 'Mua bán' : 'Cho thuê'}
+              </button>
+            ))}
           </div>
 
-          <div className="flex items-center rounded-sm border border-brdr px-3 py-2 focus-within:border-primary">
-            <Search size={18} className="text-ink-muted" />
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Tìm theo địa điểm, dự án, đường..."
-              className="ml-2 w-full bg-transparent text-sm text-ink placeholder:text-ink-muted focus:outline-none"
-            />
+          <div className="home-search__bar">
+            <label className="home-search__keyword">
+              <Search size={19} />
+              <span>
+                <small>Từ khóa</small>
+                <input
+                  type="text"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Dự án, đường, khu vực..."
+                />
+              </span>
+            </label>
+
+            <FilterMenu name="city" label="Tỉnh / Thành phố" value={selectedCity} icon={<MapPin size={18} />} open={openFilter === 'city'} onToggle={toggleFilter}>
+              <label className="home-search__option">
+                <input type="radio" name="home-city" checked={!cityCode} onChange={() => { setCityCode(''); setDistrictCode(''); setOpenFilter(null); }} />
+                <span>Tất cả tỉnh thành</span>
+              </label>
+              {cities.map((city) => (
+                <label key={city.code} className="home-search__option">
+                  <input type="radio" name="home-city" checked={cityCode === city.code} onChange={() => { setCityCode(city.code); setDistrictCode(''); setOpenFilter(null); }} />
+                  <span>{city.name}</span>
+                </label>
+              ))}
+            </FilterMenu>
+
+            <FilterMenu name="district" label="Quận / Huyện" value={selectedDistrict} icon={<MapPin size={18} />} open={openFilter === 'district'} disabled={!cityCode} onToggle={toggleFilter}>
+              <label className="home-search__option">
+                <input type="radio" name="home-district" checked={!districtCode} onChange={() => { setDistrictCode(''); setOpenFilter(null); }} />
+                <span>Tất cả quận huyện</span>
+              </label>
+              {districtOptions.map((district) => (
+                <label key={district.value} className="home-search__option">
+                  <input type="radio" name="home-district" checked={districtCode === district.value} onChange={() => { setDistrictCode(district.value); setOpenFilter(null); }} />
+                  <span>{district.label}</span>
+                </label>
+              ))}
+            </FilterMenu>
+
+            <FilterMenu name="property" label="Loại bất động sản" value={selectedProperty} icon={<Building2 size={18} />} open={openFilter === 'property'} onToggle={toggleFilter}>
+              <label className="home-search__option">
+                <input type="radio" name="home-property" checked={!propertyType} onChange={() => { setPropertyType(''); setOpenFilter(null); }} />
+                <span>Tất cả loại hình</span>
+              </label>
+              {Object.entries(PROPERTY_TYPE_LABELS).map(([value, label]) => (
+                <label key={value} className="home-search__option">
+                  <input type="radio" name="home-property" checked={propertyType === value} onChange={() => { setPropertyType(value); setOpenFilter(null); }} />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </FilterMenu>
+
+            <FilterMenu name="price" label="Khoảng giá" value={selectedPrice} icon={<BadgeDollarSign size={18} />} open={openFilter === 'price'} onToggle={toggleFilter} wide>
+              <div className="home-search__price-grid">
+                <label className="home-search__option">
+                  <input type="radio" name="home-price" checked={!priceBucket} onChange={() => { setPriceBucket(''); setOpenFilter(null); }} />
+                  <span>Tất cả mức giá</span>
+                </label>
+                {priceBrackets.map((bracket, index) => (
+                  <label key={bracket.label} className="home-search__option">
+                    <input type="radio" name="home-price" checked={priceBucket === String(index)} onChange={() => { setPriceBucket(String(index)); setOpenFilter(null); }} />
+                    <span>{bracket.label}</span>
+                  </label>
+                ))}
+              </div>
+            </FilterMenu>
+
+            <button type="submit" className="home-search__submit" aria-label="Tìm kiếm bất động sản">
+              <Search size={19} />
+              <span>Tìm kiếm</span>
+            </button>
           </div>
 
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Select
-              options={cities.map((c) => ({ value: c.code, label: c.name }))}
-              placeholder="Tỉnh / Thành phố"
-              value={cityCode}
-              onChange={(e) => {
-                setCityCode(e.target.value);
-                setDistrictCode('');
-              }}
-            />
-            <Select
-              options={districtOptions}
-              placeholder="Quận / Huyện"
-              value={districtCode}
-              onChange={(e) => setDistrictCode(e.target.value)}
-              disabled={!cityCode}
-            />
-            <Select
-              options={Object.entries(PROPERTY_TYPE_LABELS).map(([v, l]) => ({ value: v, label: l }))}
-              placeholder="Loại BĐS"
-              value={propertyType}
-              onChange={(e) => setPropertyType(e.target.value)}
-            />
-            <Select
-              options={priceBrackets.map((b, i) => ({ value: String(i), label: b.label }))}
-              placeholder="Khoảng giá"
-              value={priceBucket}
-              onChange={(e) => setPriceBucket(e.target.value)}
-            />
-          </div>
-
-          <div className="mt-4 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="inline-flex items-center gap-1 text-xs text-ink-muted">
-              <MapPin size={14} /> Phổ biến: TP.HCM, Hà Nội, Bình Dương, Đà Nẵng
-            </p>
-            <Button type="submit" leftIcon={<Search size={16} />}>
-              Tìm kiếm
-            </Button>
-          </div>
+          <p className="home-search__popular">
+            <MapPin size={13} /> Phổ biến: TP.HCM, Hà Nội, Bình Dương, Đà Nẵng
+          </p>
         </form>
       </div>
     </section>
