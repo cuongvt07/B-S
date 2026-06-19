@@ -55,6 +55,8 @@ export default async function HomePage() {
   const sections = homeSections.length > 0
     ? homeSections
     : fallbackHomeSections(vipResult, newestResult, landResult);
+  const featuredListings =
+    sections.find((section) => section.sectionType === 'listings')?.listings ?? vipResult.data;
 
   return (
     <>
@@ -66,6 +68,7 @@ export default async function HomePage() {
         renderHomeSection(section, {
           regions,
           blogs: blogResult.data,
+          featuredListings,
           priorityCount: index === 0 ? 4 : 0,
         })
       )}
@@ -78,6 +81,7 @@ function renderHomeSection(
   context: {
     regions: RegionStat[];
     blogs: Awaited<ReturnType<typeof listBlogs>>['data'];
+    featuredListings: Awaited<ReturnType<typeof listListings>>['data'];
     priorityCount: number;
   }
 ) {
@@ -109,7 +113,7 @@ function renderHomeSection(
   if (section.sectionType === 'promo') {
     return (
       <Reveal key={section.key} direction="up">
-        <PromoBanner />
+        <PromoBanner listings={context.featuredListings} />
       </Reveal>
     );
   }

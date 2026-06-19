@@ -1,54 +1,42 @@
 import Link from 'next/link';
-import { Compass, FileText, Calculator, Sun, Sparkles, Map } from 'lucide-react';
+import Image from 'next/image';
 
 const TOOLS = [
   {
     label: 'Xem tuổi xây nhà',
     desc: 'Tra cứu năm hợp tuổi làm nhà',
     href: '/tien-ich/tuoi-xay-nha',
-    Icon: Compass,
-    color: 'text-vip',
-    bg: 'bg-vip-soft',
+    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=480&q=80',
   },
   {
     label: 'Chi phí làm nhà',
     desc: 'Ước tính chi phí xây dựng',
     href: '/tien-ich/chi-phi-xay-nha',
-    Icon: FileText,
-    color: 'text-danger',
-    bg: 'bg-danger-soft',
+    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=480&q=80',
   },
   {
     label: 'Tính lãi suất',
     desc: 'Tính khoản vay ngân hàng',
     href: '/tien-ich/tinh-lai-suat',
-    Icon: Calculator,
-    color: 'text-primary',
-    bg: 'bg-primary/10',
+    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=480&q=80',
   },
   {
     label: 'Tư vấn phong thuỷ',
     desc: 'Hướng nhà, bố trí nội thất',
     href: '/tien-ich/phong-thuy',
-    Icon: Sun,
-    color: 'text-vip',
-    bg: 'bg-vip-soft',
+    image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=480&q=80',
   },
   {
     label: 'Bản đồ quy hoạch',
     desc: 'Tra cứu quy hoạch khu vực',
     href: '/tien-ich/quy-hoach',
-    Icon: Map,
-    color: 'text-price',
-    bg: 'bg-price-soft',
+    image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=480&q=80',
   },
   {
     label: 'Wiki bất động sản',
     desc: 'Thuật ngữ và kiến thức BĐS',
     href: '/wiki',
-    Icon: Sparkles,
-    color: 'text-primary',
-    bg: 'bg-primary/10',
+    image: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=480&q=80',
   },
 ];
 
@@ -62,24 +50,21 @@ export function UtilityTools() {
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {TOOLS.map((t) => {
-          const Icon = t.Icon;
-          return (
+        {TOOLS.map((t) => (
             <Link
               key={t.href}
               href={t.href}
-              className="unstyled group flex flex-col items-start gap-2 rounded-md border border-brdr bg-white p-4 shadow-raised transition-all hover:-translate-y-0.5 hover:shadow-elevated hover:border-primary"
+              className="classic-tool unstyled group flex flex-col items-start overflow-hidden rounded-md border border-[#ded8cd] bg-[#fffdf9] shadow-raised"
             >
-              <span
-                className={`grid h-10 w-10 place-items-center rounded-md transition-transform group-hover:animate-pulseSoft ${t.bg} ${t.color}`}
-              >
-                <Icon size={20} />
+              <span className="classic-tool__image">
+                <Image src={t.image} alt={t.label} fill sizes="(max-width: 640px) 50vw, 16vw" className="object-cover" />
               </span>
-              <p className="text-sm font-semibold text-ink group-hover:text-primary">{t.label}</p>
-              <p className="text-xs text-ink-muted">{t.desc}</p>
+              <span className="block p-4">
+                <span className="block text-sm font-semibold text-ink transition-colors group-hover:text-[#9a6a32]">{t.label}</span>
+                <span className="mt-1 block text-xs text-ink-muted">{t.desc}</span>
+              </span>
             </Link>
-          );
-        })}
+        ))}
       </div>
     </section>
   );

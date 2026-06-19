@@ -27,6 +27,7 @@ function Section({ title, children, defaultOpen = false }: SectionProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
         className="flex w-full items-center justify-between text-left text-sm font-semibold text-ink"
       >
         {title}
@@ -52,16 +53,15 @@ function Radio({
   label: string;
 }) {
   return (
-    <label className="fc-chip">
+    <label className="filter-choice">
       <input
         type="radio"
         name={name}
         checked={checked}
         onChange={onChange}
-        className="fc-chip__input"
+        className="filter-choice__control"
       />
-      <span className="fc-chip__text">{label}</span>
-      <span className="fc-chip__check" aria-hidden="true">✓</span>
+      <span>{label}</span>
     </label>
   );
 }
@@ -122,7 +122,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
         <div className={cn('mt-3 space-y-2', mobileOpen ? 'block' : 'hidden lg:block')}>
 
         <Section title="Loại giao dịch" defaultOpen>
-          <div className="fc-chip-row">
+          <div className="filter-choice-grid">
           <Radio
             name="tx"
             label="Tất cả"
@@ -151,7 +151,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
         </Section>
 
         <Section title="Loại bất động sản">
-          <div className="fc-chip-row">
+          <div className="filter-choice-grid">
           <Radio
             name="pt"
             label="Tất cả"
@@ -204,7 +204,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
         </Section>
 
         <Section title="Khoảng giá">
-          <div className="fc-chip-row">
+          <div className="filter-choice-grid">
           <Radio
             name="price"
             label="Tất cả"
@@ -224,7 +224,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
         </Section>
 
         <Section title="Diện tích" defaultOpen={false}>
-          <div className="fc-chip-row">
+          <div className="filter-choice-grid">
           <Radio
             name="area"
             label="Tất cả"
@@ -244,52 +244,47 @@ export function FilterPanel({ filter, setFilter }: Props) {
         </Section>
 
         <Section title="Số phòng ngủ" defaultOpen={false}>
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            <button
-              type="button"
-              onClick={() => setFilter({ bedrooms: undefined })}
-              className={cn(
-                'rounded-sm border px-3 py-1 text-xs',
-                !filter.bedrooms ? 'border-primary text-primary' : 'border-brdr text-ink'
-              )}
-            >
-              Tất cả
-            </button>
+          <div className="filter-choice-grid">
+            <Radio
+              name="bedrooms"
+              label="Tất cả"
+              checked={!filter.bedrooms}
+              onChange={() => setFilter({ bedrooms: undefined })}
+            />
             {[1, 2, 3, 4].map((n) => (
-              <button
+              <Radio
                 key={n}
-                type="button"
-                onClick={() => setFilter({ bedrooms: n })}
-                className={cn(
-                  'rounded-sm border px-3 py-1 text-xs',
-                  filter.bedrooms === n ? 'border-primary text-primary' : 'border-brdr text-ink'
-                )}
-              >
-                {n}+
-              </button>
+                name="bedrooms"
+                label={`${n}+ phòng`}
+                checked={filter.bedrooms === n}
+                onChange={() => setFilter({ bedrooms: n })}
+              />
             ))}
           </div>
         </Section>
 
         <Section title="Hướng nhà" defaultOpen={false}>
-          <select
-            value={filter.direction ?? ''}
-            onChange={(e) =>
-              setFilter({ direction: (e.target.value as ListingFilter['direction']) || undefined })
-            }
-            className="w-full rounded-sm border border-brdr px-2 py-1 text-sm"
-          >
-            <option value="">Tất cả hướng</option>
+          <div className="filter-choice-grid">
+            <Radio
+              name="direction"
+              label="Tất cả"
+              checked={!filter.direction}
+              onChange={() => setFilter({ direction: undefined })}
+            />
             {Object.entries(DIRECTION_LABELS).map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
+              <Radio
+                key={v}
+                name="direction"
+                label={l}
+                checked={filter.direction === v}
+                onChange={() => setFilter({ direction: v as ListingFilter['direction'] })}
+              />
             ))}
-          </select>
+          </div>
         </Section>
 
         <Section title="Nội thất" defaultOpen={false}>
-          <div className="fc-chip-row">
+          <div className="filter-choice-grid">
           {(['none', 'basic', 'full'] as const).map((v) => (
             <Radio
               key={v}
@@ -309,12 +304,12 @@ export function FilterPanel({ filter, setFilter }: Props) {
         </Section>
 
         <Section title="Khác" defaultOpen={false}>
-          <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
+          <label className="filter-choice">
             <input
               type="checkbox"
               checked={!!filter.vipOnly}
               onChange={(e) => setFilter({ vipOnly: e.target.checked })}
-              className="accent-primary"
+              className="filter-choice__control rounded-[3px]"
             />
             Chỉ tin VIP
           </label>
