@@ -178,20 +178,20 @@ export function HeroSearch() {
             ))}
           </div>
 
-          <div className="home-search__bar">
-            <label className="home-search__keyword">
-              <Search size={19} />
-              <span>
-                <small>Từ khóa</small>
-                <input
-                  type="text"
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Dự án, đường, khu vực..."
-                />
-              </span>
-            </label>
+          <label className="home-search__keyword">
+            <Search size={19} />
+            <span>
+              <small>Từ khóa</small>
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Nhập dự án, tên đường hoặc khu vực cần tìm..."
+              />
+            </span>
+          </label>
 
+          <div className="home-search__bar">
             <FilterMenu name="city" label="Tỉnh / Thành phố" value={selectedCity} icon={<MapPin size={18} />} open={openFilter === 'city'} onToggle={toggleFilter}>
               <label className="home-search__option">
                 <input type="radio" name="home-city" checked={!cityCode} onChange={() => { setCityCode(''); setDistrictCode(''); setOpenFilter(null); }} />
