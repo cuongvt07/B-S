@@ -132,15 +132,17 @@ export function HeroSearch() {
             </div>
           </div>
           <div className="home-room-banner__photo">
-            <Image
-              key={BANNER_IMAGES[bannerIndex]}
-              src={BANNER_IMAGES[bannerIndex]}
-              alt="Bất động sản mua bán và cho thuê"
-              fill
-              priority
-              sizes="(max-width: 768px) 55vw, 480px"
-              className="home-room-banner__image"
-            />
+            {BANNER_IMAGES.map((src, index) => (
+              <Image
+                key={src}
+                src={src}
+                alt={index === bannerIndex ? 'Bất động sản mua bán và cho thuê' : ''}
+                fill
+                priority={index === 0}
+                sizes="(max-width: 768px) 55vw, 480px"
+                className={`home-room-banner__image${index === bannerIndex ? ' is-active' : ''}`}
+              />
+            ))}
             <div className="home-room-banner__dots" aria-label="Chọn ảnh banner">
               {BANNER_IMAGES.map((_, index) => (
                 <button
