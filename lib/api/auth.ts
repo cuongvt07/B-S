@@ -9,7 +9,7 @@ import {
   type LaravelPaginated,
 } from './laravelAdapter';
 import { cities, getDistrict } from '@/mocks/data/cities';
-import type { ApiResponse, Direction, Listing, PropertyType, User } from '@/types';
+import type { ApiResponse, Direction, Listing, PaginatedResponse, PropertyType, User } from '@/types';
 
 interface ApiUser {
   id: number;
@@ -169,11 +169,14 @@ export const authApi = {
 };
 
 export const meApi = {
-  async listListings(): Promise<ApiResponse<Listing[]>> {
+  async listListings({
+    page = 1,
+    pageSize = 100,
+  }: { page?: number; pageSize?: number } = {}): Promise<PaginatedResponse<Listing>> {
     const res = await realFetch<LaravelPaginated<LaravelListing>>('/me/listings', {
-      query: { per_page: 100 },
+      query: { page, per_page: pageSize },
     });
-    return { data: mapPaginated(res).data };
+    return mapPaginated(res);
   },
 
   async createListing(payload: Partial<Listing>): Promise<ApiResponse<Listing>> {

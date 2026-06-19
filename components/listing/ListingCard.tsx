@@ -40,12 +40,12 @@ export const ListingCard = memo(function ListingCard({
 
   return (
     <>
-      <article className="group flex h-full flex-col overflow-hidden rounded-md border border-brdr bg-white shadow-raised transition-shadow hover:shadow-elevated">
+      <article className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-md border border-brdr bg-white shadow-raised transition-shadow hover:shadow-elevated">
         <Link
           href={href}
           onClick={openQuick}
           aria-label={listing.title}
-          className="listing-card__media unstyled relative block aspect-[4/3] overflow-hidden"
+          className="listing-card__media unstyled relative block aspect-[4/3] shrink-0 overflow-hidden"
         >
           <ListingImageCarousel images={listing.images} alt={listing.title} priority={priority} />
 
@@ -86,18 +86,18 @@ export const ListingCard = memo(function ListingCard({
             {listing.title}
           </Link>
 
-          <div className="flex items-center gap-3 text-sm">
-            <span className="font-semibold text-price">
+          <div className="flex min-w-0 items-center gap-2 text-sm">
+            <span className="truncate font-semibold text-price">
               {formatPrice(listing.price, listing.priceUnit)}
             </span>
             <span className="text-ink-muted">·</span>
-            <span className="inline-flex items-center gap-1 text-ink-muted">
+            <span className="inline-flex shrink-0 items-center gap-1 text-ink-muted">
               <Maximize2 size={14} /> {formatArea(listing.area)}
             </span>
             {listing.bedrooms ? (
               <>
                 <span className="text-ink-muted">·</span>
-                <span className="inline-flex items-center gap-1 text-ink-muted">
+                <span className="inline-flex shrink-0 items-center gap-1 text-ink-muted">
                   <BedDouble size={14} /> {listing.bedrooms} PN
                 </span>
               </>
@@ -111,15 +111,15 @@ export const ListingCard = memo(function ListingCard({
             </span>
           </p>
 
-          <div className="mt-auto flex items-center justify-between text-xs text-ink-muted">
-            <div className="flex flex-wrap gap-1">
+          <div className="mt-auto flex min-w-0 items-center justify-between gap-2 text-xs text-ink-muted">
+            <div className="flex min-w-0 gap-1 overflow-hidden">
               {listing.tags.slice(0, 2).map((t) => (
                 <Badge key={t} variant="outline">
                   {t}
                 </Badge>
               ))}
             </div>
-            <span>{formatTimeAgo(listing.createdAt)}</span>
+            <span className="shrink-0">{formatTimeAgo(listing.createdAt)}</span>
           </div>
         </div>
       </article>

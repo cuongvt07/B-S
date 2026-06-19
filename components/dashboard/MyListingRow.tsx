@@ -28,23 +28,29 @@ export function MyListingRow({ listing }: { listing: Listing }) {
   });
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-brdr bg-white p-3 sm:flex-row">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm sm:h-24 sm:w-32 sm:flex-shrink-0">
+    <article className="flex min-h-[144px] flex-col gap-4 bg-white py-4 sm:flex-row">
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm bg-surface-subtle sm:h-28 sm:w-40 sm:flex-shrink-0">
         {cover ? (
-          <Image src={cover.url} alt={listing.title} fill sizes="128px" className="object-cover" />
+          <Image
+            src={cover.url}
+            alt={listing.title}
+            fill
+            sizes="(min-width: 640px) 160px, 100vw"
+            className="object-cover"
+          />
         ) : (
           <div className="h-full w-full bg-surface-subtle" />
         )}
       </div>
-      <div className="flex flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <div className="flex items-start justify-between gap-2">
           <Link
             href={`/tin-dang/${listing.slug}`}
-            className="unstyled font-semibold text-ink hover:text-primary line-clamp-1"
+            className="unstyled min-w-0 font-semibold text-ink hover:text-primary line-clamp-2"
           >
             {listing.title}
           </Link>
-          <Badge variant={listing.status === 'active' ? 'success' : listing.status === 'sold' ? 'danger' : 'outline'}>
+          <Badge className="shrink-0" variant={listing.status === 'active' ? 'success' : listing.status === 'sold' ? 'danger' : 'outline'}>
             {STATUS_LABELS[listing.status]}
           </Badge>
         </div>
@@ -55,7 +61,7 @@ export function MyListingRow({ listing }: { listing: Listing }) {
         <p className="text-xs text-ink-muted">
           {listing.viewCount} lượt xem - Cập nhật {formatTimeAgo(listing.updatedAt)}
         </p>
-        <div className="mt-1 flex gap-2">
+        <div className="mt-auto flex flex-wrap gap-2 pt-1">
           <Link
             href={`/tin-dang/${listing.slug}`}
             className="unstyled inline-flex items-center gap-1 rounded-sm border border-brdr px-2 py-1 text-xs text-ink hover:border-primary"
@@ -80,6 +86,6 @@ export function MyListingRow({ listing }: { listing: Listing }) {
           </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

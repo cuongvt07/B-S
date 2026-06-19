@@ -42,10 +42,11 @@ export function ListingSlider({ listings, emptyText }: Props) {
     if (!el) return;
     const card = el.querySelector<HTMLElement>('[data-card]');
     if (!card) return;
-    const cardW = card.offsetWidth;
-    const curIdx = Math.round(el.scrollLeft / cardW);
+    const nextCard = card.nextElementSibling as HTMLElement | null;
+    const cardStep = nextCard ? nextCard.offsetLeft - card.offsetLeft : card.offsetWidth;
+    const curIdx = Math.round(el.scrollLeft / cardStep);
     const target = Math.max(0, Math.min(listings.length - 1, curIdx + direction));
-    el.scrollTo({ left: target * cardW, behavior: 'smooth' });
+    el.scrollTo({ left: target * cardStep, behavior: 'smooth' });
   }, [listings.length]);
 
   if (!listings.length) {
@@ -60,14 +61,14 @@ export function ListingSlider({ listings, emptyText }: Props) {
     <div className="relative">
       <div
         ref={trackRef}
-        className="-mx-2 flex snap-x snap-mandatory items-stretch overflow-x-auto overscroll-x-contain pb-2 [&::-webkit-scrollbar]:hidden"
+        className="-mx-2 flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto overscroll-x-contain px-2 pb-2 [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: 'none' }}
       >
         {listings.map((l) => (
           <div
             key={l.id}
             data-card
-            className="flex snap-start shrink-0 basis-full px-2 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            className="flex h-[420px] w-[288px] min-w-[288px] snap-start"
           >
             <ListingCard listing={l} />
           </div>
