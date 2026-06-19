@@ -58,11 +58,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          'var(--font-dm-sans)',
-          '"DM Sans"',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          '"Segoe UI"',
+          '"SVN-Proxima Nova"',
           'sans-serif',
         ],
         mono: ['"Courier New"', 'monospace'],

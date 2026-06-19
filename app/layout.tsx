@@ -1,16 +1,8 @@
 import type { Metadata } from 'next';
-import { DM_Sans } from 'next/font/google';
 import { Providers } from './providers';
 import { COMPANY, SITE } from '@/lib/constants';
 import { JsonLd } from '@/components/seo';
 import './globals.css';
-
-const dmSans = DM_Sans({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-  variable: '--font-dm-sans',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -33,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={dmSans.variable}>
+    <html lang="vi">
       <body className="min-h-screen flex flex-col">
         <JsonLd
           data={{
