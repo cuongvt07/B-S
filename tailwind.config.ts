@@ -58,7 +58,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          '"SVN-Proxima Nova"',
+          'Arial',
+          'Helvetica',
           'sans-serif',
         ],
         mono: ['"Courier New"', 'monospace'],

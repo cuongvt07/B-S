@@ -15,7 +15,14 @@
 
   body {
     @apply bg-surface text-ink font-sans text-base;
-    font-family: 'SVN-Proxima Nova', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
   }
 
   *:focus-visible {
