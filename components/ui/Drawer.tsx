@@ -68,7 +68,7 @@ export function Drawer({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 bg-black/55 animate-fadeIn will-change-opacity"
       onClick={onClose}
     >
       <div
@@ -77,7 +77,7 @@ export function Drawer({
         aria-label={typeof title === 'string' ? title : undefined}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'absolute flex flex-col bg-white shadow-deep',
+          'absolute flex flex-col bg-white shadow-deep transform-gpu will-change-transform',
           sideClasses[side],
           widthClass,
           sideAnimation[side],

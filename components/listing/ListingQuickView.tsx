@@ -59,7 +59,12 @@ export function ListingQuickView({ open, onClose, listing }: Props) {
       <div className="grid grid-cols-1 gap-5 md:grid-cols-[1.1fr_1fr]">
         {/* Gallery with carousel */}
         <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-brdr group">
-          <ListingImageCarousel images={listing.images} alt={listing.title} sizes="500px" />
+          <ListingImageCarousel
+            images={listing.images}
+            alt={listing.title}
+            sizes="(max-width: 768px) 100vw, 500px"
+            priority
+          />
           {listing.vipTier !== 'normal' && (
             <div className="pointer-events-none absolute left-3 top-3 z-10">
               <Badge variant="vip">

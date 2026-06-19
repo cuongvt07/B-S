@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Breadcrumbs } from '@/components/seo';
+import { COMPANY, SITE } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Quy chế hoạt động',
@@ -12,7 +13,7 @@ export default function TermsPage() {
       <Breadcrumbs items={[{ label: 'Trang chủ', href: '/' }, { label: 'Quy chế hoạt động' }]} />
 
       <h1 className="mt-4 text-3xl font-semibold text-ink">Quy chế hoạt động</h1>
-      <p className="mb-6 mt-2 text-sm text-ink-muted">Cập nhật ngày 01/01/2026</p>
+      <p className="mb-6 mt-2 text-sm text-ink-muted">Cập nhật ngày 19/06/2026</p>
 
       <section>
         <h2 className="mb-3 mt-8 text-lg font-semibold text-ink">1. Quy định chung</h2>
@@ -20,6 +21,11 @@ export default function TermsPage() {
           BDS Việt (sau đây gọi là &ldquo;Nền tảng&rdquo;) cung cấp dịch vụ tin đăng mua bán, cho thuê
           bất động sản trên toàn quốc. Bằng việc sử dụng dịch vụ, bạn đồng ý tuân thủ toàn bộ các
           điều khoản trong quy chế này.
+        </p>
+        <p className="my-3 leading-relaxed text-ink">
+          Nền tảng do <strong>{COMPANY.legalName}</strong>, mã số doanh nghiệp{' '}
+          <strong>{COMPANY.taxCode}</strong>, sở hữu và vận hành. Người đại diện theo pháp luật là{' '}
+          <strong>{COMPANY.legalRepresentative}</strong>, chức vụ {COMPANY.representativeTitle}.
         </p>
         <p className="my-3 leading-relaxed text-ink">
           Quy chế có thể được điều chỉnh theo thời gian; phiên bản mới sẽ được công bố tại trang này
@@ -88,8 +94,8 @@ export default function TermsPage() {
       <section>
         <h2 className="mb-3 mt-8 text-lg font-semibold text-ink">7. Hỗ trợ</h2>
         <p className="my-3 leading-relaxed text-ink">
-          Mọi thắc mắc xin vui lòng gửi qua email <strong>hotro@bds.vn</strong> hoặc gọi hotline{' '}
-          <strong>1900 1234</strong> trong giờ làm việc.
+          Mọi thắc mắc xin vui lòng gửi qua email <strong>{SITE.contactEmail}</strong> hoặc gọi
+          hotline <strong>{SITE.contactPhone}</strong>. Địa chỉ liên hệ: {COMPANY.address}.
         </p>
       </section>
     </div>

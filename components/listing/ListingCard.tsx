@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type MouseEvent } from 'react';
+import { memo, useState, type MouseEvent } from 'react';
 import { MapPin, Maximize2, BedDouble, Star } from 'lucide-react';
 import type { Listing } from '@/types';
 import { Badge } from '@/components/ui';
@@ -19,7 +19,7 @@ const STATUS_LABELS: Record<Listing['status'], string> = {
   sold: 'Đã giao dịch',
 };
 
-export function ListingCard({
+export const ListingCard = memo(function ListingCard({
   listing,
   priority,
 }: {
@@ -45,7 +45,7 @@ export function ListingCard({
           href={href}
           onClick={openQuick}
           aria-label={listing.title}
-          className="unstyled relative block aspect-[4/3] overflow-hidden"
+          className="listing-card__media unstyled relative block aspect-[4/3] overflow-hidden"
         >
           <ListingImageCarousel images={listing.images} alt={listing.title} priority={priority} />
 
@@ -104,9 +104,11 @@ export function ListingCard({
             ) : null}
           </div>
 
-          <p className="inline-flex items-start gap-1 text-xs text-ink-muted line-clamp-1">
-            <MapPin size={14} className="mt-0.5 flex-shrink-0" />
-            {formatLocation(listing.cityCode, listing.districtCode, listing.wardName)}
+          <p className="flex min-w-0 items-center gap-1 text-xs leading-5 text-ink-muted">
+            <MapPin size={14} className="flex-shrink-0" aria-hidden="true" />
+            <span className="truncate">
+              {formatLocation(listing.cityCode, listing.districtCode, listing.wardName)}
+            </span>
           </p>
 
           <div className="mt-auto flex items-center justify-between text-xs text-ink-muted">
@@ -122,7 +124,9 @@ export function ListingCard({
         </div>
       </article>
 
-      <ListingQuickView open={quickOpen} onClose={() => setQuickOpen(false)} listing={listing} />
+      {quickOpen ? (
+        <ListingQuickView open onClose={() => setQuickOpen(false)} listing={listing} />
+      ) : null}
     </>
   );
-}
+});

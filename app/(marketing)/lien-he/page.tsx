@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Phone, Mail, MapPin, Globe2 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/seo';
 import { ContactForm } from '@/components/forms/ContactForm';
-import { SITE } from '@/lib/constants';
+import { COMPANY, SITE } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Liên hệ',
@@ -15,14 +15,14 @@ const INFO = [
   {
     Icon: MapPin,
     label: 'Trụ sở',
-    value: 'Tầng 12, Toà nhà ABC, 123 Lê Lợi, Quận 1, TP.HCM',
+    value: COMPANY.address,
     accent: 'text-vip',
     bg: 'bg-vip-soft',
   },
   {
-    Icon: Clock,
-    label: 'Giờ làm việc',
-    value: 'Thứ 2 - Thứ 7: 8h00 - 18h00',
+    Icon: Globe2,
+    label: 'Website',
+    value: COMPANY.website ?? 'Chưa đăng ký',
     accent: 'text-ink',
     bg: 'bg-surface-subtle',
   },
@@ -64,6 +64,48 @@ export default function ContactPage() {
 
         <ContactForm />
       </div>
+
+      <section className="mt-10 rounded-md border border-brdr bg-white p-6 shadow-raised sm:p-8">
+        <div className="max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
+            Chủ sở hữu và vận hành website
+          </p>
+          <h2 className="mt-2 text-xl font-semibold text-ink sm:text-2xl">
+            Thông tin doanh nghiệp
+          </h2>
+        </div>
+
+        <dl className="mt-6 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            ['Tên doanh nghiệp', COMPANY.legalName],
+            ['Mã số doanh nghiệp (MST)', COMPANY.taxCode],
+            ['Ngày đăng ký lần đầu', COMPANY.registrationDate],
+            ['Người đại diện pháp luật', COMPANY.legalRepresentative],
+            ['Chức vụ', COMPANY.representativeTitle],
+            ['Vốn điều lệ', COMPANY.charterCapital],
+          ].map(([label, value]) => (
+            <div key={label}>
+              <dt className="text-xs uppercase tracking-wide text-ink-muted">{label}</dt>
+              <dd className="mt-1 text-sm font-semibold leading-relaxed text-ink">{value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-8 border-t border-brdr pt-6">
+          <h3 className="text-lg font-semibold text-ink">Ngành nghề kinh doanh</h3>
+          <div className="mt-3 rounded-md border border-primary/15 bg-primary/5 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+              Mã ngành chính: {COMPANY.primaryIndustryCode}
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-ink">{COMPANY.primaryIndustry}</p>
+          </div>
+          <ul className="mt-4 grid list-disc grid-cols-1 gap-x-8 gap-y-2 pl-5 text-sm text-ink-muted sm:grid-cols-2 lg:grid-cols-3">
+            {COMPANY.industries.map((industry) => (
+              <li key={industry}>{industry}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
     </div>
   );
 }

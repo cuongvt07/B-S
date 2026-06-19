@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Breadcrumbs } from '@/components/seo';
+import { COMPANY, SITE } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Chính sách bảo mật',
@@ -75,7 +76,9 @@ export default function PrivacyPage() {
         <h2 className="mb-3 mt-8 text-lg font-semibold text-ink">7. Liên hệ về bảo mật</h2>
         <p className="my-3 leading-relaxed text-ink">
           Mọi yêu cầu liên quan đến quyền riêng tư hoặc bảo mật xin vui lòng gửi email tới{' '}
-          <strong>baomat@bds.vn</strong>. Chúng tôi sẽ phản hồi trong vòng 7 ngày làm việc.
+          <strong>{SITE.contactEmail}</strong>. Đơn vị tiếp nhận và xử lý yêu cầu là{' '}
+          <strong>{COMPANY.legalName}</strong>, mã số doanh nghiệp {COMPANY.taxCode}. Chúng tôi sẽ
+          phản hồi trong vòng 7 ngày làm việc.
         </p>
       </section>
     </div>

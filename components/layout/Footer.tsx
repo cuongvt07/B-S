@@ -9,7 +9,7 @@ import {
   Smartphone,
   ArrowUp,
 } from 'lucide-react';
-import { SITE } from '@/lib/constants';
+import { COMPANY, SITE } from '@/lib/constants';
 import { Logo } from './Logo';
 
 interface FooterGroup {
@@ -168,14 +168,16 @@ export function Footer() {
               </li>
               <li className="inline-flex items-start gap-2">
                 <MapPin size={14} className="mt-1 shrink-0 text-white/60" />
-                <span className="text-white/80">
-                  Tầng 12, Toà nhà ABC, 123 Lê Lợi, Quận 1, TP.HCM
-                </span>
+                <span className="text-white/80">{COMPANY.address}</span>
               </li>
             </ul>
-            <p className="mt-3 text-xs text-white/50">
-              Công ty TNHH BDS Việt — MST: 0123456789 do Sở KH&ĐT TP.HCM cấp.
-            </p>
+            <div className="mt-3 space-y-1 text-xs leading-relaxed text-white/55">
+              <p className="font-semibold text-white/75">{COMPANY.legalName}</p>
+              <p>Mã số doanh nghiệp: {COMPANY.taxCode}</p>
+              <p>
+                Người đại diện: {COMPANY.legalRepresentative} — {COMPANY.representativeTitle}
+              </p>
+            </div>
           </div>
 
           <div>

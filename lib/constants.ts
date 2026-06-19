@@ -75,6 +75,38 @@ export const SITE = {
   name: 'BDS Việt',
   tagline: 'Nền tảng tin đăng bất động sản hàng đầu',
   url: 'https://bds.vn',
-  contactPhone: '1900 1234',
-  contactEmail: 'hotro@bds.vn',
+  contactPhone: '0922 255 544',
+  contactEmail: 'vmphuthinhland@gmail.com',
 };
+
+export const COMPANY = {
+  legalName: 'CÔNG TY TNHH MỘT THÀNH VIÊN VM PHÚ THỊNH LAND',
+  taxCode: '4101690886',
+  registrationDate: '08/06/2026',
+  legalRepresentative: 'VÕ XUÂN PHONG',
+  representativeTitle: 'Giám đốc',
+  charterCapital: '1.000.000.000 VNĐ',
+  address: '140 Nguyễn Diêu, Phường Quy Nhơn Đông, Tỉnh Gia Lai, Việt Nam',
+  addressLines: [
+    '140 Nguyễn Diêu',
+    'Phường Quy Nhơn Đông',
+    'Tỉnh Gia Lai, Việt Nam',
+  ],
+  website: null as string | null,
+  primaryIndustryCode: '6810',
+  primaryIndustry:
+    'Kinh doanh bất động sản, quyền sử dụng đất thuộc chủ sở hữu, chủ sử dụng hoặc đi thuê.',
+  industries: [
+    'Xây dựng dân dụng',
+    'Xây dựng công trình giao thông',
+    'Hoàn thiện công trình xây dựng',
+    'Tư vấn kỹ thuật xây dựng',
+    'Thiết kế chuyên dụng',
+    'Quảng cáo',
+    'Môi giới bất động sản',
+    'Cho thuê xe có động cơ',
+    'Thương mại điện tử',
+    'Lập trình máy tính',
+    'Vận tải hành khách và hàng hóa',
+  ],
+} as const;

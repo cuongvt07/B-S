@@ -29,6 +29,7 @@ import { useCurrentUser, useLogout } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
+import { SITE } from '@/lib/constants';
 
 interface Props {
   open: boolean;
@@ -186,7 +187,7 @@ export function MobileDrawer({ open, onClose }: Props) {
       {/* Footer — hotline + social */}
       <section className="mt-6 border-t border-brdr pt-4">
         <a
-          href="tel:0981847977"
+          href={`tel:${SITE.contactPhone.replace(/\s/g, '')}`}
           className="unstyled flex items-center gap-3 rounded-sm bg-surface-subtle px-3 py-2.5 text-sm font-semibold text-ink"
         >
           <span className="grid h-8 w-8 place-items-center rounded-full bg-price text-white">
@@ -196,13 +197,13 @@ export function MobileDrawer({ open, onClose }: Props) {
             <span className="block text-[11px] uppercase tracking-wide text-ink-muted">
               Hotline
             </span>
-            0981 847 977
+            {SITE.contactPhone}
           </span>
         </a>
 
         <div className="mt-3 flex items-center justify-center gap-2">
           <a
-            href="https://zalo.me/0981847977"
+            href={`https://zalo.me/${SITE.contactPhone.replace(/\s/g, '')}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Zalo"

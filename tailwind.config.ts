@@ -58,11 +58,11 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          'system-ui',
+          'var(--font-dm-sans)',
+          '"DM Sans"',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
-          'Roboto',
           'sans-serif',
         ],
         mono: ['"Courier New"', 'monospace'],

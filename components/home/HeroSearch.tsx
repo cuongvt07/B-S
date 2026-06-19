@@ -2,11 +2,17 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
-import { Search, MapPin } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Search, MapPin, House, BadgeDollarSign, ShieldCheck, Headphones } from 'lucide-react';
 import { Button, SegmentedControl, Select } from '@/components/ui';
 import { cities, cityByCode } from '@/mocks/data/cities';
 import { PROPERTY_TYPE_LABELS, PRICE_BRACKETS_RENT } from '@/lib/constants';
+
+const BANNER_IMAGES = [
+  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=85',
+];
 
 export function HeroSearch() {
   const router = useRouter();
@@ -16,6 +22,15 @@ export function HeroSearch() {
   const [propertyType, setPropertyType] = useState('');
   const [priceBucket, setPriceBucket] = useState('');
   const [q, setQ] = useState('');
+  const [bannerIndex, setBannerIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setBannerIndex((current) => (current + 1) % BANNER_IMAGES.length),
+      3000
+    );
+    return () => window.clearInterval(timer);
+  }, []);
 
   const districtOptions = useMemo(() => {
     const city = cityCode ? cityByCode.get(cityCode) : undefined;
@@ -40,30 +55,47 @@ export function HeroSearch() {
   }
 
   return (
-    <section className="relative isolate overflow-hidden bg-ink-strong">
-      <Image
-        src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80&auto=format&fit=crop"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover scale-105 motion-safe:animate-[float_12s_ease-in-out_infinite]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/50" />
-
-      <div className="relative container-app py-14 lg:py-24">
-        <div className="mx-auto max-w-3xl text-center animate-slideUp">
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl lg:text-5xl drop-shadow">
-            Tìm ngôi nhà phù hợp cho bạn
-          </h1>
-          <p className="mt-3 text-base text-white/85 sm:text-lg">
-            Hơn 20 tin đăng cho thuê và mua bán từ chủ nhà và môi giới xác thực.
-          </p>
+    <section className="bg-white py-5 lg:py-7">
+      <div className="container-app">
+        <div className="home-room-banner animate-slideUp">
+          <div className="home-room-banner__content">
+            <span className="home-room-banner__kicker">CHUYÊN</span>
+            <h1 className="home-room-banner__title">Tìm phòng trọ</h1>
+            <p className="home-room-banner__tagline">Nhanh chóng – Uy tín – Miễn phí</p>
+            <div className="home-room-banner__features">
+              <span className="home-room-banner__feature"><House />Phòng trọ đa dạng</span>
+              <span className="home-room-banner__feature"><BadgeDollarSign />Giá cả hợp lý</span>
+              <span className="home-room-banner__feature"><ShieldCheck />Thông tin minh bạch</span>
+              <span className="home-room-banner__feature"><Headphones />Hỗ trợ tận tâm</span>
+            </div>
+          </div>
+          <div className="home-room-banner__photo">
+            <Image
+              key={BANNER_IMAGES[bannerIndex]}
+              src={BANNER_IMAGES[bannerIndex]}
+              alt="Phòng trọ hiện đại, đầy đủ tiện nghi"
+              fill
+              priority
+              sizes="(max-width: 768px) 55vw, 480px"
+              className="home-room-banner__image"
+            />
+            <div className="home-room-banner__dots" aria-label="Chọn ảnh banner">
+              {BANNER_IMAGES.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  aria-label={`Ảnh banner ${index + 1}`}
+                  aria-current={index === bannerIndex}
+                  onClick={() => setBannerIndex(index)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         <form
           onSubmit={onSubmit}
-          className="mx-auto mt-8 max-w-4xl rounded-md border border-brdr bg-white p-4 shadow-raised animate-slideUp"
+          className="relative z-10 mx-auto -mt-3 max-w-5xl rounded-xl border border-brdr/80 bg-white/95 p-4 shadow-elevated backdrop-blur-sm animate-slideUp lg:-mt-4"
           style={{ animationDelay: '120ms' }}
         >
           <div className="mb-3 flex justify-center">

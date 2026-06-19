@@ -67,7 +67,7 @@ export function Modal({
     <div
       role="presentation"
       onClick={() => closeOnBackdrop && onClose()}
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-fadeIn sm:items-center sm:p-4"
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/55 animate-fadeIn will-change-opacity sm:items-center sm:p-4"
     >
       <div
         role="dialog"
@@ -75,7 +75,7 @@ export function Modal({
         aria-label={typeof title === 'string' ? title : undefined}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'flex w-full max-h-[92vh] flex-col bg-white shadow-deep animate-modalIn sm:max-h-[88vh]',
+          'flex w-full max-h-[92vh] flex-col bg-white shadow-deep animate-modalIn transform-gpu will-change-transform sm:max-h-[88vh]',
           'rounded-t-md sm:rounded-md',
           sizeClasses[size],
           className
@@ -104,7 +104,7 @@ export function Modal({
           </div>
         )}
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
+        <div className="min-h-0 flex-1 overscroll-contain overflow-y-auto px-5 py-4">{children}</div>
 
         {footer && (
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-brdr px-5 py-3">

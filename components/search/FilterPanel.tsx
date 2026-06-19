@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { cities, cityByCode } from '@/mocks/data/cities';
 import {
@@ -20,10 +20,10 @@ interface SectionProps {
   defaultOpen?: boolean;
 }
 
-function Section({ title, children, defaultOpen = true }: SectionProps) {
+function Section({ title, children, defaultOpen = false }: SectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-brdr py-3">
+    <div className="filter-section">
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -35,7 +35,7 @@ function Section({ title, children, defaultOpen = true }: SectionProps) {
           className={cn('text-ink-muted transition-transform', open && 'rotate-180')}
         />
       </button>
-      {open && <div className="mt-3 space-y-2">{children}</div>}
+      {open && <div className="mt-3">{children}</div>}
     </div>
   );
 }
@@ -52,15 +52,16 @@ function Radio({
   label: string;
 }) {
   return (
-    <label className="flex items-center gap-2 text-sm text-ink cursor-pointer hover:text-primary">
+    <label className="fc-chip">
       <input
         type="radio"
         name={name}
         checked={checked}
         onChange={onChange}
-        className="accent-primary"
+        className="fc-chip__input"
       />
-      {label}
+      <span className="fc-chip__text">{label}</span>
+      <span className="fc-chip__check" aria-hidden="true">✓</span>
     </label>
   );
 }
@@ -71,15 +72,30 @@ interface Props {
 }
 
 export function FilterPanel({ filter, setFilter }: Props) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const priceBrackets =
     filter.transactionType === 'sale' ? PRICE_BRACKETS_SALE : PRICE_BRACKETS_RENT;
   const city = filter.cityCode ? cityByCode.get(filter.cityCode) : undefined;
 
   return (
     <aside className="w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
-      <div className="rounded-md border border-brdr bg-white p-4">
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-ink">Bộ lọc tìm kiếm</h3>
+      <div className="rounded-2xl border border-brdr/70 bg-white p-3 shadow-raised lg:p-4">
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setMobileOpen((open) => !open)}
+            className="flex flex-1 items-center gap-2 text-left text-sm font-semibold text-ink lg:pointer-events-none"
+            aria-expanded={mobileOpen}
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-primary-soft text-primary">
+              <SlidersHorizontal size={16} />
+            </span>
+            Bộ lọc tìm kiếm
+            <ChevronDown
+              size={15}
+              className={cn('ml-auto text-ink-muted transition-transform lg:hidden', mobileOpen && 'rotate-180')}
+            />
+          </button>
           <button
             type="button"
             onClick={() => setFilter({
@@ -103,7 +119,10 @@ export function FilterPanel({ filter, setFilter }: Props) {
           </button>
         </div>
 
-        <Section title="Loại giao dịch">
+        <div className={cn('mt-3 space-y-2', mobileOpen ? 'block' : 'hidden lg:block')}>
+
+        <Section title="Loại giao dịch" defaultOpen>
+          <div className="fc-chip-row">
           <Radio
             name="tx"
             label="Tất cả"
@@ -122,9 +141,11 @@ export function FilterPanel({ filter, setFilter }: Props) {
             checked={filter.transactionType === 'sale'}
             onChange={() => setFilter({ transactionType: 'sale' })}
           />
+          </div>
         </Section>
 
         <Section title="Loại bất động sản">
+          <div className="fc-chip-row">
           <Radio
             name="pt"
             label="Tất cả"
@@ -140,6 +161,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
               onChange={() => setFilter({ propertyType: v as ListingFilter['propertyType'] })}
             />
           ))}
+          </div>
         </Section>
 
         <Section title="Khu vực">
@@ -176,6 +198,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
         </Section>
 
         <Section title="Khoảng giá">
+          <div className="fc-chip-row">
           <Radio
             name="price"
             label="Tất cả"
@@ -191,9 +214,11 @@ export function FilterPanel({ filter, setFilter }: Props) {
               onChange={() => setFilter({ priceMin: b.min, priceMax: b.max })}
             />
           ))}
+          </div>
         </Section>
 
         <Section title="Diện tích" defaultOpen={false}>
+          <div className="fc-chip-row">
           <Radio
             name="area"
             label="Tất cả"
@@ -209,10 +234,11 @@ export function FilterPanel({ filter, setFilter }: Props) {
               onChange={() => setFilter({ areaMin: b.min, areaMax: b.max })}
             />
           ))}
+          </div>
         </Section>
 
         <Section title="Số phòng ngủ" defaultOpen={false}>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2">
             <button
               type="button"
               onClick={() => setFilter({ bedrooms: undefined })}
@@ -257,6 +283,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
         </Section>
 
         <Section title="Nội thất" defaultOpen={false}>
+          <div className="fc-chip-row">
           {(['none', 'basic', 'full'] as const).map((v) => (
             <Radio
               key={v}
@@ -272,6 +299,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
             checked={!filter.furnish}
             onChange={() => setFilter({ furnish: undefined })}
           />
+          </div>
         </Section>
 
         <Section title="Khác" defaultOpen={false}>
@@ -285,6 +313,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
             Chỉ tin VIP
           </label>
         </Section>
+        </div>
       </div>
     </aside>
   );

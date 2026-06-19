@@ -7,19 +7,20 @@ import { Button, Modal, Spinner } from '@/components/ui';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';
 import { useCurrentUser } from '@/lib/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { SITE } from '@/lib/constants';
 
 const ITEMS = [
   {
     key: 'phone',
     label: 'Gọi ngay',
-    href: 'tel:0981847977',
+    href: `tel:${SITE.contactPhone.replace(/\s/g, '')}`,
     icon: Phone,
     color: '#16a34a',
   },
   {
     key: 'zalo',
     label: 'Chat Zalo',
-    href: 'https://zalo.me/0981847977',
+    href: `https://zalo.me/${SITE.contactPhone.replace(/\s/g, '')}`,
     icon: MessageCircle,
     color: '#0068ff',
     isZalo: true,
