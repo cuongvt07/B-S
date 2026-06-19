@@ -344,8 +344,11 @@ export function mapFilterToApi(f: ListingFilter): LaravelListingQuery {
   if (f.vipOnly) out.vip_only = true;
   if (f.areaMin !== undefined) out.min_area = f.areaMin;
   if (f.areaMax !== undefined) out.max_area = f.areaMax;
-  if (f.priceMin !== undefined) out.min_price = f.priceMin / 1_000_000_000;
-  if (f.priceMax !== undefined) out.max_price = f.priceMax / 1_000_000_000;
+  // Laravel stores the entered numeric value together with its price unit:
+  // sale prices are expressed in billions, rent prices in millions/month.
+  const priceDivisor = f.transactionType === 'sale' ? 1_000_000_000 : 1_000_000;
+  if (f.priceMin !== undefined) out.min_price = f.priceMin / priceDivisor;
+  if (f.priceMax !== undefined) out.max_price = f.priceMax / priceDivisor;
   if (f.sort) {
     switch (f.sort) {
       case 'priceAsc':

@@ -127,19 +127,25 @@ export function FilterPanel({ filter, setFilter }: Props) {
             name="tx"
             label="Tất cả"
             checked={!filter.transactionType}
-            onChange={() => setFilter({ transactionType: undefined })}
+            onChange={() =>
+              setFilter({ transactionType: undefined, priceMin: undefined, priceMax: undefined })
+            }
           />
           <Radio
             name="tx"
             label="Cho thuê"
             checked={filter.transactionType === 'rent'}
-            onChange={() => setFilter({ transactionType: 'rent' })}
+            onChange={() =>
+              setFilter({ transactionType: 'rent', priceMin: undefined, priceMax: undefined })
+            }
           />
           <Radio
             name="tx"
             label="Mua bán"
             checked={filter.transactionType === 'sale'}
-            onChange={() => setFilter({ transactionType: 'sale' })}
+            onChange={() =>
+              setFilter({ transactionType: 'sale', priceMin: undefined, priceMax: undefined })
+            }
           />
           </div>
         </Section>

@@ -35,11 +35,16 @@ export const PRICE_BRACKETS_RENT: { label: string; min?: number; max?: number }[
 ];
 
 export const PRICE_BRACKETS_SALE: { label: string; min?: number; max?: number }[] = [
-  { label: 'Dưới 1 tỷ', max: 1_000_000_000 },
-  { label: '1 - 3 tỷ', min: 1_000_000_000, max: 3_000_000_000 },
+  { label: '100 - 500 triệu', min: 100_000_000, max: 500_000_000 },
+  { label: '500 triệu - 1 tỷ', min: 500_000_000, max: 1_000_000_000 },
+  { label: '1 - 2 tỷ', min: 1_000_000_000, max: 2_000_000_000 },
+  { label: '2 - 3 tỷ', min: 2_000_000_000, max: 3_000_000_000 },
   { label: '3 - 5 tỷ', min: 3_000_000_000, max: 5_000_000_000 },
   { label: '5 - 10 tỷ', min: 5_000_000_000, max: 10_000_000_000 },
-  { label: 'Trên 10 tỷ', min: 10_000_000_000 },
+  { label: '10 - 20 tỷ', min: 10_000_000_000, max: 20_000_000_000 },
+  { label: '20 - 30 tỷ', min: 20_000_000_000, max: 30_000_000_000 },
+  { label: '30 - 50 tỷ', min: 30_000_000_000, max: 50_000_000_000 },
+  { label: 'Trên 50 tỷ', min: 50_000_000_000 },
 ];
 
 export const AREA_BRACKETS: { label: string; min?: number; max?: number }[] = [

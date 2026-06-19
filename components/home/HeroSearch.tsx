@@ -3,15 +3,19 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Search, MapPin, House, BadgeDollarSign, ShieldCheck, Headphones } from 'lucide-react';
+import { Search, MapPin, Building2, BadgeDollarSign, ShieldCheck, Megaphone } from 'lucide-react';
 import { Button, SegmentedControl, Select } from '@/components/ui';
 import { cities, cityByCode } from '@/mocks/data/cities';
-import { PROPERTY_TYPE_LABELS, PRICE_BRACKETS_RENT } from '@/lib/constants';
+import {
+  PROPERTY_TYPE_LABELS,
+  PRICE_BRACKETS_RENT,
+  PRICE_BRACKETS_SALE,
+} from '@/lib/constants';
 
 const BANNER_IMAGES = [
-  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=85',
-  'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=85',
-  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85',
 ];
 
 export function HeroSearch() {
@@ -23,6 +27,7 @@ export function HeroSearch() {
   const [priceBucket, setPriceBucket] = useState('');
   const [q, setQ] = useState('');
   const [bannerIndex, setBannerIndex] = useState(0);
+  const priceBrackets = tab === 'sale' ? PRICE_BRACKETS_SALE : PRICE_BRACKETS_RENT;
 
   useEffect(() => {
     const timer = window.setInterval(
@@ -47,7 +52,7 @@ export function HeroSearch() {
     if (propertyType) params.set('propertyType', propertyType);
     if (priceBucket) {
       const idx = Number(priceBucket);
-      const bracket = PRICE_BRACKETS_RENT[idx];
+      const bracket = priceBrackets[idx];
       if (bracket?.min) params.set('priceMin', String(bracket.min));
       if (bracket?.max) params.set('priceMax', String(bracket.max));
     }
@@ -59,21 +64,21 @@ export function HeroSearch() {
       <div className="container-app">
         <div className="home-room-banner animate-slideUp">
           <div className="home-room-banner__content">
-            <span className="home-room-banner__kicker">CHUYÊN</span>
-            <h1 className="home-room-banner__title">Tìm phòng trọ</h1>
-            <p className="home-room-banner__tagline">Nhanh chóng – Uy tín – Miễn phí</p>
+            <span className="home-room-banner__kicker">SÀN ĐĂNG TIN</span>
+            <h1 className="home-room-banner__title">Bất động sản</h1>
+            <p className="home-room-banner__tagline">Mua bán – Cho thuê – Đăng tin miễn phí</p>
             <div className="home-room-banner__features">
-              <span className="home-room-banner__feature"><House />Phòng trọ đa dạng</span>
-              <span className="home-room-banner__feature"><BadgeDollarSign />Giá cả hợp lý</span>
+              <span className="home-room-banner__feature"><Building2 />Tin đăng đa dạng</span>
+              <span className="home-room-banner__feature"><BadgeDollarSign />Giá bán minh bạch</span>
               <span className="home-room-banner__feature"><ShieldCheck />Thông tin minh bạch</span>
-              <span className="home-room-banner__feature"><Headphones />Hỗ trợ tận tâm</span>
+              <span className="home-room-banner__feature"><Megaphone />Đăng tin nhanh chóng</span>
             </div>
           </div>
           <div className="home-room-banner__photo">
             <Image
               key={BANNER_IMAGES[bannerIndex]}
               src={BANNER_IMAGES[bannerIndex]}
-              alt="Phòng trọ hiện đại, đầy đủ tiện nghi"
+              alt="Bất động sản mua bán và cho thuê"
               fill
               priority
               sizes="(max-width: 768px) 55vw, 480px"
@@ -105,7 +110,10 @@ export function HeroSearch() {
                 { value: 'sale', label: 'Mua bán' },
               ]}
               value={tab}
-              onChange={(v) => setTab(v as 'rent' | 'sale')}
+              onChange={(v) => {
+                setTab(v as 'rent' | 'sale');
+                setPriceBucket('');
+              }}
               accent="primary"
             />
           </div>
@@ -145,7 +153,7 @@ export function HeroSearch() {
               onChange={(e) => setPropertyType(e.target.value)}
             />
             <Select
-              options={PRICE_BRACKETS_RENT.map((b, i) => ({ value: String(i), label: b.label }))}
+              options={priceBrackets.map((b, i) => ({ value: String(i), label: b.label }))}
               placeholder="Khoảng giá"
               value={priceBucket}
               onChange={(e) => setPriceBucket(e.target.value)}
