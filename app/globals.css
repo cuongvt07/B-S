@@ -429,6 +429,78 @@
   .home-search__popular { line-height: 1.4; }
 }
 
+/* Lightweight social-proof activity notification. */
+.social-proof-toast {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 90;
+  width: min(340px, calc(100vw - 32px));
+  min-height: 70px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 10px 11px 12px;
+  border: 1px solid rgba(225, 229, 235, 0.95);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 15px 40px rgba(18, 35, 58, 0.22), 0 3px 10px rgba(18, 35, 58, 0.09);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(-28px, 10px, 0) scale(0.97);
+  transition: opacity 0.28s ease, transform 0.35s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+.social-proof-toast[data-visible='true'] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+.social-proof-toast__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(145deg, #ef4444, #c82020);
+  box-shadow: 0 7px 16px rgba(220, 38, 38, 0.24);
+}
+.social-proof-toast__content { min-width: 0; }
+.social-proof-toast__content p {
+  margin: 0;
+  color: #171717;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.social-proof-toast__content strong { color: #dc2626; font-weight: 700; }
+.social-proof-toast__content > span {
+  display: block;
+  margin-top: 3px;
+  color: #8a9099;
+  font-size: 10px;
+}
+.social-proof-toast > button {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  align-self: start;
+  border-radius: 50%;
+  color: #a0a6af;
+  transition: color 0.18s ease, background 0.18s ease;
+}
+.social-proof-toast > button:hover { color: #222; background: #f1f3f5; }
+
+@media (max-width: 640px) {
+  .social-proof-toast { bottom: 14px; left: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-proof-toast { transition: opacity 0.15s linear; transform: none; }
+}
+
 /* Shared filter chip/pill component. */
 .fc-chip-grid {
   display: grid;

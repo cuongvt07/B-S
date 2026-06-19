@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Providers } from './providers';
 import { COMPANY, SITE } from '@/lib/constants';
 import { JsonLd } from '@/components/seo';
+import { SocialProofToast } from '@/components/layout';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -47,7 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             },
           }}
         />
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <SocialProofToast />
+        </Providers>
       </body>
     </html>
   );
