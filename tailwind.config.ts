@@ -58,6 +58,9 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
           'Arial',
           'Helvetica',
           'sans-serif',

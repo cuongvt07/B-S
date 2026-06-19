@@ -15,7 +15,7 @@
 
   body {
     @apply bg-surface text-ink font-sans text-base;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
   }
 
   button,
@@ -139,15 +139,15 @@
   color: #fff;
   background: #07366b;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
 }
 .home-room-banner__title {
   margin-top: 8px;
   color: #072f61;
   font-size: clamp(38px, 5vw, 64px);
-  font-weight: 900;
-  letter-spacing: -0.045em;
+  font-weight: 700;
+  letter-spacing: -0.025em;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -158,7 +158,7 @@
   color: #07366b;
   background: #ffc21c;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   clip-path: polygon(4% 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%);
 }
 .home-room-banner__features {
@@ -176,7 +176,7 @@
   border-right: 1px solid #dbe6f3;
   color: #07366b;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.25;
   text-align: center;
   text-transform: uppercase;
@@ -794,7 +794,7 @@
 .stats-about__copy > span {
   color: #0966ff;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -803,8 +803,8 @@
   margin: 16px 0 12px;
   color: #111827;
   font-size: clamp(30px, 3vw, 43px);
-  font-weight: 800;
-  letter-spacing: -0.035em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.08;
 }
 .stats-about__copy p {
@@ -838,8 +838,8 @@
   display: block;
   color: #0b0d11;
   font-size: clamp(25px, 2.5vw, 34px);
-  font-weight: 900;
-  letter-spacing: -0.04em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 .stats-about__item span {

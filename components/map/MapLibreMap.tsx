@@ -117,7 +117,7 @@ function buildPopupHTML(p: MapPoint) {
     ? `<span style="position:absolute;top:8px;left:8px;background:#D97706;color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;">VIP</span>`
     : '';
   return `
-    <div style="width:240px;font-family:Arial,Helvetica,sans-serif">
+    <div style="width:240px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,Helvetica,sans-serif">
       <div style="position:relative">${cover}${vip}</div>
       <div style="padding:10px 12px 12px">
         <p style="margin:0;font-size:13px;font-weight:600;color:#313131;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.title}</p>
