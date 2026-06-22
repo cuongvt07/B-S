@@ -56,28 +56,31 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
 
       <AuthGate>
         <div className="space-y-2">
-          <Button
+          <button
             type="button"
-            className="w-full"
             onClick={() => setRevealed(true)}
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
           >
-            <Phone size={16} /> {revealed ? listing.contact.phone : 'Hiện số điện thoại'}
-          </Button>
+            <Phone size={18} className="shrink-0" />
+            <span className="truncate">
+              {revealed ? listing.contact.phone : 'Hiện số điện thoại'}
+            </span>
+          </button>
           {listing.contact.zalo && (
             <a
-              href={`https://zalo.me/${listing.contact.zalo}`}
+              href={`https://zalo.me/${listing.contact.zalo.replace(/\D/g, '')}`}
               target="_blank"
               rel="noreferrer"
-              className="unstyled inline-flex w-full items-center justify-center gap-2 rounded-sm border border-brdr px-4 py-2 text-sm font-semibold text-ink hover:border-primary hover:text-primary"
+              className="unstyled flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-gold px-4 text-sm font-semibold text-gold-ink transition-colors hover:bg-gold-hover"
             >
-              <MessageCircle size={16} /> Chat Zalo
+              <MessageCircle size={18} className="shrink-0" /> Chat Zalo
             </a>
           )}
           <a
-            href={`tel:${listing.contact.phone}`}
-            className="unstyled inline-flex w-full items-center justify-center gap-2 rounded-sm border border-brdr px-4 py-2 text-sm font-semibold text-ink hover:border-primary hover:text-primary"
+            href={`tel:${listing.contact.phone.replace(/\s/g, '')}`}
+            className="unstyled flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-brand/40 px-4 text-sm font-semibold text-brand transition-colors hover:bg-brand-soft"
           >
-            <Phone size={16} /> Gọi ngay
+            <Phone size={18} className="shrink-0" /> Gọi ngay
           </a>
         </div>
       </AuthGate>
@@ -114,8 +117,12 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
         {feedback && (
           <p className="rounded-sm bg-surface-subtle px-3 py-2 text-xs text-ink-muted">{feedback}</p>
         )}
-        <Button type="submit" className="w-full" loading={lead.isPending}>
-          <Send size={16} /> Gửi yêu cầu
+        <Button
+          type="submit"
+          className="h-11 w-full !bg-brand hover:!bg-brand-hover active:!bg-brand-active"
+          loading={lead.isPending}
+        >
+          <Send size={16} className="shrink-0" /> Gửi yêu cầu
         </Button>
       </form>
 

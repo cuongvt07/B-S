@@ -108,17 +108,27 @@ export default async function BrokerPackagePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand via-brand to-brand-active py-16 text-white">
+      <section className="relative overflow-hidden bg-brand py-16 text-white sm:py-20">
+        {/* Background image */}
+        <div
+          className="pointer-events-none absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=70')",
+          }}
+        />
+        {/* Navy overlay keeps text readable over the photo */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/95 via-brand/90 to-brand-active/95" />
         <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-gold/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
         <div className="container-app relative text-center">
           <span className="inline-flex items-center gap-1.5 rounded-sm bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold-ink">
             <Sparkles size={13} /> Dành cho môi giới
           </span>
-          <h1 className="mt-4 text-3xl font-semibold sm:text-5xl">
+          <h1 className="mt-4 text-3xl font-bold !text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] sm:text-5xl">
             Đăng nhiều tin hơn mỗi ngày — Tiếp cận nhiều khách hơn
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-white/85 sm:text-lg">
+          <p className="mx-auto mt-3 max-w-2xl text-base text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.3)] sm:text-lg">
             Nâng cấp gói để tăng số tin đăng mỗi ngày. Chưa hỗ trợ thanh toán online —
             liên hệ Zalo hoặc hotline để được kích hoạt nhanh chóng.
           </p>
@@ -249,7 +259,7 @@ export default async function BrokerPackagePage() {
       {/* CTA bottom */}
       <section className="container-app py-12">
         <div className="overflow-hidden rounded-md bg-brand px-6 py-10 text-center text-white">
-          <h2 className="text-2xl font-semibold">Sẵn sàng nâng cấp gói đăng tin?</h2>
+          <h2 className="text-2xl font-semibold !text-white">Sẵn sàng nâng cấp gói đăng tin?</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-white/85">
             Liên hệ ngay để được tư vấn và kích hoạt gói phù hợp với nhu cầu của bạn.
           </p>
