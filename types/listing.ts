@@ -20,7 +20,7 @@ export type Direction =
 
 export type FurnishLevel = 'none' | 'basic' | 'full';
 
-export type ListingStatus = 'active' | 'pending' | 'expired' | 'sold';
+export type ListingStatus = 'active' | 'pending' | 'expired' | 'sold' | 'rejected';
 
 export type VipTier = 'normal' | 'vip1' | 'vip2' | 'vip3';
 
@@ -66,6 +66,7 @@ export interface Listing {
   tags: string[];
   vipTier: VipTier;
   status: ListingStatus;
+  rejectionReason?: string;
   isFavorited?: boolean;
   contact: ListingContact;
   ownerId: string;

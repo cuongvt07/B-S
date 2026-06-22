@@ -88,6 +88,73 @@ async function realServerFetch<T>(path: string, query?: Record<string, unknown>)
   throw lastErr;
 }
 
+export type SiteSettings = {
+  contact: {
+    site_name: string;
+    hotline: string;
+    zalo_phone: string;
+    email: string;
+    support_hours: string;
+  };
+  packages: {
+    free_daily_quota: number;
+    tier_30_price: number;
+    tier_30_quota: number;
+    tier_50_price: number;
+    tier_50_quota: number;
+    online_payment_enabled: boolean;
+  };
+  upload: {
+    max_size_mb: number;
+    max_count: number;
+    compress_quality: number;
+    max_dimension: number;
+  };
+  watermark: { enabled: boolean };
+};
+
+const SITE_SETTINGS_FALLBACK: SiteSettings = {
+  contact: {
+    site_name: 'BDS Việt',
+    hotline: '0922 255 544',
+    zalo_phone: '0922 255 544',
+    email: 'vmphuthinhland@gmail.com',
+    support_hours: '8:00 - 21:00 (T2 - CN)',
+  },
+  packages: {
+    free_daily_quota: 20,
+    tier_30_price: 399000,
+    tier_30_quota: 30,
+    tier_50_price: 599000,
+    tier_50_quota: 50,
+    online_payment_enabled: false,
+  },
+  upload: { max_size_mb: 5, max_count: 20, compress_quality: 80, max_dimension: 1920 },
+  watermark: { enabled: true },
+};
+
+/**
+ * Public site settings configured from the CMS (/website-admin → Cài đặt).
+ * Falls back to baked-in defaults if the backend is unreachable, so pages
+ * never break when the API is down.
+ */
+export async function getSiteSettings(): Promise<SiteSettings> {
+  try {
+    const res = await realServerFetch<{ data: Partial<SiteSettings> }>('/settings');
+    const d = res?.data ?? {};
+    const f = SITE_SETTINGS_FALLBACK;
+    return {
+      contact: { ...f.contact, ...(d.contact ?? {}) },
+      packages: { ...f.packages, ...(d.packages ?? {}) },
+      upload: { ...f.upload, ...(d.upload ?? {}) },
+      watermark: { ...f.watermark, ...(d.watermark ?? {}) },
+    };
+  } catch (err) {
+    console.error('[server-data] getSiteSettings failed, using fallback:', err);
+    return SITE_SETTINGS_FALLBACK;
+  }
+}
+
 export async function listListings(
   filter: ListingFilter = {}
 ): Promise<PaginatedResponse<Listing>> {

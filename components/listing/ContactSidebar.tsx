@@ -7,6 +7,7 @@ import type { Listing } from '@/types';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { Button, Input } from '@/components/ui';
 import { leadApi } from '@/lib/api/leads';
+import { ReportButton } from './ReportButton';
 import { formatPrice } from '@/lib/utils/format';
 
 export function ContactSidebar({ listing }: { listing: Listing }) {
@@ -117,6 +118,14 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
           <Send size={16} /> Gửi yêu cầu
         </Button>
       </form>
+
+      <div className="flex justify-center border-t border-brdr pt-3">
+        <ReportButton
+          targetType="listing"
+          listingId={Number.isFinite(Number(listing.id)) ? Number(listing.id) : undefined}
+          label="Báo cáo tin này"
+        />
+      </div>
     </aside>
   );
 }

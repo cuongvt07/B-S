@@ -13,3 +13,4 @@ export * from './RecentlyViewed';
 export * from './TrackRecentlyViewed';
 export * from './ListingImageCarousel';
 export * from './ContactActions';
+export * from './ReportButton';

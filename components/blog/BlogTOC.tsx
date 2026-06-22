@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { slugify } from '@/lib/utils/slugify';
+import { isHtmlContent, extractHtmlHeadings } from '@/lib/utils/richtext';
 
 interface TOCItem {
   level: 2 | 3;
@@ -11,6 +12,7 @@ interface TOCItem {
 }
 
 function parseTOC(markdown: string): TOCItem[] {
+  if (isHtmlContent(markdown)) return extractHtmlHeadings(markdown);
   const lines = markdown.split('\n');
   const items: TOCItem[] = [];
   for (const line of lines) {

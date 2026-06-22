@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/seo';
 import { Badge, Button } from '@/components/ui';
-import { ListingCard, ContactActions } from '@/components/listing';
+import { ListingCard, ContactActions, ReportButton } from '@/components/listing';
 import { AuthGate } from '@/components/auth';
 import { listListings } from '@/lib/server-data';
 import { userById } from '@/mocks/data/users';
@@ -132,6 +132,12 @@ export default async function OwnerProfilePage({ params }: PageProps) {
               <Button variant="outline" size="sm" leftIcon={<UserPlus size={14} />}>
                 Theo dõi
               </Button>
+              <ReportButton
+                targetType="user"
+                reportedUserId={Number.isFinite(Number(user.id)) ? Number(user.id) : undefined}
+                variant="button"
+                label="Báo cáo"
+              />
             </div>
           </div>
 

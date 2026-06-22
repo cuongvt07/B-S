@@ -1,6 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { slugify } from '@/lib/utils/slugify';
+import { isHtmlContent, addHeadingIds } from '@/lib/utils/richtext';
 
 function headingId(children: React.ReactNode): string {
   const text = typeof children === 'string' ? children : Array.isArray(children) ? children.join('') : '';
@@ -8,6 +9,17 @@ function headingId(children: React.ReactNode): string {
 }
 
 export function BlogContent({ markdown }: { markdown: string }) {
+  // HTML authored in the CMS (CKEditor) — render directly. Content is
+  // admin-authored and therefore trusted.
+  if (isHtmlContent(markdown)) {
+    return (
+      <div
+        className="prose-content text-ink"
+        dangerouslySetInnerHTML={{ __html: addHeadingIds(markdown) }}
+      />
+    );
+  }
+
   return (
     <div className="prose-content text-ink">
       <ReactMarkdown

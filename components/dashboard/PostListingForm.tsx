@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UploadCloud, X } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button, Input, Select } from '@/components/ui';
@@ -43,6 +43,12 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
+
+// Upload limits. Originals are compressed client-side, so the original cap is
+// generous; the stored file is further capped server-side via site settings.
+const MAX_IMAGE_MB = 15;
+const MAX_IMAGE_BYTES = MAX_IMAGE_MB * 1024 * 1024;
+const MAX_IMAGES = 20;
 
 type ImageUploadStatus = 'ready' | 'optimizing' | 'uploading' | 'done' | 'error';
 
@@ -111,6 +117,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
 
   const {
     register,
+    control,
     handleSubmit,
     watch,
     setValue,
@@ -248,9 +255,21 @@ export function PostListingForm({ editId }: { editId?: string }) {
     if (!files?.length) return;
     setServerError(null);
 
-    const selected = Array.from(files)
-      .filter((file) => file.type.startsWith('image/'))
-      .slice(0, mode === 'primary' ? 1 : Math.max(0, 30 - imageItems.length));
+    const images = Array.from(files).filter((file) => file.type.startsWith('image/'));
+
+    // Hard size cap on the original file (before compression) to protect the browser.
+    const oversized = images.filter((file) => file.size > MAX_IMAGE_BYTES);
+    if (oversized.length) {
+      setServerError(
+        `Ảnh vượt quá ${MAX_IMAGE_MB}MB sẽ bị bỏ qua: ${oversized
+          .map((f) => f.name)
+          .join(', ')}. Vui lòng chọn ảnh nhỏ hơn.`
+      );
+    }
+
+    const selected = images
+      .filter((file) => file.size <= MAX_IMAGE_BYTES)
+      .slice(0, mode === 'primary' ? 1 : Math.max(0, MAX_IMAGES - imageItems.length));
 
     if (!selected.length) return;
 
@@ -428,12 +447,23 @@ export function PostListingForm({ editId }: { editId?: string }) {
 
       <Section title="3. Giá và diện tích">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Input
-            label="Giá (VND)"
-            type="number"
-            placeholder="VD: 5000000"
-            {...register('price')}
-            error={errors.price?.message}
+          <Controller
+            control={control}
+            name="price"
+            render={({ field }) => (
+              <Input
+                label="Giá (VND)"
+                inputMode="numeric"
+                placeholder="VD: 5.000.000"
+                value={Number(field.value) > 0 ? Number(field.value).toLocaleString('vi-VN') : ''}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 13);
+                  field.onChange(digits ? parseInt(digits, 10) : 0);
+                }}
+                onBlur={field.onBlur}
+                error={errors.price?.message}
+              />
+            )}
           />
           <Select
             label="Đơn vị giá"

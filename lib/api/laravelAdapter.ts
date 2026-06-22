@@ -50,7 +50,8 @@ export interface LaravelListing {
   tags?: string[] | null;
   video_url?: string | null;
   vip_tier?: VipTier | null;
-  status?: 'active' | 'pending' | 'expired' | 'sold' | null;
+  status?: 'active' | 'pending' | 'expired' | 'sold' | 'rejected' | null;
+  rejection_reason?: string | null;
   is_favorited?: boolean | null;
   is_sold: boolean;
   view_count?: number | string | null;
@@ -271,6 +272,7 @@ export function mapApiListing(api: LaravelListing): Listing {
     tags: api.tags ?? [],
     vipTier: api.vip_tier ?? 'normal',
     status: api.is_sold ? 'sold' : api.status ?? 'active',
+    rejectionReason: api.rejection_reason ?? undefined,
     isFavorited: Boolean(api.is_favorited),
     contact: {
       name: api.contact_name ?? api.owner?.name ?? '',

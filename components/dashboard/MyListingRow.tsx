@@ -14,6 +14,7 @@ const STATUS_LABELS: Record<Listing['status'], string> = {
   pending: 'Chờ duyệt',
   expired: 'Hết hạn',
   sold: 'Đã giao dịch',
+  rejected: 'Bị từ chối',
 };
 
 export function MyListingRow({ listing }: { listing: Listing }) {
@@ -50,10 +51,15 @@ export function MyListingRow({ listing }: { listing: Listing }) {
           >
             {listing.title}
           </Link>
-          <Badge className="shrink-0" variant={listing.status === 'active' ? 'success' : listing.status === 'sold' ? 'danger' : 'outline'}>
+          <Badge className="shrink-0" variant={listing.status === 'active' ? 'success' : listing.status === 'sold' || listing.status === 'rejected' ? 'danger' : 'outline'}>
             {STATUS_LABELS[listing.status]}
           </Badge>
         </div>
+        {listing.status === 'rejected' && listing.rejectionReason && (
+          <div className="rounded-sm border border-danger/30 bg-danger-soft px-3 py-2 text-xs text-danger">
+            <span className="font-semibold">Lý do từ chối:</span> {listing.rejectionReason}
+          </div>
+        )}
         <p className="text-sm">
           <span className="font-semibold text-price">{formatPrice(listing.price, listing.priceUnit)}</span>
           <span className="ml-3 text-ink-muted">{formatArea(listing.area)}</span>

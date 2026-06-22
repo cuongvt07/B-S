@@ -28,6 +28,7 @@ const STATUS_LABELS = {
   pending: 'Chờ duyệt',
   expired: 'Hết hạn',
   sold: 'Đã giao dịch',
+  rejected: 'Bị từ chối',
 } as const;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

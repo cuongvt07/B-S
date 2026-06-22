@@ -1,149 +1,147 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
-import { CheckCircle2, ChevronDown } from 'lucide-react';
-import { Button, Card } from '@/components/ui';
+import { CheckCircle2, ChevronDown, Phone, MessageCircle, Sparkles } from 'lucide-react';
+import { getSiteSettings } from '@/lib/server-data';
 
 export const metadata: Metadata = {
-  title: 'Gói môi giới chuyên nghiệp',
-  description: 'Nâng cấp tài khoản môi giới để quản lý hàng trăm tin đăng, theo dõi hiệu suất và chốt khách hàng nhanh hơn.',
+  title: 'Gói đăng tin môi giới',
+  description:
+    'Nâng số tin đăng mỗi ngày để tiếp cận nhiều khách hàng hơn. Liên hệ Zalo/hotline để kích hoạt gói.',
 };
 
-const TIERS = [
-  {
-    slug: 'starter',
-    name: 'Starter',
-    tagline: 'Phù hợp cá nhân thử nghiệm',
-    price: 'Miễn phí',
-    sub: '',
-    features: [
-      'Đăng tối đa 5 tin/tháng',
-      'Hiển thị tin chuẩn',
-      'Quản lý cơ bản',
-      'Hỗ trợ qua email',
-    ],
-    cta: 'Bắt đầu miễn phí',
-    primary: false,
-  },
-  {
-    slug: 'pro',
-    name: 'Pro',
-    tagline: 'Cho môi giới chuyên nghiệp',
-    price: '599K',
-    sub: '/tháng',
-    features: [
-      'Đăng tối đa 50 tin/tháng',
-      'Đẩy top 10 lượt/tháng',
-      'Huy hiệu môi giới xác thực',
-      'Báo cáo lượt xem & liên hệ real-time',
-      'Quản lý leads từ tin đăng',
-      'Hỗ trợ ưu tiên qua hotline',
-    ],
-    cta: 'Đăng ký gói Pro',
-    primary: true,
-  },
-  {
-    slug: 'enterprise',
-    name: 'Enterprise',
-    tagline: 'Cho công ty môi giới và sàn',
-    price: '1.999K',
-    sub: '/tháng',
-    features: [
-      'Tin đăng không giới hạn',
-      'Đẩy top không giới hạn',
-      'API tích hợp CRM',
-      'White-label logo riêng',
-      'Account manager dành riêng',
-      'Báo cáo BI nâng cao',
-    ],
-    cta: 'Liên hệ tư vấn',
-    primary: false,
-  },
-];
+// Settings come from the CMS — keep this page fresh without a redeploy.
+export const revalidate = 300;
 
-const FAQS = [
-  {
-    q: 'Tôi có thể nâng cấp hay hạ cấp gói bất kỳ lúc nào không?',
-    a: 'Có. Bạn có thể nâng cấp ngay lập tức, phần phí chênh lệch sẽ được tính theo tỷ lệ thời gian còn lại. Khi hạ cấp, gói mới có hiệu lực ở chu kỳ thanh toán kế tiếp.',
-  },
-  {
-    q: 'Thanh toán như thế nào?',
-    a: 'Hỗ trợ chuyển khoản, ví điện tử (Momo, ZaloPay, VNPay), thẻ tín dụng quốc tế (Visa/Master). Tự động gia hạn hàng tháng, có thể huỷ bất cứ lúc nào.',
-  },
-  {
-    q: 'Có hỗ trợ xuất hoá đơn VAT không?',
-    a: 'Có. Vào mục "Thanh toán" trong dashboard, chọn giao dịch cần xuất và điền thông tin doanh nghiệp. Hoá đơn điện tử được gửi qua email trong vòng 24h.',
-  },
-  {
-    q: 'Tôi có được dùng thử Pro miễn phí không?',
-    a: 'Tài khoản môi giới mới được dùng thử 14 ngày miễn phí gói Pro. Không cần khai báo thẻ tín dụng. Hết thời gian thử, tài khoản tự động về Starter nếu không nâng cấp.',
-  },
-  {
-    q: 'Sự khác nhau giữa Pro và Enterprise là gì?',
-    a: 'Pro phù hợp cá nhân và đội nhỏ (đến 50 tin/tháng). Enterprise dành cho sàn / công ty môi giới cần API tích hợp, không giới hạn tin, branding riêng và account manager hỗ trợ sâu.',
-  },
-];
+const vnd = (n: number) => n.toLocaleString('vi-VN') + 'đ';
 
-const QUOTES = [
-  {
-    avatar: 'https://i.pravatar.cc/120?img=12',
-    name: 'Nguyễn Văn An',
-    role: 'Môi giới tự do, TP.HCM',
-    quote:
-      'Từ khi dùng gói Pro, lượng leads tăng gấp 3 lần. Dashboard real-time giúp tôi biết khách nào quan tâm tin nào để chăm sóc kịp thời.',
-  },
-  {
-    avatar: 'https://i.pravatar.cc/120?img=47',
-    name: 'Trần Thuỳ Linh',
-    role: 'Trưởng phòng kinh doanh, Sàn ABC',
-    quote:
-      'Hệ thống đẩy top và huy hiệu xác thực giúp tin của team luôn được chú ý. Phí hợp lý so với hiệu quả mang lại.',
-  },
-  {
-    avatar: 'https://i.pravatar.cc/120?img=33',
-    name: 'Phạm Quốc Đức',
-    role: 'Founder Sky Land',
-    quote:
-      'Enterprise API giúp chúng tôi đồng bộ kho tin từ CRM nội bộ lên BDS Việt chỉ trong vài giờ. Account manager hỗ trợ rất chuyên nghiệp.',
-  },
-];
+type Tier = {
+  slug: string;
+  name: string;
+  tagline: string;
+  quota: string;
+  price: string;
+  sub: string;
+  features: string[];
+  cta: string;
+  primary: boolean;
+};
 
-export default function BrokerPackagePage() {
+export default async function BrokerPackagePage() {
+  const settings = await getSiteSettings();
+  const pkg = settings.packages;
+  const phoneDigits = settings.contact.zalo_phone.replace(/\D/g, '');
+  const ZALO_HREF = `https://zalo.me/${phoneDigits}`;
+  const TEL_HREF = `tel:${phoneDigits}`;
+
+  const TIERS: Tier[] = [
+    {
+      slug: 'free',
+      name: 'Miễn phí',
+      tagline: 'Dành cho người mới bắt đầu',
+      quota: `${pkg.free_daily_quota} tin / ngày`,
+      price: 'Miễn phí',
+      sub: '',
+      features: [
+        `Đăng tối đa ${pkg.free_daily_quota} tin mỗi ngày`,
+        'Hiển thị tin chuẩn',
+        'Quản lý tin cơ bản',
+        'Lưu tin yêu thích & tìm kiếm',
+      ],
+      cta: 'Dùng ngay',
+      primary: false,
+    },
+    {
+      slug: 'pro-30',
+      name: `Gói ${pkg.tier_30_quota} tin`,
+      tagline: 'Cho môi giới hoạt động đều',
+      quota: `${pkg.tier_30_quota} tin / ngày`,
+      price: vnd(pkg.tier_30_price),
+      sub: '/ tháng',
+      features: [
+        `Đăng tối đa ${pkg.tier_30_quota} tin mỗi ngày`,
+        'Toàn bộ quyền lợi gói Miễn phí',
+        'Ưu tiên hiển thị hơn tài khoản thường',
+        'Hỗ trợ qua hotline / Zalo',
+      ],
+      cta: 'Liên hệ kích hoạt',
+      primary: true,
+    },
+    {
+      slug: 'pro-50',
+      name: `Gói ${pkg.tier_50_quota} tin`,
+      tagline: 'Cho môi giới chuyên nghiệp',
+      quota: `${pkg.tier_50_quota} tin / ngày`,
+      price: vnd(pkg.tier_50_price),
+      sub: '/ tháng',
+      features: [
+        `Đăng tối đa ${pkg.tier_50_quota} tin mỗi ngày`,
+        `Toàn bộ quyền lợi gói ${pkg.tier_30_quota} tin`,
+        'Mức hiển thị cao nhất',
+        'Hỗ trợ ưu tiên qua hotline / Zalo',
+      ],
+      cta: 'Liên hệ kích hoạt',
+      primary: false,
+    },
+  ];
+
+  const FAQS = [
+    {
+      q: `Làm sao để mua gói ${pkg.tier_30_quota} tin hoặc ${pkg.tier_50_quota} tin?`,
+      a: 'Hiện tại hệ thống chưa hỗ trợ thanh toán online. Bạn vui lòng bấm nút “Liên hệ Zalo” hoặc gọi hotline để được nhân viên kích hoạt gói thủ công. Sau khi xác nhận thanh toán, gói sẽ được nâng cấp ngay cho tài khoản của bạn.',
+    },
+    {
+      q: 'Giới hạn “tin/ngày” được tính như thế nào?',
+      a: `Mỗi tài khoản được đăng số tin tối đa trong một ngày tùy theo gói: Miễn phí ${pkg.free_daily_quota} tin, gói ${vnd(pkg.tier_30_price)} ${pkg.tier_30_quota} tin, gói ${vnd(pkg.tier_50_price)} ${pkg.tier_50_quota} tin. Số lượt sẽ được làm mới vào đầu mỗi ngày.`,
+    },
+    {
+      q: 'Tôi có thể nâng cấp giữa chu kỳ không?',
+      a: 'Có. Bạn chỉ cần liên hệ hotline/Zalo, nhân viên sẽ hỗ trợ nâng cấp và áp dụng ngay cho phần thời gian còn lại.',
+    },
+    {
+      q: 'Gói có tự động gia hạn không?',
+      a: 'Không tự động trừ tiền. Trước khi gói hết hạn, chúng tôi sẽ nhắc bạn gia hạn qua Zalo/điện thoại để bạn chủ động quyết định.',
+    },
+  ];
+
+  const contactPhone = settings.contact.hotline;
+
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary-hover to-primary-active py-16 text-white">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand via-brand to-brand-active py-16 text-white">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-gold/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
         <div className="container-app relative text-center">
-          <span className="inline-flex items-center rounded-sm bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide backdrop-blur-sm">
-            Dành cho môi giới
+          <span className="inline-flex items-center gap-1.5 rounded-sm bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold-ink">
+            <Sparkles size={13} /> Dành cho môi giới
           </span>
           <h1 className="mt-4 text-3xl font-semibold sm:text-5xl">
-            Quản lý hàng trăm tin đăng — Dễ dàng và chuyên nghiệp
+            Đăng nhiều tin hơn mỗi ngày — Tiếp cận nhiều khách hơn
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-white/90 sm:text-lg">
-            Nâng cấp tài khoản môi giới để mở rộng quy mô, theo dõi hiệu suất và chốt khách hàng nhanh hơn.
+          <p className="mx-auto mt-3 max-w-2xl text-base text-white/85 sm:text-lg">
+            Nâng cấp gói để tăng số tin đăng mỗi ngày. Chưa hỗ trợ thanh toán online —
+            liên hệ Zalo hoặc hotline để được kích hoạt nhanh chóng.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/dang-ky" className="unstyled">
-              <Button className="!bg-white !text-ink-strong hover:!bg-white/90">
-                Đăng ký miễn phí
-              </Button>
-            </Link>
-            <Link
-              href="/quy-che"
-              className="unstyled inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-white/90 hover:underline"
-            >
-              Xem điều khoản
-            </Link>
+            <a href={ZALO_HREF} target="_blank" rel="noopener noreferrer" className="unstyled">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-gold px-8 py-3 text-base font-semibold text-gold-ink transition-colors hover:bg-gold-hover">
+                <MessageCircle size={18} /> Liên hệ Zalo
+              </span>
+            </a>
+            <a href={TEL_HREF} className="unstyled">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm border border-white/40 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10">
+                <Phone size={18} /> {contactPhone}
+              </span>
+            </a>
           </div>
         </div>
       </section>
 
+      {/* Pricing */}
       <section className="container-app py-12">
-        <h2 className="text-center text-2xl font-semibold text-ink">Bảng giá gói dịch vụ</h2>
+        <h2 className="text-center text-2xl font-semibold text-ink">Bảng giá gói đăng tin</h2>
         <p className="mt-2 text-center text-sm text-ink-muted">
-          Chọn gói phù hợp với quy mô và mục tiêu của bạn
+          Chọn gói phù hợp với nhu cầu đăng tin của bạn
         </p>
 
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -152,47 +150,88 @@ export default function BrokerPackagePage() {
               key={t.slug}
               className={
                 'relative flex flex-col rounded-md border bg-white p-6 shadow-raised ' +
-                (t.primary ? 'border-primary ring-2 ring-primary/30' : 'border-brdr')
+                (t.primary ? 'border-brand ring-2 ring-brand/25' : 'border-brdr')
               }
             >
               {t.primary && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-gold-ink">
                   Phổ biến nhất
                 </span>
               )}
-              <p className="text-xl font-semibold text-ink">{t.name}</p>
+              <p className="text-xl font-semibold text-brand">{t.name}</p>
               <p className="mt-1 text-sm text-ink-muted">{t.tagline}</p>
+
               <div className="mt-4 flex items-baseline gap-1">
                 <span className="text-3xl font-semibold text-ink">{t.price}</span>
                 {t.sub && <span className="text-sm text-ink-muted">{t.sub}</span>}
               </div>
+              <span className="mt-3 inline-flex w-fit items-center rounded-sm bg-brand-soft px-2.5 py-1 text-sm font-semibold text-brand">
+                {t.quota}
+              </span>
+
               <ul className="mt-6 flex-1 space-y-2">
                 {t.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-ink">
-                    <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-price" />
+                    <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-brand" />
                     {f}
                   </li>
                 ))}
               </ul>
-              <Link href={`/dang-ky?tier=${t.slug}`} className="unstyled mt-6 block">
-                <Button variant={t.primary ? 'primary' : 'outline'} fullWidth>
-                  {t.cta}
-                </Button>
-              </Link>
+
+              {t.slug === 'free' ? (
+                <Link href="/dang-ky" className="unstyled mt-6 block">
+                  <span className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-sm border border-brand px-4 py-3 text-base font-semibold text-brand transition-colors hover:bg-brand-soft">
+                    {t.cta}
+                  </span>
+                </Link>
+              ) : (
+                <a
+                  href={ZALO_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="unstyled mt-6 block"
+                >
+                  <span
+                    className={
+                      'inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-sm px-4 py-3 text-base font-semibold transition-colors ' +
+                      (t.primary
+                        ? 'bg-brand text-white hover:bg-brand-hover'
+                        : 'border border-brand text-brand hover:bg-brand-soft')
+                    }
+                  >
+                    <MessageCircle size={16} /> {t.cta}
+                  </span>
+                </a>
+              )}
             </div>
           ))}
         </div>
+
+        {/* Payment notice */}
+        <div className="mx-auto mt-8 max-w-3xl rounded-md border border-gold/50 bg-gold-soft px-5 py-4 text-sm text-gold-ink">
+          <p className="font-semibold">Lưu ý về thanh toán</p>
+          <p className="mt-1 leading-relaxed">
+            Hệ thống hiện <strong>chưa hỗ trợ thanh toán online</strong>. Để mua hoặc gia hạn gói,
+            vui lòng liên hệ qua{' '}
+            <a href={ZALO_HREF} target="_blank" rel="noopener noreferrer" className="font-semibold underline">
+              Zalo
+            </a>{' '}
+            hoặc gọi hotline{' '}
+            <a href={TEL_HREF} className="font-semibold underline">
+              {contactPhone}
+            </a>{' '}
+            — nhân viên sẽ kích hoạt gói thủ công cho tài khoản của bạn.
+          </p>
+        </div>
       </section>
 
+      {/* FAQ */}
       <section className="bg-surface-subtle py-12">
         <div className="container-app mx-auto max-w-3xl">
           <h2 className="mb-6 text-2xl font-semibold text-ink">Câu hỏi thường gặp</h2>
           <div className="space-y-2">
             {FAQS.map((f, i) => (
-              <details
-                key={i}
-                className="group rounded-md border border-brdr bg-white px-4"
-              >
+              <details key={i} className="group rounded-md border border-brdr bg-white px-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between py-3 text-sm font-semibold text-ink">
                   {f.q}
                   <ChevronDown
@@ -207,25 +246,25 @@ export default function BrokerPackagePage() {
         </div>
       </section>
 
+      {/* CTA bottom */}
       <section className="container-app py-12">
-        <h2 className="mb-8 text-center text-2xl font-semibold text-ink">
-          Môi giới nói gì về BDS Việt
-        </h2>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {QUOTES.map((q) => (
-            <Card key={q.name} padded className="!p-6">
-              <div className="flex items-center gap-3">
-                <div className="relative h-12 w-12 overflow-hidden rounded-full">
-                  <Image src={q.avatar} alt={q.name} fill sizes="48px" className="object-cover" />
-                </div>
-                <div>
-                  <p className="font-semibold text-ink">{q.name}</p>
-                  <p className="text-xs text-ink-muted">{q.role}</p>
-                </div>
-              </div>
-              <p className="mt-3 text-sm leading-relaxed text-ink">&ldquo;{q.quote}&rdquo;</p>
-            </Card>
-          ))}
+        <div className="overflow-hidden rounded-md bg-brand px-6 py-10 text-center text-white">
+          <h2 className="text-2xl font-semibold">Sẵn sàng nâng cấp gói đăng tin?</h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm text-white/85">
+            Liên hệ ngay để được tư vấn và kích hoạt gói phù hợp với nhu cầu của bạn.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <a href={ZALO_HREF} target="_blank" rel="noopener noreferrer" className="unstyled">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-gold px-8 py-3 text-base font-semibold text-gold-ink transition-colors hover:bg-gold-hover">
+                <MessageCircle size={18} /> Liên hệ Zalo
+              </span>
+            </a>
+            <a href={TEL_HREF} className="unstyled">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm border border-white/40 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10">
+                <Phone size={18} /> Gọi {contactPhone}
+              </span>
+            </a>
+          </div>
         </div>
       </section>
     </>

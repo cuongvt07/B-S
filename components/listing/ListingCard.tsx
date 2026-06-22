@@ -17,6 +17,7 @@ const STATUS_LABELS: Record<Listing['status'], string> = {
   pending: 'Chờ duyệt',
   expired: 'Hết hạn',
   sold: 'Đã giao dịch',
+  rejected: 'Bị từ chối',
 };
 
 export const ListingCard = memo(function ListingCard({

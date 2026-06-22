@@ -30,6 +30,20 @@ const config: Config = {
           active: '#0000AA',
           disabled: '#CCCCCC',
         },
+        // Brand palette (BĐS): navy + gold. Adopt incrementally across the site.
+        brand: {
+          DEFAULT: '#07366b',
+          hover: '#0a4a8f',
+          active: '#052748',
+          soft: '#EAF1FA',
+        },
+        gold: {
+          DEFAULT: '#ffc21c',
+          hover: '#f0b400',
+          active: '#d99e00',
+          soft: '#FFF6DC',
+          ink: '#5C4400',
+        },
         ink: {
           DEFAULT: '#313131',
           strong: '#000000',
