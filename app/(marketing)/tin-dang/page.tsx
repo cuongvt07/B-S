@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Tin đăng bất động sản',
   description:
     'Tìm kiếm tin đăng cho thuê, mua bán bất động sản trên toàn quốc — căn hộ, phòng trọ, nhà nguyên căn, văn phòng.',
+  // Canonical to the clean URL so filtered query-string variants don't create
+  // duplicate-content pages.
+  alternates: { canonical: '/tin-dang' },
 };
 
 export default function SearchPage() {

@@ -50,6 +50,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+// ISR — cache the rendered detail page and revalidate at most every 5 minutes.
+export const revalidate = 300;
+
 export default async function ListingDetailPage({ params }: PageProps) {
   const id = extractIdFromSlug(params.slug);
   if (!id) notFound();
@@ -58,17 +61,17 @@ export default async function ListingDetailPage({ params }: PageProps) {
   const l = result.data;
   const city = cityByCode.get(l.cityCode);
 
-  const similar = await listListings({
-    propertyType: l.propertyType,
-    cityCode: l.cityCode,
-    pageSize: 4,
-  });
+  // Fetch "similar" and "same owner" listings in parallel (not sequentially),
+  // and query the owner's listings directly by ownerId instead of pulling a
+  // large page and filtering client-side.
+  const [similar, ownerListingsResult] = await Promise.all([
+    listListings({ propertyType: l.propertyType, cityCode: l.cityCode, pageSize: 4 }),
+    /^\d+$/.test(l.ownerId)
+      ? listListings({ ownerId: l.ownerId, pageSize: 5 })
+      : Promise.resolve({ data: [], meta: { page: 1, pageSize: 5, total: 0, totalPages: 0 } }),
+  ]);
   const relatedListings = similar.data.filter((s) => s.id !== l.id).slice(0, 3);
-
-  const ownerListingsResult = await listListings({ pageSize: 100 });
-  const ownerListings = ownerListingsResult.data
-    .filter((s) => s.ownerId === l.ownerId && s.id !== l.id)
-    .slice(0, 4);
+  const ownerListings = ownerListingsResult.data.filter((s) => s.id !== l.id).slice(0, 4);
 
   const url = `${SITE.url}/tin-dang/${l.slug}`;
   const hasCoords = typeof l.lat === 'number' && typeof l.lng === 'number';

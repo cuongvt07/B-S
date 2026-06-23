@@ -31,12 +31,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+// ISR — cache the rendered article and revalidate at most every 5 minutes.
+export const revalidate = 300;
+
 export default async function BlogDetailPage({ params }: PageProps) {
-  const result = await getBlog(params.slug);
+  // Fetch the post and the related list in parallel.
+  const [result, related] = await Promise.all([getBlog(params.slug), listBlogs({ pageSize: 4 })]);
   if (!result) notFound();
   const b = result.data;
 
-  const related = await listBlogs({ pageSize: 3 });
   const relatedBlogs = related.data.filter((x) => x.id !== b.id).slice(0, 3);
 
   const url = `${SITE.url}/blog/${b.slug}`;

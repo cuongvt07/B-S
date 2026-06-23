@@ -22,6 +22,7 @@ export interface ListingFilter {
   direction?: Direction;
   furnish?: FurnishLevel;
   vipOnly?: boolean;
+  ownerId?: string;
   sort?: SortBy;
   page?: number;
   pageSize?: number;

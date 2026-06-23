@@ -308,6 +308,7 @@ export interface LaravelListingQuery {
   category_id?: string;
   type?: string;
   property_type?: number;
+  user_id?: number;
   province?: string;
   district?: string;
   ward?: string;
@@ -331,6 +332,7 @@ export function mapFilterToApi(f: ListingFilter): LaravelListingQuery {
   if (f.categoryId) out.category_id = f.categoryId;
   if (f.transactionType) out.type = TX_MAP_TO_API[f.transactionType];
   if (f.propertyType) out.property_type = PROPERTY_LOCAL_TO_CODE[f.propertyType];
+  if (f.ownerId && /^\d+$/.test(f.ownerId)) out.user_id = Number(f.ownerId);
   if (f.cityCode) {
     const city = cities.find((c) => c.code === f.cityCode);
     if (city) out.province = city.name;
