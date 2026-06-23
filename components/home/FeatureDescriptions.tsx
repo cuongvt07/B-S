@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { getSiteSettings } from '@/lib/server-data';
 
 const FEATURES = [
   {
@@ -32,7 +33,8 @@ const FEATURES = [
   },
 ];
 
-export function FeatureDescriptions() {
+export async function FeatureDescriptions() {
+  const { contact } = await getSiteSettings();
   return (
     <section className="border-t border-brdr bg-surface-subtle">
       <div className="container-app py-10">
@@ -41,7 +43,7 @@ export function FeatureDescriptions() {
             Triệu lựa chọn nhà, một kênh tìm kiếm
           </h2>
           <p className="mt-2 text-sm text-ink-muted">
-            Báo chí và cộng đồng người dùng đánh giá cao chất lượng tin đăng tại BDS Việt
+            Báo chí và cộng đồng người dùng đánh giá cao chất lượng tin đăng tại {contact.site_name}
           </p>
         </div>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">

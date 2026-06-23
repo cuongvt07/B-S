@@ -9,6 +9,7 @@ import { useListings } from '@/lib/hooks/useListings';
 import { Breadcrumbs } from '@/components/seo';
 import { Badge, SegmentedControl, Skeleton } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { useSiteSettings } from '@/components/layout/SiteSettingsProvider';
 import { formatPrice, formatArea } from '@/lib/utils/format';
 import { getListingLngLat } from '@/lib/utils/coords';
 import { formatLocation } from '@/mocks/data/cities';
@@ -40,6 +41,7 @@ function priceShort(price: number, unit: 'month' | 'total'): string {
 }
 
 export default function MapPage() {
+  const { siteName } = useSiteSettings();
   const { data, isLoading } = useListings({ pageSize: 50, sort: 'newest' });
   const listings = useMemo(() => data?.data ?? [], [data]);
 
@@ -76,8 +78,8 @@ export default function MapPage() {
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.title = 'Bản đồ tin đăng — BDS Việt';
-  }, []);
+    document.title = `Bản đồ tin đăng — ${siteName}`;
+  }, [siteName]);
 
   useEffect(() => {
     if (!selectedId || !sidebarRef.current) return;

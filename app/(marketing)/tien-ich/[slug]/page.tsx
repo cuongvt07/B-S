@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { Wrench } from 'lucide-react';
 import { Breadcrumbs } from '@/components/seo';
 import { Button } from '@/components/ui';
+import { getSiteSettings } from '@/lib/server-data';
+
+export const revalidate = 300;
 
 interface PageProps {
   params: { slug: string };
@@ -15,15 +18,17 @@ function humanize(slug: string): string {
     .join(' ');
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { contact } = await getSiteSettings();
   return {
     title: `Tiện ích: ${humanize(params.slug)}`,
-    description: `Công cụ tiện ích ${humanize(params.slug)} trên BDS Việt.`,
+    description: `Công cụ tiện ích ${humanize(params.slug)} trên ${contact.site_name}.`,
   };
 }
 
-export default function UtilityPage({ params }: PageProps) {
+export default async function UtilityPage({ params }: PageProps) {
   const title = humanize(params.slug);
+  const { contact } = await getSiteSettings();
   return (
     <div className="container-app py-16 text-center">
       <Breadcrumbs
@@ -39,7 +44,7 @@ export default function UtilityPage({ params }: PageProps) {
         </div>
         <h1 className="text-2xl font-semibold text-ink">Tính năng đang được phát triển</h1>
         <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">
-          Công cụ <strong>{title}</strong> sẽ sớm có mặt trên BDS Việt. Chúng tôi đang hoàn thiện
+          Công cụ <strong>{title}</strong> sẽ sớm có mặt trên {contact.site_name}. Chúng tôi đang hoàn thiện
           tính năng để mang lại trải nghiệm tốt nhất.
         </p>
         <Link href="/" className="unstyled mt-6 inline-block">

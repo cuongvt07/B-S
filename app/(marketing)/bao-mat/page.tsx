@@ -1,13 +1,20 @@
 import type { Metadata } from 'next';
 import { Breadcrumbs } from '@/components/seo';
 import { COMPANY, SITE } from '@/lib/constants';
+import { getSiteSettings } from '@/lib/server-data';
 
-export const metadata: Metadata = {
-  title: 'Chính sách bảo mật',
-  description: 'Chính sách bảo mật thông tin người dùng của BDS Việt.',
-};
+export const revalidate = 300;
 
-export default function PrivacyPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const { contact } = await getSiteSettings();
+  return {
+    title: 'Chính sách bảo mật',
+    description: `Chính sách bảo mật thông tin người dùng của ${contact.site_name}.`,
+  };
+}
+
+export default async function PrivacyPage() {
+  const { contact } = await getSiteSettings();
   return (
     <div className="container-app mx-auto max-w-3xl py-8">
       <Breadcrumbs items={[{ label: 'Trang chủ', href: '/' }, { label: 'Chính sách bảo mật' }]} />
@@ -18,7 +25,7 @@ export default function PrivacyPage() {
       <section>
         <h2 className="mb-3 mt-8 text-lg font-semibold text-ink">1. Thu thập thông tin</h2>
         <p className="my-3 leading-relaxed text-ink">
-          BDS Việt thu thập các thông tin sau khi bạn sử dụng nền tảng: thông tin tài khoản (email, số
+          {contact.site_name} thu thập các thông tin sau khi bạn sử dụng nền tảng: thông tin tài khoản (email, số
           điện thoại, họ tên), thông tin tin đăng bạn đăng tải, lịch sử tìm kiếm và tương tác, dữ liệu
           thiết bị (loại trình duyệt, hệ điều hành, địa chỉ IP).
         </p>

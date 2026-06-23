@@ -1,43 +1,53 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { PlusCircle, FileText, ListChecks } from 'lucide-react';
 import { Button, Card, EmptyState, Spinner } from '@/components/ui';
 import { MyListingRow } from '@/components/dashboard';
-import { Pagination } from '@/components/search';
 import { meApi } from '@/lib/api/auth';
+import type { Listing, ListingStatus } from '@/types';
 
-const PAGE_SIZE = 6;
+// Fetch the whole set once; "my listings" is small enough to filter client-side.
+const FETCH_SIZE = 200;
+
+type StatusKey = 'all' | ListingStatus;
+
+const STATUS_TABS: { key: StatusKey; label: string }[] = [
+  { key: 'all', label: 'Tất cả' },
+  { key: 'active', label: 'Đang hiển thị' },
+  { key: 'pending', label: 'Chờ duyệt' },
+  { key: 'rejected', label: 'Bị từ chối' },
+  { key: 'expired', label: 'Hết hạn' },
+  { key: 'sold', label: 'Đã giao dịch' },
+];
 
 export default function MyListingsPage() {
-  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState<StatusKey>('all');
+
   const listings = useQuery({
-    queryKey: ['me', 'listings', page, PAGE_SIZE],
-    queryFn: () => meApi.listListings({ page, pageSize: PAGE_SIZE }),
+    queryKey: ['me', 'listings', 'all', FETCH_SIZE],
+    queryFn: () => meApi.listListings({ page: 1, pageSize: FETCH_SIZE }),
     placeholderData: (previous) => previous,
     retry: 1,
   });
 
-  const myListings = listings.data?.data ?? [];
-  const meta = listings.data?.meta;
-  const total = meta?.total ?? myListings.length;
-  const totalPages = meta?.totalPages ?? 1;
+  const all: Listing[] = useMemo(() => listings.data?.data ?? [], [listings.data]);
 
-  useEffect(() => {
-    if (!listings.isFetching && myListings.length === 0 && page > totalPages) {
-      setPage(Math.max(1, totalPages));
-    }
-  }, [listings.isFetching, myListings.length, page, totalPages]);
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: all.length };
+    for (const l of all) c[l.status] = (c[l.status] ?? 0) + 1;
+    return c;
+  }, [all]);
 
-  function changePage(nextPage: number) {
-    setPage(nextPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  const filtered = useMemo(
+    () => (status === 'all' ? all : all.filter((l) => l.status === status)),
+    [all, status]
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <header className="overflow-hidden rounded-md border border-primary/20 bg-gradient-to-r from-primary/10 via-white to-white p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-start gap-3">
@@ -57,6 +67,41 @@ export default function MyListingsPage() {
         </div>
       </header>
 
+      {/* Filter bar */}
+      <div className="flex flex-wrap items-center gap-2 rounded-md border border-brdr bg-surface px-3 py-2.5">
+        {STATUS_TABS.map((t) => {
+          const n = counts[t.key] ?? 0;
+          const active = status === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setStatus(t.key)}
+              className={
+                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ' +
+                (active
+                  ? 'border-primary bg-primary text-white'
+                  : 'border-brdr bg-white text-ink-muted hover:border-primary/50 hover:text-ink')
+              }
+            >
+              {t.label}
+              <span
+                className={
+                  'rounded-full px-1.5 text-[11px] font-bold ' +
+                  (active ? 'bg-white/20 text-white' : 'bg-surface-subtle text-ink-muted')
+                }
+              >
+                {n}
+              </span>
+            </button>
+          );
+        })}
+        <span className="ml-auto inline-flex items-center gap-2 text-xs text-ink-muted">
+          {listings.isFetching && <Spinner className="h-3.5 w-3.5" />}
+          {filtered.length} tin
+        </span>
+      </div>
+
       {listings.isLoading ? (
         <div className="flex items-center justify-center gap-3 rounded-md border border-brdr bg-white p-10 text-sm text-ink-muted">
           <Spinner />
@@ -75,7 +120,7 @@ export default function MyListingsPage() {
             }
           />
         </Card>
-      ) : myListings.length === 0 ? (
+      ) : all.length === 0 ? (
         <Card padded className="!p-0">
           <EmptyState
             icon={FileText}
@@ -88,29 +133,20 @@ export default function MyListingsPage() {
             }
           />
         </Card>
+      ) : filtered.length === 0 ? (
+        <Card padded className="py-10 text-center text-sm text-ink-muted">
+          Không có tin nào ở trạng thái này.
+        </Card>
       ) : (
-        <section className="overflow-hidden rounded-md border border-brdr bg-surface shadow-raised">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-brdr px-4 py-3">
-            <div>
-              <h2 className="font-semibold text-ink">Danh sách tin đăng</h2>
-              <p className="mt-0.5 text-xs text-ink-muted">
-                {total.toLocaleString('vi-VN')} tin · Trang {page}/{totalPages}
-              </p>
+        <section className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+          {filtered.map((l) => (
+            <div
+              key={l.id}
+              className="rounded-md border border-brdr bg-white px-3 shadow-raised sm:px-4"
+            >
+              <MyListingRow listing={l} />
             </div>
-            {listings.isFetching && <Spinner className="h-4 w-4" />}
-          </div>
-
-          <div className="divide-y divide-brdr px-3 sm:px-4">
-            {myListings.map((l) => (
-              <MyListingRow key={l.id} listing={l} />
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="flex justify-center border-t border-brdr px-4 py-4">
-              <Pagination page={page} totalPages={totalPages} onChange={changePage} />
-            </div>
-          )}
+          ))}
         </section>
       )}
     </div>

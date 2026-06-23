@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useSiteSettings } from '@/components/layout/SiteSettingsProvider';
 import { listings } from '@/mocks/data/listings';
 import { blogs } from '@/mocks/data/blogs';
 import { cities } from '@/mocks/data/cities';
@@ -61,6 +62,7 @@ function StatItem({
 export function StatsBar() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [inView, setInView] = useState(false);
+  const { siteName } = useSiteSettings();
   const activeCount = listings.filter((listing) => listing.status === 'active').length;
 
   useEffect(() => {
@@ -94,8 +96,8 @@ export function StatsBar() {
           </div>
 
           <div className="stats-about__copy">
-            <span>Về BDS Việt</span>
-            <h2>Cộng đồng BDS Việt tin tưởng</h2>
+            <span>Về {siteName}</span>
+            <h2>Cộng đồng {siteName} tin tưởng</h2>
             <p>
               Nền tảng tin đăng minh bạch, xác thực — kết nối hàng nghìn chủ nhà và
               người mua thuê mỗi ngày.

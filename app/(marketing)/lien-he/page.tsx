@@ -2,33 +2,39 @@ import type { Metadata } from 'next';
 import { Phone, Mail, MapPin, Globe2 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/seo';
 import { ContactForm } from '@/components/forms/ContactForm';
-import { COMPANY, SITE } from '@/lib/constants';
+import { COMPANY } from '@/lib/constants';
+import { getSiteSettings } from '@/lib/server-data';
 
-export const metadata: Metadata = {
-  title: 'Liên hệ',
-  description: 'Liên hệ với đội ngũ BDS Việt — hỗ trợ tin đăng, hợp tác, phản hồi.',
-};
+export const revalidate = 300;
 
-const INFO = [
-  { Icon: Phone, label: 'Hotline', value: SITE.contactPhone, accent: 'text-primary', bg: 'bg-primary/10' },
-  { Icon: Mail, label: 'Email', value: SITE.contactEmail, accent: 'text-price', bg: 'bg-price-soft' },
-  {
-    Icon: MapPin,
-    label: 'Trụ sở',
-    value: COMPANY.address,
-    accent: 'text-vip',
-    bg: 'bg-vip-soft',
-  },
-  {
-    Icon: Globe2,
-    label: 'Website',
-    value: COMPANY.website ?? 'Chưa đăng ký',
-    accent: 'text-ink',
-    bg: 'bg-surface-subtle',
-  },
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const { contact } = await getSiteSettings();
+  return {
+    title: 'Liên hệ',
+    description: `Liên hệ với đội ngũ ${contact.site_name} — hỗ trợ tin đăng, hợp tác, phản hồi.`,
+  };
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { contact } = await getSiteSettings();
+  const INFO = [
+    { Icon: Phone, label: 'Hotline', value: contact.hotline, accent: 'text-primary', bg: 'bg-primary/10' },
+    { Icon: Mail, label: 'Email', value: contact.email, accent: 'text-price', bg: 'bg-price-soft' },
+    {
+      Icon: MapPin,
+      label: 'Trụ sở',
+      value: COMPANY.address,
+      accent: 'text-vip',
+      bg: 'bg-vip-soft',
+    },
+    {
+      Icon: Globe2,
+      label: 'Website',
+      value: COMPANY.website ?? 'Chưa đăng ký',
+      accent: 'text-ink',
+      bg: 'bg-surface-subtle',
+    },
+  ];
   return (
     <div className="container-app py-8">
       <Breadcrumbs items={[{ label: 'Trang chủ', href: '/' }, { label: 'Liên hệ' }]} />

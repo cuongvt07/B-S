@@ -1,13 +1,20 @@
 import type { Metadata } from 'next';
 import { Breadcrumbs } from '@/components/seo';
-import { COMPANY, SITE } from '@/lib/constants';
+import { COMPANY } from '@/lib/constants';
+import { getSiteSettings } from '@/lib/server-data';
 
-export const metadata: Metadata = {
-  title: 'Quy chế hoạt động',
-  description: 'Quy chế và điều khoản sử dụng nền tảng BDS Việt.',
-};
+export const revalidate = 300;
 
-export default function TermsPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const { contact } = await getSiteSettings();
+  return {
+    title: 'Quy chế hoạt động',
+    description: `Quy chế và điều khoản sử dụng nền tảng ${contact.site_name}.`,
+  };
+}
+
+export default async function TermsPage() {
+  const { contact } = await getSiteSettings();
   return (
     <div className="container-app mx-auto max-w-3xl py-8">
       <Breadcrumbs items={[{ label: 'Trang chủ', href: '/' }, { label: 'Quy chế hoạt động' }]} />
@@ -18,7 +25,7 @@ export default function TermsPage() {
       <section>
         <h2 className="mb-3 mt-8 text-lg font-semibold text-ink">1. Quy định chung</h2>
         <p className="my-3 leading-relaxed text-ink">
-          BDS Việt (sau đây gọi là &ldquo;Nền tảng&rdquo;) cung cấp dịch vụ tin đăng mua bán, cho thuê
+          {contact.site_name} (sau đây gọi là &ldquo;Nền tảng&rdquo;) cung cấp dịch vụ tin đăng mua bán, cho thuê
           bất động sản trên toàn quốc. Bằng việc sử dụng dịch vụ, bạn đồng ý tuân thủ toàn bộ các
           điều khoản trong quy chế này.
         </p>
@@ -94,8 +101,8 @@ export default function TermsPage() {
       <section>
         <h2 className="mb-3 mt-8 text-lg font-semibold text-ink">7. Hỗ trợ</h2>
         <p className="my-3 leading-relaxed text-ink">
-          Mọi thắc mắc xin vui lòng gửi qua email <strong>{SITE.contactEmail}</strong> hoặc gọi
-          hotline <strong>{SITE.contactPhone}</strong>. Địa chỉ liên hệ: {COMPANY.address}.
+          Mọi thắc mắc xin vui lòng gửi qua email <strong>{contact.email}</strong> hoặc gọi
+          hotline <strong>{contact.hotline}</strong>. Địa chỉ liên hệ: {COMPANY.address}.
         </p>
       </section>
     </div>

@@ -85,7 +85,7 @@ const COLUMNS: FooterGroup[] = [
   {
     title: 'Công ty',
     links: [
-      { label: 'Về BDS Việt', href: '/lien-he' },
+      { label: 'Về {site}', href: '/lien-he' },
       { label: 'Blog & Cẩm nang', href: '/blog' },
       { label: 'Liên hệ', href: '/lien-he' },
       { label: 'Quy chế hoạt động', href: '/quy-che' },
@@ -98,7 +98,7 @@ const COLUMNS: FooterGroup[] = [
       { label: 'Tính khả năng vay', href: '/tien-ich/tinh-lai-suat' },
       { label: 'Nên mua hay thuê?', href: '/blog' },
       { label: 'Lợi tức cho thuê', href: '/blog' },
-      { label: 'Quảng cáo trên BDS Việt', href: '/goi-moi-gioi' },
+      { label: 'Quảng cáo trên {site}', href: '/goi-moi-gioi' },
       { label: 'Trung tâm trợ giúp', href: '/lien-he' },
     ],
   },
@@ -236,7 +236,7 @@ export function Footer({
                       href={link.href}
                       className="unstyled text-xs text-white/65 hover:text-white"
                     >
-                      {link.label}
+                      {link.label.replace('{site}', siteName)}
                     </Link>
                   </li>
                 ))}

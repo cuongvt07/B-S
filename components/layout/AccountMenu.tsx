@@ -21,10 +21,12 @@ import { Popover } from '@/components/ui';
 import { useCurrentUser, useLogout } from '@/lib/hooks/useAuth';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';
 import { cn } from '@/lib/utils';
+import { useSiteSettings } from '@/components/layout/SiteSettingsProvider';
 
 export function AccountMenu() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { siteName } = useSiteSettings();
   const { data: user, isLoading } = useCurrentUser();
   const logout = useLogout();
   const openLogin = useAuthModal((s) => s.openLogin);
@@ -140,7 +142,7 @@ export function AccountMenu() {
         ) : (
           <>
             <div className="border-b border-brdr px-4 py-4 text-center">
-              <p className="text-sm text-ink-muted">Chào mừng đến BDS Việt</p>
+              <p className="text-sm text-ink-muted">Chào mừng đến {siteName}</p>
               <p className="mt-0.5 text-base font-semibold text-ink">
                 Đăng nhập để quản lý tin đăng
               </p>

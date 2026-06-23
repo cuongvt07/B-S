@@ -134,7 +134,7 @@ export type SiteSettings = {
 
 const SITE_SETTINGS_FALLBACK: SiteSettings = {
   contact: {
-    site_name: 'BDS Việt',
+    site_name: 'VM Phú Thịnh Land',
     hotline: '0922 255 544',
     zalo_phone: '0922 255 544',
     email: 'vmphuthinhland@gmail.com',
@@ -147,8 +147,8 @@ const SITE_SETTINGS_FALLBACK: SiteSettings = {
     tagline: 'Nền tảng tin đăng bất động sản hàng đầu',
   },
   seo: {
-    default_title: 'BDS Việt — Nền tảng tin đăng bất động sản',
-    title_template: '%s | BDS Việt',
+    default_title: 'VM Phú Thịnh Land — Nền tảng tin đăng bất động sản',
+    title_template: '%s | VM Phú Thịnh Land',
     default_description:
       'Tìm kiếm và đăng tin cho thuê, mua bán bất động sản: căn hộ, phòng trọ, nhà nguyên căn, đất nền, văn phòng trên toàn quốc.',
     keywords: 'bất động sản, nhà đất, cho thuê, mua bán, căn hộ, đất nền',

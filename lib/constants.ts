@@ -77,7 +77,7 @@ export const SORT_OPTIONS = [
 ] as const;
 
 export const SITE = {
-  name: 'BDS Việt',
+  name: 'VM Phú Thịnh Land',
   tagline: 'Nền tảng tin đăng bất động sản hàng đầu',
   url: 'https://bds.vn',
   contactPhone: '0922 255 544',

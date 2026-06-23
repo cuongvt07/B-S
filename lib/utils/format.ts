@@ -33,3 +33,14 @@ export function formatTimeAgo(iso: string): string {
 export function formatNumber(n: number): string {
   return n.toLocaleString('vi-VN');
 }
+
+/**
+ * Mask a listing's contact phone so the real number is never exposed.
+ * Keeps the leading network prefix for context, hides the rest.
+ * e.g. "0912 345 678" → "0912 *** ***"
+ */
+export function maskPhone(phone: string): string {
+  const digits = (phone || '').replace(/\D/g, '');
+  if (digits.length < 4) return '*** *** ***';
+  return `${digits.slice(0, 4)} *** ***`;
+}

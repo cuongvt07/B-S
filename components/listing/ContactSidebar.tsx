@@ -2,16 +2,15 @@
 
 import { useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { MessageCircle, Phone, Send } from 'lucide-react';
+import { MessageCircle, Phone, Send, Lock } from 'lucide-react';
 import type { Listing } from '@/types';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { Button, Input } from '@/components/ui';
 import { leadApi } from '@/lib/api/leads';
 import { ReportButton } from './ReportButton';
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice, maskPhone } from '@/lib/utils/format';
 
 export function ContactSidebar({ listing }: { listing: Listing }) {
-  const [revealed, setRevealed] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState(`Tôi quan tâm tin: ${listing.title}`);
@@ -56,16 +55,12 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
 
       <AuthGate>
         <div className="space-y-2">
-          <button
-            type="button"
-            onClick={() => setRevealed(true)}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
-          >
+          {/* Listing phone is always masked — contact via Zalo or the request form. */}
+          <div className="flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-brand/30 bg-brand-soft px-4 text-sm font-semibold text-brand">
             <Phone size={18} className="shrink-0" />
-            <span className="truncate">
-              {revealed ? listing.contact.phone : 'Hiện số điện thoại'}
-            </span>
-          </button>
+            <span className="tracking-wider">{maskPhone(listing.contact.phone)}</span>
+            <Lock size={13} className="shrink-0 opacity-70" />
+          </div>
           {listing.contact.zalo && (
             <a
               href={`https://zalo.me/${listing.contact.zalo.replace(/\D/g, '')}`}
@@ -76,12 +71,9 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
               <MessageCircle size={18} className="shrink-0" /> Chat Zalo
             </a>
           )}
-          <a
-            href={`tel:${listing.contact.phone.replace(/\s/g, '')}`}
-            className="unstyled flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-brand/40 px-4 text-sm font-semibold text-brand transition-colors hover:bg-brand-soft"
-          >
-            <Phone size={18} className="shrink-0" /> Gọi ngay
-          </a>
+          <p className="text-center text-xs text-ink-muted">
+            Số điện thoại được bảo mật. Vui lòng liên hệ qua Zalo hoặc gửi yêu cầu tư vấn bên dưới.
+          </p>
         </div>
       </AuthGate>
 

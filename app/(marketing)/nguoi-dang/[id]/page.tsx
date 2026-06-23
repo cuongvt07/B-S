@@ -14,7 +14,7 @@ import { Breadcrumbs } from '@/components/seo';
 import { Badge, Button } from '@/components/ui';
 import { ListingCard, ContactActions, ReportButton } from '@/components/listing';
 import { AuthGate } from '@/components/auth';
-import { listListings } from '@/lib/server-data';
+import { listListings, getSiteSettings } from '@/lib/server-data';
 import { userById } from '@/mocks/data/users';
 import { formatNumber } from '@/lib/utils/format';
 import { formatDistanceToNow } from 'date-fns';
@@ -35,9 +35,10 @@ function joinedSince(iso: string): string {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const user = userById.get(params.id);
   if (!user) return { title: 'Người đăng' };
+  const { contact } = await getSiteSettings();
   return {
     title: `${user.name} — Tin đăng & thông tin`,
-    description: `Xem tất cả tin đăng và thông tin liên hệ của ${user.name} trên BDS Việt.`,
+    description: `Xem tất cả tin đăng và thông tin liên hệ của ${user.name} trên ${contact.site_name}.`,
   };
 }
 
