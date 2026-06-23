@@ -96,6 +96,25 @@ export type SiteSettings = {
     email: string;
     support_hours: string;
   };
+  branding: {
+    logo: string;
+    logo_dark: string;
+    favicon: string;
+    tagline: string;
+  };
+  seo: {
+    default_title: string;
+    title_template: string;
+    default_description: string;
+    keywords: string;
+    og_image: string;
+    robots_index: boolean;
+    canonical_base: string;
+    google_site_verification: string;
+    facebook_app_id: string;
+    twitter_handle: string;
+    analytics_id: string;
+  };
   packages: {
     free_daily_quota: number;
     tier_30_price: number;
@@ -121,6 +140,26 @@ const SITE_SETTINGS_FALLBACK: SiteSettings = {
     email: 'vmphuthinhland@gmail.com',
     support_hours: '8:00 - 21:00 (T2 - CN)',
   },
+  branding: {
+    logo: '',
+    logo_dark: '',
+    favicon: '',
+    tagline: 'Nền tảng tin đăng bất động sản hàng đầu',
+  },
+  seo: {
+    default_title: 'BDS Việt — Nền tảng tin đăng bất động sản',
+    title_template: '%s | BDS Việt',
+    default_description:
+      'Tìm kiếm và đăng tin cho thuê, mua bán bất động sản: căn hộ, phòng trọ, nhà nguyên căn, đất nền, văn phòng trên toàn quốc.',
+    keywords: 'bất động sản, nhà đất, cho thuê, mua bán, căn hộ, đất nền',
+    og_image: '',
+    robots_index: true,
+    canonical_base: 'https://vmphuthinhland.com',
+    google_site_verification: '',
+    facebook_app_id: '',
+    twitter_handle: '',
+    analytics_id: '',
+  },
   packages: {
     free_daily_quota: 20,
     tier_30_price: 399000,
@@ -145,6 +184,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     const f = SITE_SETTINGS_FALLBACK;
     return {
       contact: { ...f.contact, ...(d.contact ?? {}) },
+      branding: { ...f.branding, ...(d.branding ?? {}) },
+      seo: { ...f.seo, ...(d.seo ?? {}) },
       packages: { ...f.packages, ...(d.packages ?? {}) },
       upload: { ...f.upload, ...(d.upload ?? {}) },
       watermark: { ...f.watermark, ...(d.watermark ?? {}) },

@@ -4,12 +4,38 @@ import { SITE } from '@/lib/constants';
 /**
  * Logo — solid navy mark with a building silhouette. Kept intentionally simple.
  */
-export function Logo({ compact = false }: { compact?: boolean }) {
+export function Logo({
+  compact = false,
+  logoUrl,
+  siteName = SITE.name,
+}: {
+  compact?: boolean;
+  logoUrl?: string;
+  siteName?: string;
+}) {
+  // Custom logo configured in the CMS — render the image instead of the SVG mark.
+  if (logoUrl) {
+    return (
+      <Link
+        href="/"
+        className="unstyled group inline-flex shrink-0 items-center whitespace-nowrap"
+        aria-label={siteName}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logoUrl}
+          alt={siteName}
+          className="h-9 w-auto max-w-[180px] object-contain transition-transform duration-200 group-hover:scale-105"
+        />
+      </Link>
+    );
+  }
+
   return (
     <Link
       href="/"
       className="unstyled group inline-flex shrink-0 items-center gap-2 whitespace-nowrap font-semibold text-ink"
-      aria-label={SITE.name}
+      aria-label={siteName}
     >
       <span
         className="grid h-9 w-9 shrink-0 place-items-center rounded-md transition-transform duration-200 group-hover:scale-105"
@@ -47,7 +73,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
       </span>
       {!compact && (
         <span className="text-lg font-bold tracking-tight text-ink group-hover:text-primary transition-colors">
-          {SITE.name}
+          {siteName}
         </span>
       )}
     </Link>

@@ -14,7 +14,7 @@ import { AccountMenu } from './AccountMenu';
  * Single-row sticky header. No collapsing row 2 — categories are inline.
  * Width is full-bleed (px padding only, no max-width container).
  */
-export function Header() {
+export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: string } = {}) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -30,7 +30,7 @@ export function Header() {
             <Menu size={22} />
           </button>
 
-          <Logo />
+          <Logo logoUrl={logoUrl} siteName={siteName} />
 
           {/* Inline categories — desktop only */}
           <InlineCategories />
