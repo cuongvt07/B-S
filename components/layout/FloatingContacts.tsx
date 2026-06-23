@@ -7,39 +7,41 @@ import { Button, Modal, Spinner } from '@/components/ui';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';
 import { useCurrentUser } from '@/lib/hooks/useAuth';
 import { cn } from '@/lib/utils';
-import { SITE } from '@/lib/constants';
+import { useSiteSettings } from '@/components/layout/SiteSettingsProvider';
 
-const ITEMS = [
-  {
-    key: 'phone',
-    label: 'Gọi ngay',
-    href: `tel:${SITE.contactPhone.replace(/\s/g, '')}`,
-    icon: Phone,
-    color: '#16a34a',
-  },
-  {
-    key: 'zalo',
-    label: 'Chat Zalo',
-    href: `https://zalo.me/${SITE.contactPhone.replace(/\s/g, '')}`,
-    icon: MessageCircle,
-    color: '#0068ff',
-    isZalo: true,
-  },
-  {
-    key: 'messenger',
-    label: 'Messenger',
-    href: 'https://m.me/61571555651500',
-    icon: MessageCircle,
-    color: '#7c3aed',
-  },
-  {
-    key: 'facebook',
-    label: 'Facebook',
-    href: 'https://facebook.com/61571555651500',
-    icon: Facebook,
-    color: '#1877f2',
-  },
-];
+function buildItems(hotline: string, zaloPhone: string) {
+  return [
+    {
+      key: 'phone',
+      label: 'Gọi ngay',
+      href: `tel:${hotline.replace(/\s/g, '')}`,
+      icon: Phone,
+      color: '#16a34a',
+    },
+    {
+      key: 'zalo',
+      label: 'Chat Zalo',
+      href: `https://zalo.me/${zaloPhone.replace(/\D/g, '')}`,
+      icon: MessageCircle,
+      color: '#0068ff',
+      isZalo: true,
+    },
+    {
+      key: 'messenger',
+      label: 'Messenger',
+      href: 'https://m.me/61571555651500',
+      icon: MessageCircle,
+      color: '#7c3aed',
+    },
+    {
+      key: 'facebook',
+      label: 'Facebook',
+      href: 'https://facebook.com/61571555651500',
+      icon: Facebook,
+      color: '#1877f2',
+    },
+  ];
+}
 
 function currentUrl() {
   if (typeof window === 'undefined') return undefined;
@@ -52,6 +54,8 @@ export function FloatingContacts() {
   const [reopenPostAfterAuth, setReopenPostAfterAuth] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { data: user, isLoading } = useCurrentUser();
+  const { hotline, zaloPhone } = useSiteSettings();
+  const items = buildItems(hotline, zaloPhone);
   const openLogin = useAuthModal((s) => s.openLogin);
   const openRegister = useAuthModal((s) => s.openRegister);
 
@@ -93,7 +97,7 @@ export function FloatingContacts() {
     >
       {open && (
         <ul className="flex flex-col items-end gap-2">
-          {ITEMS.map((it, i) => {
+          {items.map((it, i) => {
             const Icon = it.icon;
             return (
               <li

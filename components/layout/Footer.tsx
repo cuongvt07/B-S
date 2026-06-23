@@ -110,7 +110,17 @@ const SOCIAL = [
   { Icon: MessageCircle, href: 'https://zalo.me/', label: 'Zalo' },
 ];
 
-export function Footer() {
+export function Footer({
+  siteName = SITE.name,
+  hotline = SITE.contactPhone,
+  email = SITE.contactEmail,
+  zaloPhone = SITE.contactPhone,
+}: {
+  siteName?: string;
+  hotline?: string;
+  email?: string;
+  zaloPhone?: string;
+} = {}) {
   return (
     <footer className="mt-12 bg-ink-strong text-white/90">
       {/* Brand strip */}
@@ -151,19 +161,19 @@ export function Footer() {
               <li className="inline-flex items-start gap-2">
                 <Phone size={14} className="mt-1 shrink-0 text-white/60" />
                 <a
-                  href={`tel:${SITE.contactPhone.replace(/\s/g, '')}`}
+                  href={`tel:${hotline.replace(/\s/g, '')}`}
                   className="unstyled text-white hover:underline"
                 >
-                  Hotline: {SITE.contactPhone}
+                  Hotline: {hotline}
                 </a>
               </li>
               <li className="inline-flex items-start gap-2">
                 <Mail size={14} className="mt-1 shrink-0 text-white/60" />
                 <a
-                  href={`mailto:${SITE.contactEmail}`}
+                  href={`mailto:${email}`}
                   className="unstyled text-white hover:underline"
                 >
-                  {SITE.contactEmail}
+                  {email}
                 </a>
               </li>
               <li className="inline-flex items-start gap-2">
@@ -240,7 +250,7 @@ export function Footer() {
       <div className="border-t border-white/10 bg-black/30">
         <div className="container-app flex flex-col items-start gap-3 py-5 text-xs text-white/60 md:flex-row md:items-center md:justify-between">
           <p>
-            © 2026 <span className="font-semibold text-white">{SITE.name}</span>. All Rights Reserved.
+            © 2026 <span className="font-semibold text-white">{siteName}</span>. All Rights Reserved.
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <span className="inline-flex items-center gap-1">
