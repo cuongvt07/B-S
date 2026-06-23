@@ -48,7 +48,7 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
         <p className="mt-1 text-lg font-semibold text-ink">
           {listing.contact.name || 'Môi giới / chủ nhà'}
         </p>
-        <p className="mt-1 text-sm font-semibold text-price">
+        <p className="mt-1 text-sm font-semibold text-price no-break">
           {formatPrice(listing.price, listing.priceUnit)}
         </p>
       </div>

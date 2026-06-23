@@ -52,6 +52,25 @@
   h5,
   h6 {
     @apply font-semibold text-ink;
+    /* Balance headings so the last line isn't a single orphan word on mobile. */
+    text-wrap: balance;
+  }
+
+  p {
+    /* Avoid ugly single-word last lines in body copy. */
+    text-wrap: pretty;
+  }
+
+  /* Long unbroken tokens (codes, urls, emails) wrap instead of overflowing. */
+  body {
+    overflow-wrap: break-word;
+  }
+}
+
+@layer utilities {
+  /* Keep prices / numbers / phone on one line (never split mid-number). */
+  .no-break {
+    white-space: nowrap;
   }
 }
 

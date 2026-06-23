@@ -123,7 +123,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
             <dl className="grid grid-cols-2 gap-y-3 text-sm sm:grid-cols-4">
               <div>
                 <dt className="text-ink-muted">Giá</dt>
-                <dd className="font-semibold text-price">
+                <dd className="font-semibold text-price no-break">
                   {formatPrice(l.price, l.priceUnit)}
                 </dd>
               </div>
