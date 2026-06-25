@@ -5,6 +5,7 @@ import {
   FeaturedListingsGrid,
   FeaturedRegionsMasonry,
   FeaturedVehiclesGrid,
+  CategoryTiles,
   UtilityTools,
   PromoBanner,
   BlogStrip,
@@ -41,16 +42,27 @@ async function fetchProvinceCount(provinceName: string): Promise<number> {
 }
 
 export default async function HomePage() {
-  const [homeSections, vipResult, newestResult, landResult, blogResult, vehicleResult, regionCounts] =
-    await Promise.all([
-      getHomepageSections(),
-      listListings({ sort: 'newest', pageSize: 8 }),
-      listListings({ sort: 'newest', pageSize: 8, page: 2 }),
-      listListings({ propertyType: 'land', pageSize: 8, sort: 'newest' }),
-      listBlogs({ pageSize: 10 }),
-      listVehicles({ pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
-      Promise.all(REGION_DEFAULTS.map((r) => fetchProvinceCount(r.provinceName))),
-    ]);
+  const [
+    homeSections,
+    vipResult,
+    newestResult,
+    landResult,
+    blogResult,
+    vehicleResult,
+    carResult,
+    motorbikeResult,
+    regionCounts,
+  ] = await Promise.all([
+    getHomepageSections(),
+    listListings({ sort: 'newest', pageSize: 8 }),
+    listListings({ sort: 'newest', pageSize: 8, page: 2 }),
+    listListings({ propertyType: 'land', pageSize: 8, sort: 'newest' }),
+    listBlogs({ pageSize: 10 }),
+    listVehicles({ pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
+    listVehicles({ vehicleType: 'car', pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
+    listVehicles({ vehicleType: 'motorbike', pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
+    Promise.all(REGION_DEFAULTS.map((r) => fetchProvinceCount(r.provinceName))),
+  ]);
 
   const regions: RegionStat[] = REGION_DEFAULTS.map((r, i) => ({
     ...r,
@@ -61,8 +73,50 @@ export default async function HomePage() {
     : fallbackHomeSections(vipResult, newestResult, landResult);
   const featuredListings =
     sections.find((section) => section.sectionType === 'listings')?.listings ?? vipResult.data;
-  // Chèn "Xe nổi bật" ngay sau khối tin đăng (BĐS) đầu tiên.
-  const firstListingsKey = sections.find((section) => section.sectionType === 'listings')?.key;
+
+  // Bố cục ~60% BĐS / 40% Xe: đan 3 khối xe vào giữa các khối BĐS.
+  // - Sau khối tin BĐS thứ 1 → "Xe nổi bật" (ô tô + xe máy)
+  // - Sau khối "Khu vực nổi bật" → "Ô tô giá tốt"
+  // - Sau khối tin BĐS thứ 2 → "Xe máy mới đăng"
+  const listingKeys = sections.filter((s) => s.sectionType === 'listings').map((s) => s.key);
+  const firstListingsKey = listingKeys[0];
+  const secondListingsKey = listingKeys[1];
+  const regionsKey = sections.find((s) => s.sectionType === 'regions')?.key;
+
+  function vehicleBlockFor(sectionKey: string) {
+    if (sectionKey === firstListingsKey) {
+      return (
+        <FeaturedVehiclesGrid
+          vehicles={vehicleResult.data}
+          title="Xe nổi bật"
+          description="Ô tô & xe máy mới đăng — giá tốt, cập nhật liên tục"
+          href="/xe"
+          showTypeLinks
+        />
+      );
+    }
+    if (sectionKey === regionsKey) {
+      return (
+        <FeaturedVehiclesGrid
+          vehicles={carResult.data}
+          title="Ô tô giá tốt"
+          description="Ô tô cũ & mới từ người bán uy tín"
+          href="/xe?loai=car"
+        />
+      );
+    }
+    if (sectionKey === secondListingsKey) {
+      return (
+        <FeaturedVehiclesGrid
+          vehicles={motorbikeResult.data}
+          title="Xe máy mới đăng"
+          description="Xe số, tay ga, côn tay — đa dạng tầm giá"
+          href="/xe?loai=motorbike"
+        />
+      );
+    }
+    return null;
+  }
 
   return (
     <>
@@ -70,21 +124,21 @@ export default async function HomePage() {
       <Reveal direction="fade">
         <StatsBar />
       </Reveal>
-      {sections.map((section, index) => (
-        <Fragment key={section.key}>
-          {renderHomeSection(section, {
-            regions,
-            blogs: blogResult.data,
-            featuredListings,
-            priorityCount: index === 0 ? 4 : 0,
-          })}
-          {section.key === firstListingsKey && vehicleResult.data.length > 0 && (
-            <Reveal>
-              <FeaturedVehiclesGrid vehicles={vehicleResult.data} />
-            </Reveal>
-          )}
-        </Fragment>
-      ))}
+      <CategoryTiles />
+      {sections.map((section, index) => {
+        const vehicleBlock = vehicleBlockFor(section.key);
+        return (
+          <Fragment key={section.key}>
+            {renderHomeSection(section, {
+              regions,
+              blogs: blogResult.data,
+              featuredListings,
+              priorityCount: index === 0 ? 4 : 0,
+            })}
+            {vehicleBlock && <Reveal>{vehicleBlock}</Reveal>}
+          </Fragment>
+        );
+      })}
     </>
   );
 }

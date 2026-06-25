@@ -3,6 +3,7 @@ export * from './FeaturedListingsGrid';
 export * from './FeaturedRegionsMasonry';
 export * from './BlogStrip';
 export * from './FeaturedVehiclesGrid';
+export * from './CategoryTiles';
 export * from './UtilityTools';
 export * from './PromoBanner';
 export * from './FeatureDescriptions';
