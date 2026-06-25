@@ -76,6 +76,65 @@ export const SORT_OPTIONS = [
   { value: 'areaDesc', label: 'Diện tích lớn đến nhỏ' },
 ] as const;
 
+// ───────────────── XE CỘ ─────────────────
+export const VEHICLE_TYPE_LABELS: Record<'car' | 'motorbike', string> = {
+  car: 'Ô tô',
+  motorbike: 'Xe máy',
+};
+
+export const TRANSMISSION_LABELS: Record<string, string> = {
+  manual: 'Số sàn',
+  automatic: 'Số tự động',
+  cvt: 'Số vô cấp (CVT)',
+  semi_automatic: 'Số bán tự động',
+};
+
+export const FUEL_LABELS: Record<string, string> = {
+  petrol: 'Xăng',
+  diesel: 'Dầu (Diesel)',
+  electric: 'Điện',
+  hybrid: 'Hybrid',
+};
+
+export const CONDITION_LABELS: Record<string, string> = {
+  new: 'Mới',
+  used: 'Đã sử dụng',
+};
+
+export const ORIGIN_LABELS: Record<string, string> = {
+  imported: 'Nhập khẩu',
+  domestic: 'Lắp ráp trong nước',
+};
+
+export const CAR_BRANDS = [
+  'Toyota', 'Honda', 'Hyundai', 'Kia', 'Mazda', 'Ford', 'Mitsubishi',
+  'Mercedes-Benz', 'BMW', 'Audi', 'VinFast', 'Suzuki', 'Nissan',
+  'Chevrolet', 'Lexus', 'Peugeot', 'MG', 'Isuzu', 'Khác',
+];
+
+export const MOTORBIKE_BRANDS = [
+  'Honda', 'Yamaha', 'Suzuki', 'SYM', 'Piaggio', 'Vespa', 'VinFast',
+  'Kawasaki', 'Ducati', 'Harley-Davidson', 'Khác',
+];
+
+// Khoảng giá xe (VND) — chung cho ô tô & xe máy, dải rộng để phủ cả 2.
+export const VEHICLE_PRICE_BRACKETS: { label: string; min?: number; max?: number }[] = [
+  { label: 'Dưới 20 triệu', max: 20_000_000 },
+  { label: '20 - 50 triệu', min: 20_000_000, max: 50_000_000 },
+  { label: '50 - 200 triệu', min: 50_000_000, max: 200_000_000 },
+  { label: '200 - 500 triệu', min: 200_000_000, max: 500_000_000 },
+  { label: '500 triệu - 1 tỷ', min: 500_000_000, max: 1_000_000_000 },
+  { label: 'Trên 1 tỷ', min: 1_000_000_000 },
+];
+
+export const VEHICLE_SORT_OPTIONS = [
+  { value: 'newest', label: 'Mới nhất' },
+  { value: 'priceAsc', label: 'Giá thấp đến cao' },
+  { value: 'priceDesc', label: 'Giá cao đến thấp' },
+  { value: 'yearDesc', label: 'Đời xe mới nhất' },
+  { value: 'kmAsc', label: 'Số km ít nhất' },
+] as const;
+
 export const SITE = {
   name: 'VM Phú Thịnh Land',
   tagline: 'Nền tảng tin đăng bất động sản hàng đầu',

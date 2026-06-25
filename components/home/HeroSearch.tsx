@@ -9,6 +9,8 @@ import {
   PROPERTY_TYPE_LABELS,
   PRICE_BRACKETS_RENT,
   PRICE_BRACKETS_SALE,
+  VEHICLE_TYPE_LABELS,
+  VEHICLE_PRICE_BRACKETS,
 } from '@/lib/constants';
 
 const BANNER_IMAGES = [
@@ -17,7 +19,8 @@ const BANNER_IMAGES = [
   'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85',
 ];
 
-type FilterKey = 'city' | 'district' | 'property' | 'price';
+type FilterKey = 'city' | 'district' | 'property' | 'price' | 'vehicleType' | 'vehiclePrice';
+type Vertical = 'property' | 'vehicle';
 
 function FilterMenu({
   name,
@@ -67,15 +70,24 @@ function FilterMenu({
 
 export function HeroSearch() {
   const router = useRouter();
+  const [vertical, setVertical] = useState<Vertical>('property');
   const [tab, setTab] = useState<'rent' | 'sale'>('sale');
   const [cityCode, setCityCode] = useState('');
   const [districtCode, setDistrictCode] = useState('');
   const [propertyType, setPropertyType] = useState('');
   const [priceBucket, setPriceBucket] = useState('');
+  // Xe cộ
+  const [vehicleType, setVehicleType] = useState('');
+  const [vehiclePrice, setVehiclePrice] = useState('');
   const [q, setQ] = useState('');
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [bannerIndex, setBannerIndex] = useState(0);
   const priceBrackets = tab === 'sale' ? PRICE_BRACKETS_SALE : PRICE_BRACKETS_RENT;
+
+  const selectedVehicleType = vehicleType
+    ? VEHICLE_TYPE_LABELS[vehicleType as keyof typeof VEHICLE_TYPE_LABELS]
+    : undefined;
+  const selectedVehiclePrice = vehiclePrice ? VEHICLE_PRICE_BRACKETS[Number(vehiclePrice)]?.label : undefined;
 
   useEffect(() => {
     const timer = window.setInterval(
@@ -101,6 +113,17 @@ export function HeroSearch() {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (vertical === 'vehicle') {
+      const params = new URLSearchParams();
+      if (vehicleType) params.set('loai', vehicleType);
+      if (q.trim()) params.set('q', q.trim());
+      if (vehiclePrice) params.set('gia', vehiclePrice);
+      const qs = params.toString();
+      router.push(qs ? `/xe?${qs}` : '/xe');
+      return;
+    }
+
     const params = new URLSearchParams();
     params.set('transactionType', tab);
     if (q.trim()) params.set('q', q.trim());
@@ -162,23 +185,49 @@ export function HeroSearch() {
           className="home-search animate-slideUp"
           style={{ animationDelay: '120ms' }}
         >
-          <div className="home-search__tabs" role="tablist" aria-label="Loại giao dịch">
-            {(['sale', 'rent'] as const).map((value) => (
+          {/* Công tắc danh mục cấp cao: Nhà đất | Xe cộ */}
+          <div className="mb-3 inline-flex rounded-full bg-surface-subtle p-1">
+            {([
+              { key: 'property', label: 'Nhà đất' },
+              { key: 'vehicle', label: 'Xe cộ' },
+            ] as const).map((v) => (
               <button
-                key={value}
+                key={v.key}
                 type="button"
-                role="tab"
-                aria-selected={tab === value}
+                aria-pressed={vertical === v.key}
                 onClick={() => {
-                  setTab(value);
-                  setPriceBucket('');
+                  setVertical(v.key);
                   setOpenFilter(null);
                 }}
+                className={
+                  'rounded-full px-5 py-1.5 text-sm font-semibold transition-colors ' +
+                  (vertical === v.key ? 'bg-primary text-white shadow' : 'text-ink-muted hover:text-ink')
+                }
               >
-                {value === 'sale' ? 'Mua bán' : 'Cho thuê'}
+                {v.label}
               </button>
             ))}
           </div>
+
+          {vertical === 'property' && (
+            <div className="home-search__tabs" role="tablist" aria-label="Loại giao dịch">
+              {(['sale', 'rent'] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === value}
+                  onClick={() => {
+                    setTab(value);
+                    setPriceBucket('');
+                    setOpenFilter(null);
+                  }}
+                >
+                  {value === 'sale' ? 'Mua bán' : 'Cho thuê'}
+                </button>
+              ))}
+            </div>
+          )}
 
           <label className="home-search__keyword">
             <Search size={19} />
@@ -188,12 +237,18 @@ export function HeroSearch() {
                 type="text"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Nhập dự án, tên đường hoặc khu vực cần tìm..."
+                placeholder={
+                  vertical === 'vehicle'
+                    ? 'Nhập hãng, dòng xe cần tìm (VD: Toyota Vios, SH...)'
+                    : 'Nhập dự án, tên đường hoặc khu vực cần tìm...'
+                }
               />
             </span>
           </label>
 
           <div className="home-search__bar">
+            {vertical === 'property' && (
+            <>
             <FilterMenu name="city" label="Tỉnh / Thành phố" value={selectedCity} icon={<MapPin size={18} />} open={openFilter === 'city'} onToggle={toggleFilter}>
               <label className="home-search__option">
                 <input type="radio" name="home-city" checked={!cityCode} onChange={() => { setCityCode(''); setDistrictCode(''); setOpenFilter(null); }} />
@@ -247,8 +302,42 @@ export function HeroSearch() {
                 ))}
               </div>
             </FilterMenu>
+            </>
+            )}
 
-            <button type="submit" className="home-search__submit" aria-label="Tìm kiếm bất động sản">
+            {vertical === 'vehicle' && (
+            <>
+            <FilterMenu name="vehicleType" label="Loại xe" value={selectedVehicleType} icon={<Building2 size={18} />} open={openFilter === 'vehicleType'} onToggle={toggleFilter}>
+              <label className="home-search__option">
+                <input type="radio" name="home-vehicle-type" checked={!vehicleType} onChange={() => { setVehicleType(''); setOpenFilter(null); }} />
+                <span>Tất cả loại xe</span>
+              </label>
+              {Object.entries(VEHICLE_TYPE_LABELS).map(([value, label]) => (
+                <label key={value} className="home-search__option">
+                  <input type="radio" name="home-vehicle-type" checked={vehicleType === value} onChange={() => { setVehicleType(value); setOpenFilter(null); }} />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </FilterMenu>
+
+            <FilterMenu name="vehiclePrice" label="Khoảng giá" value={selectedVehiclePrice} icon={<BadgeDollarSign size={18} />} open={openFilter === 'vehiclePrice'} onToggle={toggleFilter} wide>
+              <div className="home-search__price-grid">
+                <label className="home-search__option">
+                  <input type="radio" name="home-vehicle-price" checked={!vehiclePrice} onChange={() => { setVehiclePrice(''); setOpenFilter(null); }} />
+                  <span>Tất cả mức giá</span>
+                </label>
+                {VEHICLE_PRICE_BRACKETS.map((bracket, index) => (
+                  <label key={bracket.label} className="home-search__option">
+                    <input type="radio" name="home-vehicle-price" checked={vehiclePrice === String(index)} onChange={() => { setVehiclePrice(String(index)); setOpenFilter(null); }} />
+                    <span>{bracket.label}</span>
+                  </label>
+                ))}
+              </div>
+            </FilterMenu>
+            </>
+            )}
+
+            <button type="submit" className="home-search__submit" aria-label="Tìm kiếm">
               <Search size={19} />
               <span>Tìm kiếm</span>
             </button>

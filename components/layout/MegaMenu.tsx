@@ -35,6 +35,14 @@ const MENU: MenuGroup[] = [
       { label: 'Bán văn phòng', href: '/ban-van-phong' },
     ],
   },
+  {
+    title: 'Xe cộ',
+    href: '/xe',
+    children: [
+      { label: 'Ô tô', href: '/xe?loai=car' },
+      { label: 'Xe máy', href: '/xe?loai=motorbike' },
+    ],
+  },
 ];
 
 const SIMPLE_LINKS = [

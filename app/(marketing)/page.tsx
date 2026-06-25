@@ -1,8 +1,10 @@
+import { Fragment } from 'react';
 import {
   HeroSearch,
   StatsBar,
   FeaturedListingsGrid,
   FeaturedRegionsMasonry,
+  FeaturedVehiclesGrid,
   UtilityTools,
   PromoBanner,
   BlogStrip,
@@ -15,6 +17,7 @@ import {
   getHomepageSections,
   listBlogs,
   listListings,
+  listVehicles,
   type HomepageSection,
 } from '@/lib/server-data';
 
@@ -38,13 +41,14 @@ async function fetchProvinceCount(provinceName: string): Promise<number> {
 }
 
 export default async function HomePage() {
-  const [homeSections, vipResult, newestResult, landResult, blogResult, regionCounts] =
+  const [homeSections, vipResult, newestResult, landResult, blogResult, vehicleResult, regionCounts] =
     await Promise.all([
       getHomepageSections(),
       listListings({ sort: 'newest', pageSize: 8 }),
       listListings({ sort: 'newest', pageSize: 8, page: 2 }),
       listListings({ propertyType: 'land', pageSize: 8, sort: 'newest' }),
       listBlogs({ pageSize: 10 }),
+      listVehicles({ pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
       Promise.all(REGION_DEFAULTS.map((r) => fetchProvinceCount(r.provinceName))),
     ]);
 
@@ -57,6 +61,8 @@ export default async function HomePage() {
     : fallbackHomeSections(vipResult, newestResult, landResult);
   const featuredListings =
     sections.find((section) => section.sectionType === 'listings')?.listings ?? vipResult.data;
+  // Chèn "Xe nổi bật" ngay sau khối tin đăng (BĐS) đầu tiên.
+  const firstListingsKey = sections.find((section) => section.sectionType === 'listings')?.key;
 
   return (
     <>
@@ -64,14 +70,21 @@ export default async function HomePage() {
       <Reveal direction="fade">
         <StatsBar />
       </Reveal>
-      {sections.map((section, index) =>
-        renderHomeSection(section, {
-          regions,
-          blogs: blogResult.data,
-          featuredListings,
-          priorityCount: index === 0 ? 4 : 0,
-        })
-      )}
+      {sections.map((section, index) => (
+        <Fragment key={section.key}>
+          {renderHomeSection(section, {
+            regions,
+            blogs: blogResult.data,
+            featuredListings,
+            priorityCount: index === 0 ? 4 : 0,
+          })}
+          {section.key === firstListingsKey && vehicleResult.data.length > 0 && (
+            <Reveal>
+              <FeaturedVehiclesGrid vehicles={vehicleResult.data} />
+            </Reveal>
+          )}
+        </Fragment>
+      ))}
     </>
   );
 }

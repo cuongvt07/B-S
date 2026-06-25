@@ -41,6 +41,14 @@ const CATEGORIES: CategoryGroup[] = [
       { label: 'Ở ghép', href: '/o-ghep' },
     ],
   },
+  {
+    title: 'Xe cộ',
+    href: '/xe',
+    children: [
+      { label: 'Ô tô', href: '/xe?loai=car' },
+      { label: 'Xe máy', href: '/xe?loai=motorbike' },
+    ],
+  },
   { title: 'Blog', href: '/blog' },
   { title: 'Gói môi giới', href: '/goi-moi-gioi' },
 ];

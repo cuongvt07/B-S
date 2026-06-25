@@ -20,6 +20,7 @@ import {
   Newspaper,
   Users,
   Building,
+  Car,
   ChevronRight,
 } from 'lucide-react';
 import { Drawer } from '@/components/ui';
@@ -39,6 +40,7 @@ interface Props {
 const CAT_ICONS: Record<string, LucideIcon> = {
   'Mua bán': Tag,
   'Cho thuê': Key,
+  'Xe cộ': Car,
   Blog: Newspaper,
   'Gói môi giới': Users,
 };

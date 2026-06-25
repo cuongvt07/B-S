@@ -5,7 +5,7 @@
  * Blogs → still mock (Laravel doesn't expose blogs yet).
  */
 import 'server-only';
-import type { Listing, ListingFilter, Blog, PaginatedResponse, ApiResponse } from '@/types';
+import type { Listing, ListingFilter, Blog, Vehicle, PaginatedResponse, ApiResponse } from '@/types';
 import { blogs as blogsData, blogBySlug } from '@/mocks/data/blogs';
 import { paginate } from '@/mocks/handlers/paginate';
 import {
@@ -15,6 +15,7 @@ import {
   type LaravelListing,
   type LaravelPaginated,
 } from './api/laravelAdapter';
+import { mapApiVehicle, mapVehiclePaginated, type LaravelVehicle } from './api/vehicleAdapter';
 
 /**
  * Resolves the host used for server-side Laravel fetches.
@@ -294,6 +295,67 @@ export async function listBlogs(
   }
   filtered.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   return paginate(filtered, params.page ?? 1, params.pageSize ?? 10);
+}
+
+// ── Vehicles (ô tô / xe máy) ──
+export interface VehicleQuery {
+  vehicleType?: 'car' | 'motorbike';
+  brand?: string;
+  transmission?: string;
+  fuelType?: string;
+  condition?: string;
+  province?: string;
+  minYear?: number;
+  maxYear?: number;
+  maxMileage?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: 'created_at' | 'price' | 'year' | 'mileage' | 'view_count';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+}
+
+export async function listVehicles(params: VehicleQuery = {}): Promise<PaginatedResponse<Vehicle>> {
+  const query: Record<string, unknown> = {
+    vehicle_type: params.vehicleType,
+    brand: params.brand,
+    transmission: params.transmission,
+    fuel_type: params.fuelType,
+    condition: params.condition,
+    province: params.province,
+    min_year: params.minYear,
+    max_year: params.maxYear,
+    max_mileage: params.maxMileage,
+    // Backend so sánh giá theo đơn vị "tỷ"; xe nhập triệu → quy về tỷ.
+    min_price: params.minPrice !== undefined ? params.minPrice / 1_000_000_000 : undefined,
+    max_price: params.maxPrice !== undefined ? params.maxPrice / 1_000_000_000 : undefined,
+    sort_by: params.sortBy,
+    sort_order: params.sortOrder,
+    page: params.page,
+    per_page: params.pageSize ? Math.min(params.pageSize, 30) : undefined,
+  };
+
+  try {
+    const res = await realServerFetch<LaravelPaginated<LaravelVehicle>>('/vehicles', query);
+    return mapVehiclePaginated(res);
+  } catch (err) {
+    console.error('[server-data] listVehicles failed:', err);
+    return {
+      data: [],
+      meta: { page: 1, pageSize: params.pageSize ?? 12, total: 0, totalPages: 0 },
+    };
+  }
+}
+
+export async function getVehicle(idOrSlug: string): Promise<ApiResponse<Vehicle> | null> {
+  try {
+    const res = await realServerFetch<{ data: LaravelVehicle }>(`/vehicles/${idOrSlug}`);
+    return { data: mapApiVehicle(res.data) };
+  } catch (err) {
+    console.error('[server-data] getVehicle failed:', err);
+    return null;
+  }
 }
 
 export async function getBlog(slug: string): Promise<ApiResponse<Blog> | null> {

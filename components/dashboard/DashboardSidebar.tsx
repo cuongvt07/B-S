@@ -2,15 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, List, PlusCircle, Heart, LogOut, User as UserIcon, Bookmark } from 'lucide-react';
+import { LayoutDashboard, List, PlusCircle, Car, Heart, LogOut, User as UserIcon, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLogout } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 
 const ITEMS = [
   { href: '/tai-khoan', label: 'Tổng quan', icon: LayoutDashboard, exact: true },
-  { href: '/tai-khoan/tin-cua-toi', label: 'Tin của tôi', icon: List },
-  { href: '/tai-khoan/dang-tin', label: 'Đăng tin mới', icon: PlusCircle },
+  { href: '/tai-khoan/tin-cua-toi', label: 'Tin BĐS của tôi', icon: List },
+  { href: '/tai-khoan/tin-xe-cua-toi', label: 'Tin xe của tôi', icon: Car },
+  { href: '/tai-khoan/dang-tin', label: 'Đăng tin BĐS', icon: PlusCircle, exact: true },
+  { href: '/tai-khoan/dang-tin-xe', label: 'Đăng tin xe', icon: Car },
   { href: '/tai-khoan/yeu-thich', label: 'Yêu thích', icon: Heart },
   { href: '/tai-khoan/tim-kiem-da-luu', label: 'Tìm kiếm đã lưu', icon: Bookmark },
   { href: '/tai-khoan/thong-tin', label: 'Thông tin cá nhân', icon: UserIcon },
