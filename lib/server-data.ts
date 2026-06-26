@@ -316,7 +316,7 @@ export interface VehicleQuery {
   maxMileage?: number;
   minPrice?: number;
   maxPrice?: number;
-  sortBy?: 'created_at' | 'price' | 'year' | 'mileage' | 'view_count';
+  sortBy?: 'created_at' | 'price' | 'year' | 'mileage' | 'view_count' | 'vip';
   sortOrder?: 'asc' | 'desc';
   page?: number;
   pageSize?: number;

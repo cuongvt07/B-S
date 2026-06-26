@@ -320,7 +320,7 @@ export interface LaravelListingQuery {
   max_area?: number;
   min_price?: number;
   max_price?: number;
-  sort_by?: 'created_at' | 'price' | 'area' | 'view_count';
+  sort_by?: 'created_at' | 'price' | 'area' | 'view_count' | 'vip';
   sort_order?: 'asc' | 'desc';
 }
 
@@ -369,6 +369,10 @@ export function mapFilterToApi(f: ListingFilter): LaravelListingQuery {
         break;
       case 'areaDesc':
         out.sort_by = 'area';
+        out.sort_order = 'desc';
+        break;
+      case 'vip':
+        out.sort_by = 'vip';
         out.sort_order = 'desc';
         break;
       case 'newest':

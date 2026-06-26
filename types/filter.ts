@@ -2,6 +2,7 @@ import type { Direction, FurnishLevel, PropertyType, TransactionType } from './l
 
 export type SortBy =
   | 'newest'
+  | 'vip'
   | 'priceAsc'
   | 'priceDesc'
   | 'areaAsc'
