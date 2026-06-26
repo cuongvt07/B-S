@@ -41,7 +41,7 @@ export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: str
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-brdr bg-white">
-        <div className="container-app flex h-16 items-center gap-3">
+        <div className="container-app flex h-[72px] items-center gap-3 lg:h-[92px]">
           <button
             type="button"
             aria-label="Mở menu"
