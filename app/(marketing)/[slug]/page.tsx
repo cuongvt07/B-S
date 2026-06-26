@@ -83,7 +83,7 @@ export default async function SeoLandingPage({ params }: PageProps) {
               "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=70')",
           }}
         />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-brand/95 via-brand/85 to-brand/55" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-brand via-brand/80 to-brand/20" />
         <div className="relative z-10 p-6 text-white sm:p-8">
           <h1 className="text-xl font-semibold !text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.3)] sm:text-2xl">
             {title}

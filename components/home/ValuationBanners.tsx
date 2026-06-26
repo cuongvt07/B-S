@@ -8,7 +8,6 @@ interface Banner {
   href: string;
   cta: string;
   Icon: LucideIcon;
-  image: string;
 }
 
 const BANNERS: Banner[] = [
@@ -18,7 +17,6 @@ const BANNERS: Banner[] = [
     href: '/tien-ich/dinh-gia-bat-dong-san',
     cta: 'Định giá ngay',
     Icon: Home,
-    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=70',
   },
   {
     title: 'Định giá xe cũ',
@@ -26,7 +24,6 @@ const BANNERS: Banner[] = [
     href: '/tien-ich/dinh-gia-xe-cu',
     cta: 'Định giá ngay',
     Icon: Car,
-    image: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=900&q=70',
   },
 ];
 
@@ -42,12 +39,21 @@ export function ValuationBanners() {
               href={b.href}
               className="unstyled group relative min-h-[150px] overflow-hidden rounded-md p-5 text-white shadow-raised"
             >
+              <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-brand to-brand-active" />
               <div
                 aria-hidden
-                className="absolute inset-0 bg-cover bg-center opacity-35 transition-transform duration-500 group-hover:scale-105"
-                style={{ backgroundImage: `url('${b.image}')` }}
+                className="absolute inset-0 bg-repeat opacity-70"
+                style={{ backgroundImage: "url('/brand/dots.svg')" }}
               />
-              <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-brand via-brand/90 to-brand/55" />
+              <div
+                aria-hidden
+                className="absolute inset-x-0 bottom-0 h-1/2 bg-no-repeat opacity-90 transition-transform duration-500 group-hover:scale-105"
+                style={{
+                  backgroundImage: "url('/brand/skyline.svg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'bottom',
+                }}
+              />
               <div className="relative z-10 flex h-full flex-col justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <span className="icon-chip grid h-11 w-11 shrink-0 place-items-center rounded-md bg-gold text-gold-ink">

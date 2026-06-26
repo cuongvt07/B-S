@@ -1,30 +1,49 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, PlusCircle } from 'lucide-react';
+import { Menu, PlusCircle, Heart } from 'lucide-react';
 import { Logo } from './Logo';
-import { InlineCategories } from './InlineCategories';
-import { HeaderSearch } from './HeaderSearch';
 import { MobileDrawer } from './MobileDrawer';
 import { NotificationBell } from './NotificationBell';
 import { AccountMenu } from './AccountMenu';
+import { cn } from '@/lib/utils';
+
+const NAV = [
+  { label: 'Trang chủ', href: '/' },
+  { label: 'Bất động sản', href: '/tin-dang' },
+  { label: 'Xe cộ', href: '/xe' },
+  { label: 'Tin tức', href: '/blog' },
+  { label: 'Dự án', href: '/tin-dang?propertyType=apartment' },
+  { label: 'Bảng giá', href: '/goi-moi-gioi' },
+  { label: 'Liên hệ', href: '/lien-he' },
+];
+
+function navActive(pathname: string, href: string): boolean {
+  const path = href.split('?')[0];
+  if (path === '/') return pathname === '/';
+  // "Dự án" shares /tin-dang with "Bất động sản" — don't double-highlight.
+  if (href.includes('?')) return false;
+  return pathname === path || pathname.startsWith(path + '/');
+}
 
 /**
- * Single-row sticky header. No collapsing row 2 — categories are inline.
- * Width is full-bleed (px padding only, no max-width container).
+ * Sticky header. Content is constrained to the site container (1240px) so it
+ * lines up with every section; only the white background spans full width.
  */
 export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: string } = {}) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const pathname = usePathname() || '/';
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-white border-b border-brdr">
-        <div className="flex h-16 items-center gap-4 px-4 lg:px-6">
+      <header className="sticky top-0 z-30 border-b border-brdr bg-white">
+        <div className="container-app flex h-16 items-center gap-3">
           <button
             type="button"
             aria-label="Mở menu"
-            className="lg:hidden grid h-10 w-10 place-items-center rounded-md text-ink hover:bg-surface-subtle"
+            className="grid h-10 w-10 place-items-center rounded-md text-ink hover:bg-[#F5F7FB] lg:hidden"
             onClick={() => setDrawerOpen(true)}
           >
             <Menu size={22} />
@@ -32,12 +51,35 @@ export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: str
 
           <Logo logoUrl={logoUrl} siteName={siteName} />
 
-          {/* Inline categories — desktop only */}
-          <InlineCategories />
-
-          <HeaderSearch />
+          {/* Primary nav — desktop */}
+          <nav className="ml-2 hidden items-center gap-0.5 lg:flex">
+            {NAV.map((item) => {
+              const active = navActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={cn(
+                    'unstyled rounded-md px-3 py-2 text-sm font-semibold transition-colors',
+                    active
+                      ? 'bg-brand-soft text-primary'
+                      : 'text-ink hover:bg-[#F5F7FB] hover:text-primary'
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-1 whitespace-nowrap">
+            <Link
+              href="/tai-khoan/yeu-thich"
+              className="unstyled hidden items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-[#F5F7FB] hover:text-primary md:inline-flex"
+            >
+              <Heart size={16} />
+              <span className="hidden lg:inline">Yêu thích</span>
+            </Link>
             <span className="hidden md:inline-flex">
               <NotificationBell />
             </span>
