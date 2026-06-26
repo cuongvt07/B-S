@@ -285,23 +285,23 @@
 }
 .home-room-banner__photo {
   position: absolute;
-  /* Image fills the right ~70%; no diagonal clip — it blends via a gradient. */
-  inset: 0 0 0 30%;
+  /* Image spans the FULL width of the block — no side panel. */
+  inset: 0;
   overflow: hidden;
 }
 .home-room-banner__photo::after {
   content: '';
   position: absolute;
   inset: 0;
-  /* Solid navy at the left edge (meets the text), fading smoothly to fully
-     clear so the photo stays bright & sharp on the right. No hard line. */
+  /* Dark translucent overlay: strong on the left (so the text reads), fading
+     to fully transparent toward the middle — no solid panel, no hard edge. */
   background: linear-gradient(
     90deg,
-    #0F3D8C 0%,
-    rgba(15, 61, 140, 0.96) 14%,
-    rgba(15, 61, 140, 0.55) 30%,
-    rgba(15, 61, 140, 0.2) 44%,
-    transparent 58%
+    rgba(6, 18, 42, 0.9) 0%,
+    rgba(6, 18, 42, 0.72) 22%,
+    rgba(6, 18, 42, 0.38) 42%,
+    rgba(6, 18, 42, 0.1) 56%,
+    transparent 66%
   );
   pointer-events: none;
 }
@@ -986,8 +986,8 @@
   .home-room-banner__stats { gap: 8px; margin-top: 16px; }
   .home-room-banner__stats > div { padding: 7px 11px; }
   .home-room-banner__stats strong { font-size: 16px; }
-  .home-room-banner__content { width: 64%; }
-  .home-room-banner__photo { left: 36%; }
+  .home-room-banner__content { width: 78%; }
+  .home-room-banner__photo { inset: 0; }
   .home-room-banner__floats { display: none; }
 }
 
