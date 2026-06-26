@@ -8,3 +8,6 @@ export * from './UtilityTools';
 export * from './PromoBanner';
 export * from './FeatureDescriptions';
 export * from './StatsBar';
+export * from './WhyAndPost';
+export * from './ValuationBanners';
+export * from './HomeStatsRow';

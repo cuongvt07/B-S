@@ -1,328 +1,69 @@
-import { Fragment } from 'react';
 import {
   HeroSearch,
-  StatsBar,
-  FeaturedListingsGrid,
-  FeaturedRegionsMasonry,
-  FeaturedVehiclesGrid,
   CategoryTiles,
-  UtilityTools,
-  PromoBanner,
+  WhyAndPost,
+  FeaturedListingsGrid,
+  FeaturedVehiclesGrid,
+  ValuationBanners,
+  HomeStatsRow,
   BlogStrip,
-  FeatureDescriptions,
 } from '@/components/home';
-import { REGION_DEFAULTS, type RegionStat } from '@/components/home/FeaturedRegionsMasonry';
 import { Reveal } from '@/components/ui';
 import { RecentlyViewed } from '@/components/listing';
-import {
-  getHomepageSections,
-  listBlogs,
-  listListings,
-  listVehicles,
-  type HomepageSection,
-} from '@/lib/server-data';
+import { listBlogs, listListings, listVehicles } from '@/lib/server-data';
 
 export const revalidate = 300;
 
-async function fetchProvinceCount(provinceName: string): Promise<number> {
-  const real = process.env.NEXT_PUBLIC_REAL_API_URL || 'https://vmphuthinhland.com';
-  const host = real.includes('vercel.app') ? 'https://vmphuthinhland.com' : real;
-
-  try {
-    const r = await fetch(
-      `${host}/api/v1/listings?per_page=1&province=${encodeURIComponent(provinceName)}`,
-      { headers: { Accept: 'application/json' }, next: { revalidate: 120 } }
-    );
-    if (!r.ok) return 0;
-    const data = (await r.json()) as { meta?: { total?: number } };
-    return data.meta?.total ?? 0;
-  } catch {
-    return 0;
-  }
-}
-
 export default async function HomePage() {
-  const [
-    homeSections,
-    vipResult,
-    newestResult,
-    landResult,
-    blogResult,
-    vehicleResult,
-    carResult,
-    motorbikeResult,
-    regionCounts,
-  ] = await Promise.all([
-    getHomepageSections(),
+  const [featured, vehicles, blogResult] = await Promise.all([
     listListings({ sort: 'newest', pageSize: 8 }),
-    listListings({ sort: 'newest', pageSize: 8, page: 2 }),
-    listListings({ propertyType: 'land', pageSize: 8, sort: 'newest' }),
-    listBlogs({ pageSize: 10 }),
     listVehicles({ pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
-    listVehicles({ vehicleType: 'car', pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
-    listVehicles({ vehicleType: 'motorbike', pageSize: 8, sortBy: 'created_at', sortOrder: 'desc' }),
-    Promise.all(REGION_DEFAULTS.map((r) => fetchProvinceCount(r.provinceName))),
+    listBlogs({ pageSize: 8 }),
   ]);
-
-  const regions: RegionStat[] = REGION_DEFAULTS.map((r, i) => ({
-    ...r,
-    count: regionCounts[i],
-  }));
-  const sections = homeSections.length > 0
-    ? homeSections
-    : fallbackHomeSections(vipResult, newestResult, landResult);
-  const featuredListings =
-    sections.find((section) => section.sectionType === 'listings')?.listings ?? vipResult.data;
-
-  // Bố cục ~60% BĐS / 40% Xe: đan 3 khối xe vào giữa các khối BĐS.
-  // - Sau khối tin BĐS thứ 1 → "Xe nổi bật" (ô tô + xe máy)
-  // - Sau khối "Khu vực nổi bật" → "Ô tô giá tốt"
-  // - Sau khối tin BĐS thứ 2 → "Xe máy mới đăng"
-  const listingKeys = sections.filter((s) => s.sectionType === 'listings').map((s) => s.key);
-  const firstListingsKey = listingKeys[0];
-  const secondListingsKey = listingKeys[1];
-  const regionsKey = sections.find((s) => s.sectionType === 'regions')?.key;
-
-  function vehicleBlockFor(sectionKey: string) {
-    if (sectionKey === firstListingsKey) {
-      return (
-        <FeaturedVehiclesGrid
-          vehicles={vehicleResult.data}
-          title="Xe nổi bật"
-          description="Ô tô & xe máy mới đăng — giá tốt, cập nhật liên tục"
-          href="/xe"
-          showTypeLinks
-        />
-      );
-    }
-    if (sectionKey === regionsKey) {
-      return (
-        <FeaturedVehiclesGrid
-          vehicles={carResult.data}
-          title="Ô tô giá tốt"
-          description="Ô tô cũ & mới từ người bán uy tín"
-          href="/xe?loai=car"
-        />
-      );
-    }
-    if (sectionKey === secondListingsKey) {
-      return (
-        <FeaturedVehiclesGrid
-          vehicles={motorbikeResult.data}
-          title="Xe máy mới đăng"
-          description="Xe số, tay ga, côn tay — đa dạng tầm giá"
-          href="/xe?loai=motorbike"
-        />
-      );
-    }
-    return null;
-  }
 
   return (
     <>
       <HeroSearch />
-      <Reveal direction="fade">
-        <StatsBar />
-      </Reveal>
       <CategoryTiles />
-      {sections.map((section, index) => {
-        const vehicleBlock = vehicleBlockFor(section.key);
-        return (
-          <Fragment key={section.key}>
-            {renderHomeSection(section, {
-              regions,
-              blogs: blogResult.data,
-              featuredListings,
-              priorityCount: index === 0 ? 4 : 0,
-            })}
-            {vehicleBlock && <Reveal>{vehicleBlock}</Reveal>}
-          </Fragment>
-        );
-      })}
-    </>
-  );
-}
 
-function renderHomeSection(
-  section: HomepageSection,
-  context: {
-    regions: RegionStat[];
-    blogs: Awaited<ReturnType<typeof listBlogs>>['data'];
-    featuredListings: Awaited<ReturnType<typeof listListings>>['data'];
-    priorityCount: number;
-  }
-) {
-  if (section.sectionType === 'listings') {
-    return (
-      <Reveal key={section.key}>
+      <Reveal direction="fade">
+        <WhyAndPost />
+      </Reveal>
+
+      <Reveal>
         <FeaturedListingsGrid
-          title={section.title}
-          description={
-            section.description ||
-            `${section.meta.total.toLocaleString('vi-VN')} tin đăng phù hợp với cấu hình`
-          }
-          listings={section.listings}
-          href={section.href || '/tin-dang'}
-          priorityCount={context.priorityCount}
+          title="Bất động sản nổi bật"
+          description={`${featured.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị`}
+          listings={featured.data}
+          href="/tin-dang"
+          priorityCount={4}
         />
       </Reveal>
-    );
-  }
 
-  if (section.sectionType === 'regions') {
-    return (
-      <Reveal key={section.key} direction="scale">
-        <FeaturedRegionsMasonry regions={context.regions} />
+      <Reveal>
+        <FeaturedVehiclesGrid
+          title="Xe cộ nổi bật"
+          description="Ô tô & xe máy mới đăng — cập nhật liên tục"
+          vehicles={vehicles.data}
+          href="/xe"
+        />
       </Reveal>
-    );
-  }
 
-  if (section.sectionType === 'promo') {
-    return (
-      <Reveal key={section.key} direction="up">
-        <PromoBanner listings={context.featuredListings} />
+      <Reveal direction="up">
+        <ValuationBanners />
       </Reveal>
-    );
-  }
 
-  if (section.sectionType === 'tools') {
-    return (
-      <Reveal key={section.key} direction="up">
-        <UtilityTools />
+      <Reveal direction="fade">
+        <HomeStatsRow />
       </Reveal>
-    );
-  }
 
-  if (section.sectionType === 'recently_viewed') {
-    return (
-      <Reveal key={section.key} direction="up">
+      <Reveal direction="up">
         <RecentlyViewed />
       </Reveal>
-    );
-  }
 
-  if (section.sectionType === 'blogs') {
-    return (
-      <Reveal key={section.key}>
-        <BlogStrip blogs={context.blogs} />
+      <Reveal>
+        <BlogStrip blogs={blogResult.data} />
       </Reveal>
-    );
-  }
-
-  if (section.sectionType === 'feature_descriptions') {
-    return (
-      <Reveal key={section.key} direction="fade">
-        <FeatureDescriptions />
-      </Reveal>
-    );
-  }
-
-  return null;
-}
-
-function fallbackHomeSections(
-  vipResult: Awaited<ReturnType<typeof listListings>>,
-  newestResult: Awaited<ReturnType<typeof listListings>>,
-  landResult: Awaited<ReturnType<typeof listListings>>
-): HomepageSection[] {
-  const sections: HomepageSection[] = [
-    {
-      key: 'featured_latest',
-      title: 'Tin đăng nổi bật',
-      description: `${vipResult.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị`,
-      sectionType: 'listings',
-      sourceType: 'latest',
-      href: '/tin-dang',
-      limit: 8,
-      sortOrderIndex: 10,
-      meta: { total: vipResult.meta.total },
-      listings: vipResult.data,
-    },
-    {
-      key: 'regions',
-      title: 'Khu vực nổi bật',
-      sectionType: 'regions',
-      sourceType: 'regions',
-      limit: 5,
-      sortOrderIndex: 20,
-      meta: { total: 0 },
-      listings: [],
-    },
-    {
-      key: 'promo',
-      title: 'Banner',
-      sectionType: 'promo',
-      sourceType: 'static',
-      limit: 0,
-      sortOrderIndex: 30,
-      meta: { total: 0 },
-      listings: [],
-    },
-    {
-      key: 'newest',
-      title: 'Tin đăng mới nhất',
-      description: 'Cập nhật liên tục theo thời gian thực',
-      sectionType: 'listings',
-      sourceType: 'latest',
-      href: '/tin-dang',
-      limit: 8,
-      sortOrderIndex: 40,
-      meta: { total: newestResult.meta.total },
-      listings: newestResult.data,
-    },
-    {
-      key: 'land_hot',
-      title: 'Bán đất nền hot',
-      description: `${landResult.meta.total.toLocaleString('vi-VN')} tin đất nền đang rao bán`,
-      sectionType: 'listings',
-      sourceType: 'property',
-      href: '/tin-dang?propertyType=land',
-      limit: 8,
-      sortOrderIndex: 50,
-      meta: { total: landResult.meta.total },
-      listings: landResult.data,
-    },
-    {
-      key: 'tools',
-      title: 'Tiện ích',
-      sectionType: 'tools',
-      sourceType: 'static',
-      limit: 0,
-      sortOrderIndex: 60,
-      meta: { total: 0 },
-      listings: [],
-    },
-    {
-      key: 'recently_viewed',
-      title: 'Đã xem gần đây',
-      sectionType: 'recently_viewed',
-      sourceType: 'client',
-      limit: 0,
-      sortOrderIndex: 70,
-      meta: { total: 0 },
-      listings: [],
-    },
-    {
-      key: 'blogs',
-      title: 'Blog',
-      sectionType: 'blogs',
-      sourceType: 'latest',
-      limit: 10,
-      sortOrderIndex: 80,
-      meta: { total: 0 },
-      listings: [],
-    },
-    {
-      key: 'feature_descriptions',
-      title: 'Mô tả dịch vụ',
-      sectionType: 'feature_descriptions',
-      sourceType: 'static',
-      limit: 0,
-      sortOrderIndex: 90,
-      meta: { total: 0 },
-      listings: [],
-    },
-  ];
-
-  return sections.filter((section) => section.key !== 'land_hot' || landResult.data.length > 0);
+    </>
+  );
 }

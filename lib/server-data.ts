@@ -234,13 +234,14 @@ export interface HomepageSection {
   key: string;
   title: string;
   description?: string | null;
-  sectionType: 'listings' | 'regions' | 'tools' | 'recently_viewed' | 'blogs' | 'feature_descriptions' | 'promo';
+  sectionType: 'listings' | 'regions' | 'tools' | 'recently_viewed' | 'blogs' | 'feature_descriptions' | 'promo' | 'vehicles';
   sourceType: string;
   href?: string | null;
   limit: number;
   sortOrderIndex: number;
   meta: { total: number };
   listings: Listing[];
+  vehicles?: Vehicle[];
 }
 
 interface ApiHomepageSection {
@@ -253,24 +254,29 @@ interface ApiHomepageSection {
   limit?: number;
   sort_order_index?: number;
   meta?: { total?: number };
-  items?: LaravelListing[];
+  items?: (LaravelListing | LaravelVehicle)[];
 }
 
 export async function getHomepageSections(): Promise<HomepageSection[]> {
   try {
     const res = await realServerFetch<{ data: ApiHomepageSection[] }>('/homepage');
-    return (res.data ?? []).map((section) => ({
-      key: section.key,
-      title: section.title,
-      description: section.description,
-      sectionType: section.section_type,
-      sourceType: section.source_type,
-      href: section.href,
-      limit: section.limit ?? 0,
-      sortOrderIndex: section.sort_order_index ?? 0,
-      meta: { total: section.meta?.total ?? 0 },
-      listings: (section.items ?? []).map(mapApiListing),
-    }));
+    return (res.data ?? []).map((section) => {
+      const isVehicle = section.section_type === 'vehicles';
+      const items = section.items ?? [];
+      return {
+        key: section.key,
+        title: section.title,
+        description: section.description,
+        sectionType: section.section_type,
+        sourceType: section.source_type,
+        href: section.href,
+        limit: section.limit ?? 0,
+        sortOrderIndex: section.sort_order_index ?? 0,
+        meta: { total: section.meta?.total ?? 0 },
+        listings: isVehicle ? [] : (items as LaravelListing[]).map(mapApiListing),
+        vehicles: isVehicle ? (items as LaravelVehicle[]).map(mapApiVehicle) : [],
+      };
+    });
   } catch (err) {
     console.error('[server-data] getHomepageSections failed:', err);
     return [];

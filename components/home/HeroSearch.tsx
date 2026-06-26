@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Search, MapPin, Building2, BadgeDollarSign, ShieldCheck, Megaphone, ChevronDown } from 'lucide-react';
+import { Search, MapPin, Building2, BadgeDollarSign, Sparkles, ChevronDown } from 'lucide-react';
 import { cities, cityByCode } from '@/mocks/data/cities';
 import {
   PROPERTY_TYPE_LABELS,
@@ -144,14 +144,25 @@ export function HeroSearch() {
       <div className="container-app">
         <div className="home-room-banner animate-slideUp">
           <div className="home-room-banner__content">
-            <span className="home-room-banner__kicker">SÀN ĐĂNG TIN</span>
-            <h1 className="home-room-banner__title">Bất động sản</h1>
-            <p className="home-room-banner__tagline">Mua bán – Cho thuê – Đăng tin miễn phí</p>
-            <div className="home-room-banner__features">
-              <span className="home-room-banner__feature"><Building2 />Tin đăng đa dạng</span>
-              <span className="home-room-banner__feature"><BadgeDollarSign />Giá bán minh bạch</span>
-              <span className="home-room-banner__feature"><ShieldCheck />Thông tin minh bạch</span>
-              <span className="home-room-banner__feature"><Megaphone />Đăng tin nhanh chóng</span>
+            <span className="home-room-banner__kicker">
+              <Sparkles size={13} /> Nền tảng tin đăng
+            </span>
+            <h1 className="home-room-banner__title">
+              Bất động sản <span className="home-room-banner__title-accent">&amp; Xe cộ</span>
+            </h1>
+            <p className="home-room-banner__tagline">Kết nối giá trị – Khai mở tiềm năng</p>
+            <p className="home-room-banner__sub">
+              Hàng nghìn tin đăng nhà đất &amp; xe cộ đã xác thực — đăng tin nhanh chóng, dễ dàng.
+            </p>
+            <div className="home-room-banner__stats">
+              <div>
+                <strong>12,458+</strong>
+                <small>Tin đang đăng</small>
+              </div>
+              <div>
+                <strong>3,215+</strong>
+                <small>Đã giao dịch</small>
+              </div>
             </div>
           </div>
           <div className="home-room-banner__photo">
@@ -188,8 +199,8 @@ export function HeroSearch() {
           {/* Công tắc danh mục cấp cao: Nhà đất | Xe cộ */}
           <div className="mb-3 inline-flex rounded-full bg-surface-subtle p-1">
             {([
-              { key: 'property', label: 'Nhà đất' },
-              { key: 'vehicle', label: 'Xe cộ' },
+              { key: 'property', label: 'Tin bất động sản' },
+              { key: 'vehicle', label: 'Tin xe cộ' },
             ] as const).map((v) => (
               <button
                 key={v.key}
