@@ -75,7 +75,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
           <div className="relative aspect-[16/9] overflow-hidden rounded-md border border-brdr">
             <Image
-              src={b.coverImage || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1600&q=70'}
+              src={b.coverImage || '/bg/bg-3.jpg'}
               alt={b.title}
               fill
               sizes="(max-width: 1024px) 100vw, 75vw"

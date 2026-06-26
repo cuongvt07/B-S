@@ -113,8 +113,7 @@ export default async function BrokerPackagePage() {
         <div
           className="pointer-events-none absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=70')",
+            backgroundImage: "url('/bg/bg-6.jpg')",
           }}
         />
         {/* Navy overlay keeps text readable over the photo */}

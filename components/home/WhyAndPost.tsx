@@ -46,21 +46,12 @@ export function WhyAndPost() {
           href="/tai-khoan/dang-tin"
           className="unstyled group relative min-h-[160px] overflow-hidden rounded-md p-5 text-white shadow-raised"
         >
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-brand to-brand-active" />
           <div
             aria-hidden
-            className="absolute inset-0 bg-repeat opacity-70"
-            style={{ backgroundImage: "url('/brand/dots.svg')" }}
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+            style={{ backgroundImage: "url('/bg/bg-1.jpg')" }}
           />
-          <div
-            aria-hidden
-            className="absolute inset-x-0 bottom-0 h-1/2 bg-no-repeat opacity-90 transition-transform duration-500 group-hover:scale-105"
-            style={{
-              backgroundImage: "url('/brand/skyline.svg')",
-              backgroundSize: 'cover',
-              backgroundPosition: 'bottom',
-            }}
-          />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-brand via-brand/90 to-brand/65" />
           <div className="relative z-10 flex h-full flex-col justify-between gap-4">
             <div>
               <span className="icon-chip grid h-10 w-10 place-items-center rounded-md bg-gold text-gold-ink">

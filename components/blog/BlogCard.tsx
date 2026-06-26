@@ -5,8 +5,7 @@ import { formatTimeAgo } from '@/lib/utils/format';
 import type { Blog } from '@/types';
 
 // Fallback cover when a post has no image — keeps cards visually consistent.
-const FALLBACK_COVER =
-  'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=70';
+const FALLBACK_COVER = '/bg/bg-3.jpg';
 
 export function BlogCard({ blog, variant = 'normal' }: { blog: Blog; variant?: 'normal' | 'featured' }) {
   const isFeatured = variant === 'featured';

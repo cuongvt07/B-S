@@ -78,10 +78,7 @@ export default async function SeoLandingPage({ params }: PageProps) {
         <div
           aria-hidden
           className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=70')",
-          }}
+          style={{ backgroundImage: "url('/bg/bg-6.jpg')" }}
         />
         <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-brand via-brand/80 to-brand/20" />
         <div className="relative z-10 p-6 text-white sm:p-8">

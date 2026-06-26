@@ -18,10 +18,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.12]"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=70')",
-          }}
+          style={{ backgroundImage: "url('/bg/bg-2.jpg')" }}
         />
         <div
           aria-hidden
