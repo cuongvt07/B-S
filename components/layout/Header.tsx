@@ -8,6 +8,7 @@ import { Logo } from './Logo';
 import { MobileDrawer } from './MobileDrawer';
 import { NotificationBell } from './NotificationBell';
 import { AccountMenu } from './AccountMenu';
+import { usePostModal } from '@/lib/hooks/usePostModal';
 import { cn } from '@/lib/utils';
 
 const NAV = [
@@ -35,6 +36,7 @@ function navActive(pathname: string, href: string): boolean {
 export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: string } = {}) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname() || '/';
+  const openPost = usePostModal((s) => s.openPost);
 
   return (
     <>
@@ -86,13 +88,14 @@ export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: str
             <span className="hidden md:inline-flex">
               <AccountMenu />
             </span>
-            <Link
-              href="/tai-khoan/dang-tin"
-              className="unstyled bds-cta-amber ml-1 inline-flex items-center gap-1.5 rounded-sm px-4 py-2 text-sm font-semibold text-white transition-colors"
+            <button
+              type="button"
+              onClick={() => openPost('property')}
+              className="bds-cta-amber ml-1 inline-flex items-center gap-1.5 rounded-sm px-4 py-2 text-sm font-semibold text-white transition-colors"
             >
               <PlusCircle size={16} />
               <span className="hidden sm:inline">Đăng tin</span>
-            </Link>
+            </button>
           </div>
         </div>
       </header>

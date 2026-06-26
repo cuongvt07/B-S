@@ -23,7 +23,7 @@ const CATS: Cat[] = [
 export function CategoryTiles() {
   return (
     <section className="container-app pt-5">
-      <div className="flex gap-2.5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-2.5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] lg:justify-between lg:overflow-x-visible [&::-webkit-scrollbar]:hidden">
         {CATS.map((c) => {
           const Icon = c.Icon;
           return (

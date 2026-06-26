@@ -4,3 +4,4 @@ export * from './MyVehicleRow';
 export * from './PostListingForm';
 export * from './PostVehicleForm';
 export * from './ProfileEditForm';
+export * from './PostModal';

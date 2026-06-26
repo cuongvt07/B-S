@@ -1,12 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { PlusCircle, FileText, ListChecks } from 'lucide-react';
 import { Button, Card, EmptyState, Spinner } from '@/components/ui';
 import { MyListingRow } from '@/components/dashboard';
 import { meApi } from '@/lib/api/auth';
+import { usePostModal } from '@/lib/hooks/usePostModal';
 import type { Listing, ListingStatus } from '@/types';
 
 // Fetch the whole set once; "my listings" is small enough to filter client-side.
@@ -25,6 +25,7 @@ const STATUS_TABS: { key: StatusKey; label: string }[] = [
 
 export default function MyListingsPage() {
   const [status, setStatus] = useState<StatusKey>('all');
+  const openPost = usePostModal((s) => s.openPost);
 
   const listings = useQuery({
     queryKey: ['me', 'listings', 'all', FETCH_SIZE],
@@ -61,9 +62,9 @@ export default function MyListingsPage() {
               </p>
             </div>
           </div>
-          <Link href="/tai-khoan/dang-tin" className="unstyled">
-            <Button leftIcon={<PlusCircle size={16} />}>Đăng tin mới</Button>
-          </Link>
+          <Button leftIcon={<PlusCircle size={16} />} onClick={() => openPost('property')}>
+            Đăng tin mới
+          </Button>
         </div>
       </header>
 
@@ -114,9 +115,9 @@ export default function MyListingsPage() {
             title="Không tải được tin của bạn"
             description="Vui lòng kiểm tra đăng nhập hoặc kết nối API."
             action={
-              <Link href="/tai-khoan/dang-tin" className="unstyled">
-                <Button leftIcon={<PlusCircle size={16} />}>Đăng tin mới</Button>
-              </Link>
+              <Button leftIcon={<PlusCircle size={16} />} onClick={() => openPost('property')}>
+                Đăng tin mới
+              </Button>
             }
           />
         </Card>
@@ -127,9 +128,9 @@ export default function MyListingsPage() {
             title="Bạn chưa có tin đăng nào"
             description="Tạo tin đăng đầu tiên để bắt đầu nhận liên hệ từ khách hàng."
             action={
-              <Link href="/tai-khoan/dang-tin" className="unstyled">
-                <Button leftIcon={<PlusCircle size={16} />}>Đăng tin đầu tiên</Button>
-              </Link>
+              <Button leftIcon={<PlusCircle size={16} />} onClick={() => openPost('property')}>
+                Đăng tin đầu tiên
+              </Button>
             }
           />
         </Card>

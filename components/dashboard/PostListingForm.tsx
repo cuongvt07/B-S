@@ -90,7 +90,7 @@ function formValuesFromListing(listing: Listing): FormValues {
   };
 }
 
-export function PostListingForm({ editId }: { editId?: string }) {
+export function PostListingForm({ editId, onDone }: { editId?: string; onDone?: () => void }) {
   const router = useRouter();
   const qc = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -239,6 +239,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
 
     try {
       await save.mutateAsync(payload);
+      onDone?.();
       router.push('/tai-khoan/tin-cua-toi');
       router.refresh();
     } catch (e: unknown) {
@@ -609,7 +610,7 @@ export function PostListingForm({ editId }: { editId?: string }) {
       )}
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
+        <Button type="button" variant="outline" onClick={() => (onDone ? onDone() : router.back())}>
           Hủy
         </Button>
         <Button type="submit" loading={isSubmitting || save.isPending}>

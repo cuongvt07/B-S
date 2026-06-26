@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer';
 import { FloatingContacts } from '@/components/layout/FloatingContacts';
 import { CompareBar } from '@/components/listing';
 import { AuthModal } from '@/components/auth';
+import { PostModal } from '@/components/dashboard';
 import { getSiteSettings } from '@/lib/server-data';
 import { SiteSettingsProvider } from '@/components/layout/SiteSettingsProvider';
 
@@ -30,6 +31,7 @@ export default async function MarketingLayout({ children }: { children: ReactNod
       />
       <CompareBar />
       <AuthModal />
+      <PostModal />
       <FloatingContacts />
     </SiteSettingsProvider>
   );

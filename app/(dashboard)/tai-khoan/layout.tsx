@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { Header } from '@/components/layout/Header';
 import { FloatingContacts } from '@/components/layout/FloatingContacts';
 import { SiteSettingsProvider } from '@/components/layout/SiteSettingsProvider';
-import { DashboardSidebar } from '@/components/dashboard';
+import { DashboardSidebar, PostModal } from '@/components/dashboard';
 import { AuthModal, AuthRequired } from '@/components/auth';
 import { getSiteSettings } from '@/lib/server-data';
 
@@ -32,6 +32,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         </div>
       </main>
       <AuthModal />
+      <PostModal />
       <FloatingContacts />
     </SiteSettingsProvider>
   );

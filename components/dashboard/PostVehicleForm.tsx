@@ -68,7 +68,7 @@ function opt(record: Record<string, string>) {
   return Object.entries(record).map(([value, label]) => ({ value, label }));
 }
 
-export function PostVehicleForm({ editId }: { editId?: string }) {
+export function PostVehicleForm({ editId, onDone }: { editId?: string; onDone?: () => void }) {
   const router = useRouter();
   const isEditing = Boolean(editId);
   const [images, setImages] = useState<UploadedImage[]>([]);
@@ -205,9 +205,11 @@ export function PostVehicleForm({ editId }: { editId?: string }) {
     try {
       if (isEditing) {
         await vehicleApi.update(editId as string, payload);
+        onDone?.();
         router.push('/tai-khoan/tin-xe-cua-toi');
       } else {
         const created = await vehicleApi.create(payload);
+        onDone?.();
         router.push(`/xe/${created.data.slug}`);
       }
       router.refresh();
@@ -364,7 +366,7 @@ export function PostVehicleForm({ editId }: { editId?: string }) {
       {serverError && <p className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">{serverError}</p>}
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
+        <Button type="button" variant="outline" onClick={() => (onDone ? onDone() : router.back())}>
           Hủy
         </Button>
         <Button type="submit" loading={isSubmitting}>

@@ -154,15 +154,17 @@ export function HeroSearch() {
             <p className="home-room-banner__sub">
               Hàng nghìn tin đăng nhà đất &amp; xe cộ đã xác thực — đăng tin nhanh chóng, dễ dàng.
             </p>
-            <div className="home-room-banner__stats">
-              <div>
-                <strong>12,458+</strong>
-                <small>Tin đang đăng</small>
-              </div>
-              <div>
-                <strong>3,215+</strong>
-                <small>Đã giao dịch</small>
-              </div>
+          </div>
+
+          {/* Floating stat cards over the photo */}
+          <div className="home-room-banner__floats">
+            <div className="home-room-banner__float">
+              <strong>12,458+</strong>
+              <small>Tin đang đăng</small>
+            </div>
+            <div className="home-room-banner__float">
+              <strong>3,215+</strong>
+              <small>Đã giao dịch</small>
             </div>
           </div>
           <div className="home-room-banner__photo">
