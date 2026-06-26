@@ -8,3 +8,8 @@ build/
 .vercel
 next-env.d.ts
 *.tsbuildinfo
+
+# Loose source images dropped in the repo root (use /public/bg instead)
+/*.jpg
+/*.jpeg
+/*.png

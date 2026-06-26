@@ -13,7 +13,7 @@ import {
   VEHICLE_PRICE_BRACKETS,
 } from '@/lib/constants';
 
-const BANNER_IMAGES = ['/bg/bg-1.jpg', '/bg/bg-6.jpg', '/bg/bg-2.jpg'];
+const BANNER_IMAGES = ['/bg/hero-1.jpg', '/bg/bg-1.jpg', '/bg/bg-6.jpg', '/bg/bg-2.jpg'];
 
 type FilterKey = 'city' | 'district' | 'property' | 'price' | 'vehicleType' | 'vehiclePrice';
 type Vertical = 'property' | 'vehicle';
