@@ -88,7 +88,7 @@ export function AuthGate({
       {/* Overlay CTA */}
       <div className="absolute inset-0 grid place-items-center p-3">
         <div className="w-full max-w-[280px] rounded-md border border-brdr bg-white/95 p-4 text-center shadow-elevated backdrop-blur-sm">
-          <div className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+          <div className="icon-chip mx-auto grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
             <Lock size={18} />
           </div>
           <p className="mt-2 text-sm font-semibold text-ink">{title}</p>

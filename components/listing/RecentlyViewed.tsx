@@ -27,7 +27,7 @@ export function RecentlyViewed({ excludeId }: Props) {
   return (
     <section className="container-app py-8">
       <div className="mb-4">
-        <h2 className="text-xl font-semibold text-ink sm:text-2xl">Tin đã xem gần đây</h2>
+        <h2 className="text-xl font-semibold uppercase text-ink sm:text-2xl">Tin đã xem gần đây</h2>
         <p className="mt-1 text-sm text-ink-muted">Tiếp tục với những tin bạn đã quan tâm</p>
       </div>
       {isLoading ? (

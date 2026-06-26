@@ -49,7 +49,7 @@ export default function MyVehiclesPage() {
       <header className="overflow-hidden rounded-md border border-primary/20 bg-gradient-to-r from-primary/10 via-white to-white p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary text-white">
+            <span className="icon-chip grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary text-white">
               <ListChecks size={22} />
             </span>
             <div>

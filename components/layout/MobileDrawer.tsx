@@ -193,7 +193,7 @@ export function MobileDrawer({ open, onClose }: Props) {
           href={`tel:${hotline.replace(/\s/g, '')}`}
           className="unstyled flex items-center gap-3 rounded-sm bg-surface-subtle px-3 py-2.5 text-sm font-semibold text-ink"
         >
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-price text-white">
+          <span className="icon-chip grid h-8 w-8 place-items-center rounded-full bg-price text-white">
             <Phone size={14} />
           </span>
           <span className="flex-1">

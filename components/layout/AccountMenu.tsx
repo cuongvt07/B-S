@@ -62,7 +62,7 @@ export function AccountMenu() {
             <Image src={user.avatarUrl} alt={user.name} fill sizes="32px" className="object-cover" />
           </span>
         ) : (
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-primary/15 to-primary/5 text-primary">
+          <span className="icon-chip grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-primary/15 to-primary/5 text-primary">
             <UserIcon size={16} />
           </span>
         )}

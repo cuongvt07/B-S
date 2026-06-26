@@ -74,6 +74,42 @@
   }
 }
 
+@layer base {
+  /* Synchronize all Lucide icons site-wide: same smooth transition everywhere. */
+  svg.lucide {
+    transition: transform 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+  }
+}
+
+@layer components {
+  /* Consistent icon micro-interaction on interactive controls. */
+  button:not(:disabled):hover svg.lucide,
+  [role='button']:hover svg.lucide,
+  summary:hover svg.lucide {
+    transform: scale(1.1);
+  }
+
+  /* Icon "chip" (colored square holding one icon) — unified hover lift.
+     Triggers whether you hover the chip, its card (.group), or the
+     enclosing link/button — so the effect feels the same everywhere. */
+  .icon-chip {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  }
+  .icon-chip:hover,
+  .group:hover .icon-chip,
+  a:hover .icon-chip,
+  button:not(:disabled):hover .icon-chip {
+    transform: translateY(-2px);
+    filter: brightness(1.03);
+  }
+  .icon-chip:hover svg.lucide,
+  .group:hover .icon-chip svg.lucide,
+  a:hover .icon-chip svg.lucide,
+  button:not(:disabled):hover .icon-chip svg.lucide {
+    transform: scale(1.12);
+  }
+}
+
 /* Listing image light sweep */
 .listing-card__media {
   isolation: isolate;

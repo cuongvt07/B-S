@@ -39,7 +39,7 @@ export default async function UtilityPage({ params }: PageProps) {
         ]}
       />
       <div className="mx-auto mt-8 max-w-xl">
-        <div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-primary/10 text-primary">
+        <div className="icon-chip mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-primary/10 text-primary">
           <Wrench size={36} />
         </div>
         <h1 className="text-2xl font-semibold text-ink">Tính năng đang được phát triển</h1>

@@ -33,11 +33,15 @@ export function EmptyState({
         s.wrap,
         className
       )}
+      style={{
+        backgroundImage:
+          'radial-gradient(ellipse at top, rgba(0,0,238,0.05), transparent 65%)',
+      }}
     >
       {Icon && (
         <div
           className={cn(
-            'mb-4 grid place-items-center rounded-full bg-surface-subtle text-ink-muted',
+            'icon-chip mb-4 grid place-items-center rounded-full bg-gradient-to-br from-primary/10 to-primary/5 text-primary ring-1 ring-primary/10',
             s.iconBox
           )}
         >

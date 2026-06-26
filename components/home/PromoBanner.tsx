@@ -138,7 +138,7 @@ export function PromoBanner({ listings = [] }: { listings?: Listing[] }) {
 
         <div className="featured-property__content">
           <p className="featured-property__eyebrow">BẤT ĐỘNG SẢN NỔI BẬT</p>
-          <h2>Không gian đáng sống</h2>
+          <h2 className="uppercase">Không gian đáng sống</h2>
           <h3>{property.title}</h3>
           <p className="featured-property__address">
             <MapPin size={14} /> {property.address}

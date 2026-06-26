@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Listing } from '@/types';
-import { ListingGrid } from '@/components/listing';
+import { ListingCard } from '@/components/listing';
+import { CardCarousel } from '@/components/ui';
 import { ArrowRight } from 'lucide-react';
 
 interface Props {
@@ -17,7 +18,7 @@ export function FeaturedListingsGrid({ title, description, listings, href, prior
     <section className="container-app py-8">
       <div className="mb-4 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-ink sm:text-2xl">{title}</h2>
+          <h2 className="text-xl font-semibold uppercase text-ink sm:text-2xl">{title}</h2>
           {description && <p className="mt-1 text-sm text-ink-muted">{description}</p>}
         </div>
         {href && (
@@ -29,7 +30,11 @@ export function FeaturedListingsGrid({ title, description, listings, href, prior
           </Link>
         )}
       </div>
-      <ListingGrid listings={listings} priorityCount={priorityCount} />
+      <CardCarousel
+        items={listings.map((l, i) => (
+          <ListingCard key={l.id} listing={l} priority={i < (priorityCount ?? 0)} />
+        ))}
+      />
     </section>
   );
 }

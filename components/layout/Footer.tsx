@@ -144,7 +144,7 @@ export function Footer({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.label}
-                    className="unstyled grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white hover:bg-white/15"
+                    className="icon-chip unstyled grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white hover:bg-white/15"
                   >
                     <Icon size={18} />
                   </a>

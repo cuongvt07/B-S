@@ -39,7 +39,7 @@ export async function FeatureDescriptions() {
     <section className="border-t border-brdr bg-surface-subtle">
       <div className="container-app py-10">
         <div className="mb-6 text-center">
-          <h2 className="text-xl font-semibold text-ink sm:text-2xl">
+          <h2 className="text-xl font-semibold uppercase text-ink sm:text-2xl">
             Triệu lựa chọn nhà, một kênh tìm kiếm
           </h2>
           <p className="mt-2 text-sm text-ink-muted">

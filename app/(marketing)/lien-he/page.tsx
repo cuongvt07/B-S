@@ -54,7 +54,7 @@ export default async function ContactPage() {
               return (
                 <li key={it.label} className="flex items-start gap-3">
                   <span
-                    className={`grid h-10 w-10 shrink-0 place-items-center rounded-md ${it.bg} ${it.accent}`}
+                    className={`icon-chip grid h-10 w-10 shrink-0 place-items-center rounded-md ${it.bg} ${it.accent}`}
                   >
                     <Icon size={18} />
                   </span>

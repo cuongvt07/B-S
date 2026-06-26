@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, Car, Bike } from 'lucide-react';
 import type { Vehicle } from '@/types';
 import { VehicleCard } from '@/components/vehicle';
+import { CardCarousel } from '@/components/ui';
 
 export function FeaturedVehiclesGrid({
   vehicles,
@@ -23,7 +24,7 @@ export function FeaturedVehiclesGrid({
     <section className="container-app py-8">
       <div className="mb-4 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-ink sm:text-2xl">{title}</h2>
+          <h2 className="text-xl font-semibold uppercase text-ink sm:text-2xl">{title}</h2>
           <p className="mt-1 text-sm text-ink-muted">{description}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -52,11 +53,7 @@ export function FeaturedVehiclesGrid({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {vehicles.slice(0, 8).map((v) => (
-          <VehicleCard key={v.id} vehicle={v} />
-        ))}
-      </div>
+      <CardCarousel items={vehicles.map((v) => <VehicleCard key={v.id} vehicle={v} />)} />
     </section>
   );
 }

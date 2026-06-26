@@ -87,7 +87,7 @@ export function FilterPanel({ filter, setFilter }: Props) {
             className="flex flex-1 items-center gap-2 text-left text-sm font-semibold text-ink lg:pointer-events-none"
             aria-expanded={mobileOpen}
           >
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-primary-soft text-primary">
+            <span className="icon-chip grid h-8 w-8 place-items-center rounded-full bg-primary-soft text-primary">
               <SlidersHorizontal size={16} />
             </span>
             Bộ lọc tìm kiếm

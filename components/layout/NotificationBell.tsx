@@ -154,7 +154,7 @@ export function NotificationBell() {
                   >
                     <div
                       className={cn(
-                        'grid h-9 w-9 shrink-0 place-items-center rounded-md',
+                        'icon-chip grid h-9 w-9 shrink-0 place-items-center rounded-md',
                         s.bg,
                         s.text
                       )}

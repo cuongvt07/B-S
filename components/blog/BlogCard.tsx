@@ -4,8 +4,13 @@ import { Clock, ArrowRight } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/utils/format';
 import type { Blog } from '@/types';
 
+// Fallback cover when a post has no image — keeps cards visually consistent.
+const FALLBACK_COVER =
+  'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=70';
+
 export function BlogCard({ blog, variant = 'normal' }: { blog: Blog; variant?: 'normal' | 'featured' }) {
   const isFeatured = variant === 'featured';
+  const cover = blog.coverImage || FALLBACK_COVER;
   return (
     <article
       className={
@@ -20,7 +25,7 @@ export function BlogCard({ blog, variant = 'normal' }: { blog: Blog; variant?: '
         }`}
       >
         <Image
-          src={blog.coverImage}
+          src={cover}
           alt={blog.title}
           fill
           sizes={isFeatured ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 100vw, 33vw'}

@@ -97,7 +97,7 @@ export function StatsBar() {
 
           <div className="stats-about__copy">
             <span>Về {siteName}</span>
-            <h2>Cộng đồng {siteName} tin tưởng</h2>
+            <h2 className="uppercase">Cộng đồng {siteName} tin tưởng</h2>
             <p>
               Nền tảng tin đăng minh bạch, xác thực — kết nối hàng nghìn chủ nhà và
               người mua thuê mỗi ngày.

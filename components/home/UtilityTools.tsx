@@ -44,7 +44,7 @@ export function UtilityTools() {
   return (
     <section className="container-app py-8">
       <div className="mb-4">
-        <h2 className="text-xl font-semibold text-ink sm:text-2xl">Hỗ trợ tiện ích</h2>
+        <h2 className="text-xl font-semibold uppercase text-ink sm:text-2xl">Hỗ trợ tiện ích</h2>
         <p className="mt-1 text-sm text-ink-muted">
           Công cụ miễn phí giúp bạn ra quyết định nhanh và đúng
         </p>

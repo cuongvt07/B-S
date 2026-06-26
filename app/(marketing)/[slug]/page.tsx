@@ -74,12 +74,25 @@ export default async function SeoLandingPage({ params }: PageProps) {
         ]}
       />
 
-      <header className="mt-4 rounded-md border border-brdr bg-white p-6">
-        <h1 className="text-xl font-semibold text-ink sm:text-2xl">{title}</h1>
-        <p className="mt-2 text-sm text-ink-muted">
-          Tìm thấy <strong className="text-ink">{result.meta.total}</strong> tin đăng phù hợp
-          {city ? ` tại ${city.name}` : ''}. Cập nhật mới nhất từ cộng đồng người đăng và môi giới xác thực.
-        </p>
+      <header className="relative mt-4 overflow-hidden rounded-md border border-brdr">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=70')",
+          }}
+        />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-brand/95 via-brand/85 to-brand/55" />
+        <div className="relative z-10 p-6 text-white sm:p-8">
+          <h1 className="text-xl font-semibold !text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.3)] sm:text-2xl">
+            {title}
+          </h1>
+          <p className="mt-2 text-sm text-white/90">
+            Tìm thấy <strong className="text-white">{result.meta.total}</strong> tin đăng phù hợp
+            {city ? ` tại ${city.name}` : ''}. Cập nhật mới nhất từ cộng đồng người đăng và môi giới xác thực.
+          </p>
+        </div>
       </header>
 
       <section className="mt-6">

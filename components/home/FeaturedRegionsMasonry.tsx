@@ -64,7 +64,7 @@ export function FeaturedRegionsMasonry({ regions }: Props = {}) {
         <div className="featured-regions__grid">
           <div className="featured-regions__intro">
             <span>Điểm đến nổi bật</span>
-            <h2>Khu vực bất động sản nổi bật</h2>
+            <h2 className="uppercase">Khu vực bất động sản nổi bật</h2>
             <p>
               Khám phá những khu vực có thị trường sôi động, nhiều lựa chọn và tiềm
               năng phù hợp cho nhu cầu an cư hoặc đầu tư.

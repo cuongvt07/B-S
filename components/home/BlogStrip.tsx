@@ -8,7 +8,7 @@ export function BlogStrip({ blogs }: { blogs: Blog[] }) {
     <section className="container-app py-8">
       <div className="mb-4 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-ink sm:text-2xl">Blog bất động sản</h2>
+          <h2 className="text-xl font-semibold uppercase text-ink sm:text-2xl">Blog bất động sản</h2>
           <p className="mt-1 text-sm text-ink-muted">
             Kinh nghiệm, phân tích thị trường và pháp lý cập nhật
           </p>
