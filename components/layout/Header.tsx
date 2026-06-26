@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, PlusCircle, Heart, ChevronDown } from 'lucide-react';
+import { Menu, PlusCircle, ChevronDown } from 'lucide-react';
 import { Logo } from './Logo';
 import { MobileDrawer } from './MobileDrawer';
 import { NotificationBell } from './NotificationBell';
@@ -85,7 +85,7 @@ export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: str
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-brdr bg-white">
-        <div className="container-app flex h-[72px] items-center gap-3 lg:h-[92px]">
+        <div className="container-app flex h-[72px] items-center gap-2 lg:h-[92px]">
           <button
             type="button"
             aria-label="Mở menu"
@@ -98,7 +98,7 @@ export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: str
           <Logo logoUrl={logoUrl} siteName={siteName} />
 
           {/* Primary nav — desktop */}
-          <nav className="ml-2 hidden items-center gap-0.5 lg:flex">
+          <nav className="ml-1 hidden items-center gap-0 lg:flex xl:gap-0.5">
             {NAV.map((item) => {
               const active = navActive(pathname, item.href);
               const hasMenu = !!item.columns?.length;
@@ -106,14 +106,14 @@ export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: str
               return (
                 <div
                   key={item.label}
-                  className="relative"
+                  className="relative shrink-0"
                   onMouseEnter={() => hasMenu && setOpenMenu(item.label)}
                   onMouseLeave={() => hasMenu && setOpenMenu(null)}
                 >
                   <Link
                     href={item.href}
                     className={cn(
-                      'unstyled inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-semibold transition-colors',
+                      'unstyled inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-semibold transition-colors',
                       active || isOpen
                         ? 'bg-brand-soft text-primary'
                         : 'text-ink hover:bg-[#F5F7FB] hover:text-primary'
@@ -156,13 +156,6 @@ export function Header({ logoUrl, siteName }: { logoUrl?: string; siteName?: str
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-1 whitespace-nowrap">
-            <Link
-              href="/tai-khoan/yeu-thich"
-              className="unstyled hidden items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-[#F5F7FB] hover:text-primary md:inline-flex"
-            >
-              <Heart size={16} />
-              <span className="hidden lg:inline">Yêu thích</span>
-            </Link>
             <span className="hidden md:inline-flex">
               <NotificationBell />
             </span>

@@ -25,7 +25,7 @@ export function Logo({
         <img
           src={logoUrl}
           alt={siteName}
-          className="h-14 w-auto max-w-[300px] object-contain transition-transform duration-200 group-hover:scale-105 lg:h-20"
+          className="h-14 w-auto max-w-[230px] object-contain transition-transform duration-200 group-hover:scale-105 lg:h-20 lg:max-w-[260px]"
         />
       </Link>
     );
