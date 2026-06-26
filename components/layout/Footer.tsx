@@ -122,7 +122,7 @@ export function Footer({
   zaloPhone?: string;
 } = {}) {
   return (
-    <footer className="mt-12 bg-ink-strong text-white/90">
+    <footer className="mt-12 bg-[#0B1F44] text-[#D6E2F5]/90">
       {/* Brand strip */}
       <div className="border-b border-white/10">
         <div className="container-app grid grid-cols-1 gap-8 py-10 lg:grid-cols-[1.3fr_1fr_1fr]">
@@ -234,7 +234,7 @@ export function Footer({
                   <li key={link.href + link.label}>
                     <Link
                       href={link.href}
-                      className="unstyled text-xs text-white/65 hover:text-white"
+                      className="unstyled text-xs text-white/65 hover:text-gold"
                     >
                       {link.label.replace('{site}', siteName)}
                     </Link>

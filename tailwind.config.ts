@@ -18,52 +18,62 @@ const config: Config = {
         sm: '640px',
         md: '768px',
         lg: '1024px',
-        xl: '1200px',
-        '2xl': '1200px',
+        xl: '1240px',
+        '2xl': '1240px',
       },
     },
     extend: {
       colors: {
+        // ── Brand design system ──
+        // Primary = Navy, Secondary = Gold, Accent = Sky.
         primary: {
-          DEFAULT: '#0000EE',
-          hover: '#0000CC',
-          active: '#0000AA',
-          disabled: '#CCCCCC',
+          DEFAULT: '#0F3D8C',
+          hover: '#0A2F6B',
+          active: '#0A2F6B',
+          disabled: '#CBD5E1',
         },
-        // Brand palette (BĐS): navy + gold. Adopt incrementally across the site.
         brand: {
-          DEFAULT: '#07366b',
-          hover: '#0a4a8f',
-          active: '#052748',
-          soft: '#EAF1FA',
+          DEFAULT: '#0F3D8C',
+          hover: '#1E5DB8',
+          active: '#0A2F6B',
+          soft: '#EAF1FB',
         },
         gold: {
-          DEFAULT: '#ffc21c',
-          hover: '#f0b400',
-          active: '#d99e00',
-          soft: '#FFF6DC',
-          ink: '#5C4400',
+          DEFAULT: '#F5A623',
+          hover: '#D98A00',
+          active: '#D98A00',
+          soft: '#FEF3DD',
+          ink: '#5C3D00',
+        },
+        accent: {
+          DEFAULT: '#3B82F6',
+          soft: '#EFF6FF',
         },
         ink: {
-          DEFAULT: '#313131',
-          strong: '#000000',
-          muted: '#666666',
+          DEFAULT: '#1E293B',
+          strong: '#0F172A',
+          muted: '#64748B',
         },
         brdr: {
-          DEFAULT: '#D9D9D9',
-          focus: 'rgba(0,0,238,0.2)',
+          DEFAULT: '#E5E7EB',
+          focus: 'rgba(59,130,246,0.35)',
         },
         surface: {
           DEFAULT: '#FFFFFF',
-          subtle: '#F5F5F5',
+          subtle: '#F7F9FC',
         },
+        // Price is navy + bold per the design.
         price: {
-          DEFAULT: '#059669',
-          soft: '#ECFDF5',
+          DEFAULT: '#0F3D8C',
+          soft: '#EAF1FB',
+        },
+        success: {
+          DEFAULT: '#16A34A',
+          soft: '#F0FDF4',
         },
         vip: {
-          DEFAULT: '#D97706',
-          soft: '#FFFBEB',
+          DEFAULT: '#F5A623',
+          soft: '#FEF3DD',
         },
         danger: {
           DEFAULT: '#DC2626',
@@ -72,6 +82,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          'var(--font-sans)',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
@@ -100,7 +111,7 @@ const config: Config = {
         deep: '0px 8px 24px rgba(0,0,0,0.2)',
       },
       maxWidth: {
-        container: '1200px',
+        container: '1240px',
       },
       keyframes: {
         spin: {
