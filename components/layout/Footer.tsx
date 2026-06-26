@@ -115,11 +115,13 @@ export function Footer({
   hotline = SITE.contactPhone,
   email = SITE.contactEmail,
   zaloPhone = SITE.contactPhone,
+  logo,
 }: {
   siteName?: string;
   hotline?: string;
   email?: string;
   zaloPhone?: string;
+  logo?: string;
 } = {}) {
   return (
     <footer className="mt-12 bg-[#0B1F44] text-[#D6E2F5]/90">
@@ -128,7 +130,18 @@ export function Footer({
         <div className="container-app grid grid-cols-1 gap-8 py-10 lg:grid-cols-[1.3fr_1fr_1fr]">
           <div>
             <div className="text-white">
-              <Logo />
+              {logo ? (
+                <Link href="/" className="unstyled inline-block" aria-label={siteName}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={logo}
+                    alt={siteName}
+                    className="h-auto w-auto max-h-[160px] max-w-[300px] object-contain"
+                  />
+                </Link>
+              ) : (
+                <Logo siteName={siteName} />
+              )}
             </div>
             <p className="mt-3 max-w-md text-sm text-white/70">
               Nền tảng tin đăng bất động sản hàng đầu — kết nối hàng nghìn chủ nhà và người mua thuê

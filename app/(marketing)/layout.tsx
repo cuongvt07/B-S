@@ -28,6 +28,7 @@ export default async function MarketingLayout({ children }: { children: ReactNod
         hotline={contact.hotline}
         email={contact.email}
         zaloPhone={contact.zalo_phone}
+        logo={branding.logo || undefined}
       />
       <CompareBar />
       <AuthModal />
