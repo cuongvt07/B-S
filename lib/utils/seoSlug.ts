@@ -17,7 +17,14 @@ const PROPERTY_MAP: Record<string, ListingFilter['propertyType']> = {
   'van-phong': 'office',
   'mat-bang': 'office',
   'o-ghep': 'shared',
+  'dat-rung': 'forest',
   'dat': 'land',
+  'kho-xuong': 'warehouse',
+  'kho-bai': 'warehouse',
+  'quan-nhau': 'bar',
+  'karaoke': 'karaoke',
+  'quan-cafe': 'cafe',
+  'cafe': 'cafe',
 };
 
 // Build CITY_MAP from cities data (covers all 63 provinces automatically)

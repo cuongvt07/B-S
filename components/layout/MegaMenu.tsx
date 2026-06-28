@@ -43,6 +43,21 @@ const MENU: MenuGroup[] = [
       { label: 'Xe máy', href: '/xe?loai=motorbike' },
     ],
   },
+  {
+    title: 'Danh mục',
+    href: '/tin-dang',
+    children: [
+      { label: 'Căn hộ / Chung cư', href: '/can-ho' },
+      { label: 'Nhà riêng', href: '/nha-rieng' },
+      { label: 'Đất', href: '/dat' },
+      { label: 'Văn phòng / Mặt bằng', href: '/van-phong' },
+      { label: 'Kho xưởng', href: '/kho-xuong' },
+      { label: 'Đất rừng', href: '/dat-rung' },
+      { label: 'Quán nhậu', href: '/quan-nhau' },
+      { label: 'Karaoke', href: '/karaoke' },
+      { label: 'Quán cafe', href: '/quan-cafe' },
+    ],
+  },
 ];
 
 const SIMPLE_LINKS = [

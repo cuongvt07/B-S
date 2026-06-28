@@ -21,7 +21,7 @@ import type { Listing, PropertyType, TransactionType, Direction, FurnishLevel } 
 
 const schema = z.object({
   transactionType: z.enum(['rent', 'sale']),
-  propertyType: z.enum(['apartment', 'room', 'house', 'office', 'land', 'shared']),
+  propertyType: z.enum(['apartment', 'room', 'house', 'office', 'land', 'shared', 'warehouse', 'forest', 'bar', 'karaoke', 'cafe']),
   categoryId: z.string().min(1, 'Chọn danh mục'),
   title: z.string().min(5, 'Tiêu đề tối thiểu 5 ký tự').max(120, 'Tối đa 120 ký tự'),
   contactPhone: z.string().regex(/^0\d{9,10}$/, 'Số điện thoại không hợp lệ'),

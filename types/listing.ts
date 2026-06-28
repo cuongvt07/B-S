@@ -6,7 +6,12 @@ export type PropertyType =
   | 'house'
   | 'office'
   | 'land'
-  | 'shared';
+  | 'shared'
+  | 'warehouse'
+  | 'forest'
+  | 'bar'
+  | 'karaoke'
+  | 'cafe';
 
 export type Direction =
   | 'east'

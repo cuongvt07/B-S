@@ -7,6 +7,11 @@ export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
   office: 'Văn phòng / Mặt bằng',
   land: 'Nhà đất',
   shared: 'Ở ghép',
+  warehouse: 'Kho xưởng',
+  forest: 'Đất rừng',
+  bar: 'Quán nhậu',
+  karaoke: 'Karaoke',
+  cafe: 'Quán cafe',
 };
 
 export const DIRECTION_LABELS: Record<Direction, string> = {

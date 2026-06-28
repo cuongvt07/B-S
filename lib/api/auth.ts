@@ -65,6 +65,11 @@ const PROPERTY_TO_CODE: Record<PropertyType, number> = {
   office: 107,
   land: 104,
   shared: 115,
+  warehouse: 116,
+  forest: 117,
+  bar: 118,
+  karaoke: 119,
+  cafe: 120,
 };
 
 const DIRECTION_TO_API: Record<Direction, string> = {

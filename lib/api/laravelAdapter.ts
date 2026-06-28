@@ -103,6 +103,11 @@ const PROPERTY_LOCAL_TO_CODE: Record<PropertyType, number> = {
   office: 107,
   land: 104,
   shared: 115,
+  warehouse: 116,
+  forest: 117,
+  bar: 118,
+  karaoke: 119,
+  cafe: 120,
 };
 
 const PROPERTY_CODE_TO_LOCAL: Record<number, PropertyType> = {
@@ -119,6 +124,11 @@ const PROPERTY_CODE_TO_LOCAL: Record<number, PropertyType> = {
   113: 'office',
   114: 'house',
   115: 'room',
+  116: 'warehouse',
+  117: 'forest',
+  118: 'bar',
+  119: 'karaoke',
+  120: 'cafe',
 };
 
 const TX_MAP_TO_API: Record<TransactionType, string> = {
