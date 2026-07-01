@@ -1,5 +1,5 @@
 ﻿import Link from 'next/link';
-import { ArrowRight, Building2, Car } from 'lucide-react';
+import { ArrowRight, Building2, Car } from '@/components/icons';
 import type { Blog } from '@/types';
 import { BlogSlider } from '@/components/blog/BlogSlider';
 

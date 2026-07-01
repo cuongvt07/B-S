@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { PlusCircle, Car, ListChecks } from 'lucide-react';
+import { PlusCircle, Car, ListChecks } from '@/components/icons';
 import { Button, Card, EmptyState, Spinner } from '@/components/ui';
 import { MyVehicleRow } from '@/components/dashboard';
 import { vehicleApi } from '@/lib/api/vehicles';

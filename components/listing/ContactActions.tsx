@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Phone, MessageCircle, Facebook } from 'lucide-react';
+import { Phone, MessageCircle, Facebook } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import type { ListingContact } from '@/types';
 

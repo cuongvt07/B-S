@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Building2, KeyRound, LayoutGrid, Trees, Car, Bike, Truck, Zap } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Building2, KeyRound, LayoutGrid, Trees, Car, Bike, Truck, Zap } from '@/components/icons';
+import type { LucideIcon } from '@/components/icons';
 
 interface Cat {
   label: string;

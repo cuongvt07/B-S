@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send } from 'lucide-react';
+import { Send } from '@/components/icons';
 import { Button, Input } from '@/components/ui';
 import { leadApi } from '@/lib/api/leads';
 

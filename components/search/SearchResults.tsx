@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Map } from 'lucide-react';
+import { Map } from '@/components/icons';
 import { useListings } from '@/lib/hooks/useListings';
 import { useFilterParams } from '@/lib/hooks/useFilterParams';
 import { ListingGrid } from '@/components/listing';

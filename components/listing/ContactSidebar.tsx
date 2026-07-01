@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { MessageCircle, Phone, Send, Lock } from 'lucide-react';
+import { MessageCircle, Phone, Send, Lock } from '@/components/icons';
 import type { Listing } from '@/types';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { Button, Input } from '@/components/ui';

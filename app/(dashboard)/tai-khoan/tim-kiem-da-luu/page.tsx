@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bookmark, Trash2 } from 'lucide-react';
+import { Bookmark, Trash2 } from '@/components/icons';
 import { useSavedSearches } from '@/lib/hooks/useSavedSearches';
 import { Badge, Button, Card, EmptyState, Skeleton } from '@/components/ui';
 import { formatTimeAgo } from '@/lib/utils/format';

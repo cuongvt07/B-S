@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { CheckCircle2, ChevronDown, Phone, MessageCircle, Sparkles } from 'lucide-react';
+import { CheckCircle2, ChevronDown, Phone, MessageCircle, Sparkles } from '@/components/icons';
 import { getSiteSettings } from '@/lib/server-data';
 
 export const metadata: Metadata = {

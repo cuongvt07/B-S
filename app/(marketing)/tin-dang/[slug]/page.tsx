@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MapPin, Maximize2, BedDouble, Bath, Compass, Sofa, Eye, Calendar } from 'lucide-react';
+import { MapPin, Maximize2, BedDouble, Bath, Compass, Sofa, Eye, Calendar } from '@/components/icons';
 import { getListing, listListings } from '@/lib/server-data';
 import {
   ListingGallery,

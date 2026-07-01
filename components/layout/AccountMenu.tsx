@@ -16,7 +16,7 @@ import {
   Bookmark,
   Settings,
   LogOut,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Popover } from '@/components/ui';
 import { useCurrentUser, useLogout } from '@/lib/hooks/useAuth';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';

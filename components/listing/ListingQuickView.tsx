@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Star,
   Eye,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Modal, Badge, Button } from '@/components/ui';
 import type { Listing } from '@/types';
 import {

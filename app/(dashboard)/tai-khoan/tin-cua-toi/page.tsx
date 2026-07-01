@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { PlusCircle, FileText, ListChecks } from 'lucide-react';
+import { PlusCircle, FileText, ListChecks } from '@/components/icons';
 import { Button, Card, EmptyState, Spinner } from '@/components/ui';
 import { MyListingRow } from '@/components/dashboard';
 import { meApi } from '@/lib/api/auth';

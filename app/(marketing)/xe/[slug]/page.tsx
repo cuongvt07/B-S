@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Calendar, Gauge, Settings2, Fuel, Palette, Users, MapPin, Phone } from 'lucide-react';
+import { Calendar, Gauge, Settings2, Fuel, Palette, Users, MapPin, Phone } from '@/components/icons';
 import { getVehicle, listVehicles } from '@/lib/server-data';
 import { VehicleCard } from '@/components/vehicle';
 import { Breadcrumbs } from '@/components/seo';

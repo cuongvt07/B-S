@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Search, MapPin, X } from 'lucide-react';
+import { Search, MapPin, X } from '@/components/icons';
 import { cities } from '@/mocks/data/cities';
 import { getCityCenter } from '@/lib/utils/coords';
 import { cn } from '@/lib/utils';

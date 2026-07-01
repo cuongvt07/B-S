@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, List, PlusCircle, Car, Heart, LogOut, User as UserIcon, Bookmark } from 'lucide-react';
+import { LayoutDashboard, List, PlusCircle, Car, Heart, LogOut, User as UserIcon, Bookmark } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { useLogout } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';

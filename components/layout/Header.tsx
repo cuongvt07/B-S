@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, PlusCircle, ChevronDown } from 'lucide-react';
+import { Menu, PlusCircle, ChevronDown } from '@/components/icons';
 import { Logo } from './Logo';
 import { MobileDrawer } from './MobileDrawer';
 import { NotificationBell } from './NotificationBell';

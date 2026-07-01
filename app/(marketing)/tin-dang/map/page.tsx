@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Box, Map as MapIcon, Flame, MapPin, RefreshCcw, Layers } from 'lucide-react';
+import { Box, Map as MapIcon, Flame, MapPin, RefreshCcw, Layers } from '@/components/icons';
 import { useListings } from '@/lib/hooks/useListings';
 import { Breadcrumbs } from '@/components/seo';
 import { Badge, SegmentedControl, Skeleton } from '@/components/ui';

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { memo, useState, type MouseEvent } from 'react';
-import { MapPin, Maximize2, BedDouble, Star } from 'lucide-react';
+import { MapPin, Maximize2, BedDouble, Star } from '@/components/icons';
 import type { Listing } from '@/types';
 import { Badge } from '@/components/ui';
 import { formatPrice, formatArea, formatTimeAgo } from '@/lib/utils/format';

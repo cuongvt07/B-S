@@ -6,7 +6,7 @@ import {
   ShieldCheck,
   Megaphone,
   ArrowRight,
-} from 'lucide-react';
+} from '@/components/icons';
 
 const REASONS = [
   { Icon: BadgeCheck, label: 'Tin đăng thực', desc: 'Xác thực, không tin ảo' },

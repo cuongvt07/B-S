@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/components/icons';
 
 export function NotFoundSearch() {
   const router = useRouter();

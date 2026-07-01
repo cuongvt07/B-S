@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Wrench } from 'lucide-react';
+import { Wrench } from '@/components/icons';
 import { Breadcrumbs } from '@/components/seo';
 import { Button } from '@/components/ui';
 import { getSiteSettings } from '@/lib/server-data';

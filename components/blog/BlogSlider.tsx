@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from '@/components/icons';
 import type { Blog } from '@/types';
 import { BlogCard } from './BlogCard';
 import { cn } from '@/lib/utils';

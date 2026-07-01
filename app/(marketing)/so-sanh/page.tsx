@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQueries } from '@tanstack/react-query';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 import { useCompare } from '@/lib/hooks/useCompare';
 import { listingApi } from '@/lib/api/listings';
-import { GitCompare } from 'lucide-react';
+import { GitCompare } from '@/components/icons';
 import { Badge, Button, Card, EmptyState, Skeleton } from '@/components/ui';
 import { Breadcrumbs } from '@/components/seo';
 import {

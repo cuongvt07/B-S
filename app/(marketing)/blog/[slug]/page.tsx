@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock, Calendar } from '@/components/icons';
 import { getBlog, listBlogs } from '@/lib/server-data';
 import { BlogContent, BlogTOC, BlogCard } from '@/components/blog';
 import { Breadcrumbs, JsonLd, articleSchema, breadcrumbSchema } from '@/components/seo';

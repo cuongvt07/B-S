@@ -15,7 +15,7 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Badge, Button } from '@/components/ui';
 import { ListingImageCarousel, ContactActions } from '@/components/listing';
 import { AuthGate } from '@/components/auth';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BadgeCheck, Crown, Home, UserPlus, X, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, Crown, Home, UserPlus, X, type LucideIcon } from '@/components/icons';
 
 const USERS = [
   'Nguyễn Hoàng Minh', 'Trần Anh Tuấn', 'Lê Thu Hương', 'Phạm Quốc Bảo', 'Võ Thanh Tùng',

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home, Search, ArrowRight, MapPin, Building2, FileSearch } from 'lucide-react';
+import { Home, Search, ArrowRight, MapPin, Building2, FileSearch } from '@/components/icons';
 import { NotFoundSearch } from '@/components/layout/NotFoundSearch';
 
 const QUICK_LINKS = [

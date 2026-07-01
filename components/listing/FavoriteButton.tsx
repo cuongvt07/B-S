@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { Heart } from 'lucide-react';
+import { Heart } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { meApi } from '@/lib/api/auth';
 
@@ -55,7 +55,7 @@ export function FavoriteButton({
         className
       )}
     >
-      <Heart size={16} fill={active ? 'currentColor' : 'none'} />
+      <Heart size={16} weight={active ? 'fill' : 'regular'} />
     </button>
   );
 }

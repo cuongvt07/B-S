@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@/components/icons';
 import { useSiteSettings } from '@/components/layout/SiteSettingsProvider';
 import { listings } from '@/mocks/data/listings';
 import { blogs } from '@/mocks/data/blogs';

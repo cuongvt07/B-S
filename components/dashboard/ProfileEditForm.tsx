@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { UploadCloud, X } from 'lucide-react';
+import { UploadCloud, X } from '@/components/icons';
 import { Button, Card, Input } from '@/components/ui';
 import { apiFetch } from '@/lib/api/client';
 import { meApi } from '@/lib/api/auth';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Bookmark } from 'lucide-react';
+import { Bookmark } from '@/components/icons';
 import { Button, Input, Modal } from '@/components/ui';
 import { useSavedSearches } from '@/lib/hooks/useSavedSearches';
 

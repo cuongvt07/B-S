@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Car, Bike } from 'lucide-react';
+import { ArrowRight, Car, Bike } from '@/components/icons';
 import type { Vehicle } from '@/types';
 import { VehicleCard } from '@/components/vehicle';
 import { CardCarousel } from '@/components/ui';

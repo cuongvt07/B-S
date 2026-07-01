@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Trash2, Edit3, Eye } from 'lucide-react';
+import { Trash2, Edit3, Eye } from '@/components/icons';
 import type { Listing } from '@/types';
 import { Badge } from '@/components/ui';
 import { meApi } from '@/lib/api/auth';

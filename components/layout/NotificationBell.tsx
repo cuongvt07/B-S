@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Bell, Home, Info, MessageSquare } from 'lucide-react';
+import { Bell, Home, Info, MessageSquare } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { formatTimeAgo } from '@/lib/utils/format';
 
@@ -112,7 +112,7 @@ export function NotificationBell() {
         onClick={() => setOpen((v) => !v)}
         className="relative grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-surface-subtle hover:text-primary"
       >
-        <Bell size={20} strokeWidth={2.1} />
+        <Bell size={20} />
         {unreadCount > 0 && (
           <span className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white ring-2 ring-white">
             {unreadCount > 9 ? '9+' : unreadCount}

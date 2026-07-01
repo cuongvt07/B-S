@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 import { useCompare } from '@/lib/hooks/useCompare';
 import { listingApi } from '@/lib/api/listings';
 import { Button, Skeleton } from '@/components/ui';

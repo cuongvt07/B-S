@@ -22,14 +22,14 @@ import {
   Building,
   Car,
   ChevronRight,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Drawer } from '@/components/ui';
 import { INLINE_CATEGORIES } from './InlineCategories';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';
 import { useCurrentUser, useLogout } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '@/components/icons';
 import { useSiteSettings } from '@/components/layout/SiteSettingsProvider';
 
 interface Props {

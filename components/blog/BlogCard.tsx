@@ -1,6 +1,6 @@
 ﻿import Link from 'next/link';
 import Image from 'next/image';
-import { Clock, ArrowRight } from 'lucide-react';
+import { Clock, ArrowRight } from '@/components/icons';
 import { formatTimeAgo } from '@/lib/utils/format';
 import type { Blog } from '@/types';
 

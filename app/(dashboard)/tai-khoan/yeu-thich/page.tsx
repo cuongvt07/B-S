@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { Heart } from 'lucide-react';
+import { Heart } from '@/components/icons';
 import { EmptyState } from '@/components/ui';
 import { ListingGrid } from '@/components/listing';
 import { meApi } from '@/lib/api/auth';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { ChevronDown, SlidersHorizontal } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { cities, cityByCode } from '@/mocks/data/cities';
 import {

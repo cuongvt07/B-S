@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { List, PlusCircle, Heart, Eye } from 'lucide-react';
+import { List, PlusCircle, Heart, Eye } from '@/components/icons';
 import { Card, Spinner } from '@/components/ui';
 import { meApi } from '@/lib/api/auth';
 import { useCurrentUser } from '@/lib/hooks/useAuth';

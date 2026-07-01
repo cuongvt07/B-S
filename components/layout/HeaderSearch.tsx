@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { SearchSuggestions } from './SearchSuggestions';

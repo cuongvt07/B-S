@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 export type DrawerSide = 'left' | 'right' | 'bottom';

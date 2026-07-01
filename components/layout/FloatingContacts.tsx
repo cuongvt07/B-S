@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Facebook, FilePlus2, LogIn, MessageCircle, Phone, UserPlus, X } from 'lucide-react';
+import { Facebook, FilePlus2, LogIn, MessageCircle, Phone, UserPlus, X } from '@/components/icons';
 import { PostListingForm } from '@/components/dashboard';
 import { Button, Modal, Spinner } from '@/components/ui';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';
@@ -119,7 +119,7 @@ export function FloatingContacts() {
                   {it.isZalo ? (
                     <span className="text-[13px] font-bold tracking-tight">Zalo</span>
                   ) : (
-                    <Icon size={20} strokeWidth={2.2} />
+                    <Icon size={20} weight="fill" />
                   )}
                 </a>
               </li>

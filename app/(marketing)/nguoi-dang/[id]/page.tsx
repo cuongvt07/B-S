@@ -9,7 +9,7 @@ import {
   Share2,
   UserPlus,
   Eye,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Breadcrumbs } from '@/components/seo';
 import { Badge, Button } from '@/components/ui';
 import { ListingCard, ContactActions, ReportButton } from '@/components/listing';

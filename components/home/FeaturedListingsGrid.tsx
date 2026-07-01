@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Listing } from '@/types';
 import { ListingCard } from '@/components/listing';
 import { CardCarousel } from '@/components/ui';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@/components/icons';
 
 interface Props {
   title: string;

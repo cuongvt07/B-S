@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { UploadCloud, X } from 'lucide-react';
+import { UploadCloud, X } from '@/components/icons';
 import { Button, Input, Select } from '@/components/ui';
 import { meApi } from '@/lib/api/auth';
 import { vehicleApi, type VehicleInput } from '@/lib/api/vehicles';

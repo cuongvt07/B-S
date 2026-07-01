@@ -11,7 +11,7 @@ import {
   ChevronRight,
   MapPin,
   Maximize2,
-} from 'lucide-react';
+} from '@/components/icons';
 import type { Listing } from '@/types';
 import { formatArea, formatPrice } from '@/lib/utils/format';
 import { formatLocation } from '@/mocks/data/cities';

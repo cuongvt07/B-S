@@ -1,5 +1,5 @@
-import { Building2, Car, Users, Award } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Building2, Car, Users, Award } from '@/components/icons';
+import type { LucideIcon } from '@/components/icons';
 
 interface Stat {
   value: string;

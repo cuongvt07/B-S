@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check } from '@/components/icons';
 import { AMENITIES } from '@/lib/constants';
 
 export function AmenityList({ amenities }: { amenities: string[] }) {

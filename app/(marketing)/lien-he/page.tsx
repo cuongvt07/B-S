@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Phone, Mail, MapPin, Globe2 } from 'lucide-react';
+import { Phone, Mail, MapPin, Globe2 } from '@/components/icons';
 import { Breadcrumbs } from '@/components/seo';
 import { ContactForm } from '@/components/forms/ContactForm';
 import { COMPANY } from '@/lib/constants';

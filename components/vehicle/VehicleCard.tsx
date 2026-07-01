@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, Calendar, Gauge, Settings2, Star } from 'lucide-react';
+import { MapPin, Calendar, Gauge, Settings2, Star } from '@/components/icons';
 import type { Vehicle } from '@/types';
 import { Badge } from '@/components/ui';
 import { formatPrice, formatNumber, formatTimeAgo } from '@/lib/utils/format';

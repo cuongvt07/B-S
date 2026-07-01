@@ -1,6 +1,6 @@
 'use client';
 
-import { GitCompare } from 'lucide-react';
+import { GitCompare } from '@/components/icons';
 import { useCompare } from '@/lib/hooks/useCompare';
 import { cn } from '@/lib/utils';
 

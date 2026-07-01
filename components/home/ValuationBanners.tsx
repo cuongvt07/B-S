@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Home, Car, ArrowRight } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Home, Car, ArrowRight } from '@/components/icons';
+import type { LucideIcon } from '@/components/icons';
 
 interface Banner {
   title: string;

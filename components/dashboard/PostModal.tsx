@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Car, LogIn } from 'lucide-react';
+import { Building2, Car, LogIn } from '@/components/icons';
 import { Modal, SegmentedControl, Button } from '@/components/ui';
 import { usePostModal, type PostVertical } from '@/lib/hooks/usePostModal';
 import { useCurrentUser } from '@/lib/hooks/useAuth';

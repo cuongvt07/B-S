@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Search, MapPin, Building2, BadgeDollarSign, Sparkles, ChevronDown } from 'lucide-react';
+import { Search, MapPin, Building2, BadgeDollarSign, Sparkles, ChevronDown } from '@/components/icons';
 import { cities, cityByCode } from '@/mocks/data/cities';
 import {
   PROPERTY_TYPE_LABELS,

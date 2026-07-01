@@ -8,7 +8,7 @@ import {
   MessageCircle,
   Smartphone,
   ArrowUp,
-} from 'lucide-react';
+} from '@/components/icons';
 import { COMPANY, SITE } from '@/lib/constants';
 import { Logo } from './Logo';
 

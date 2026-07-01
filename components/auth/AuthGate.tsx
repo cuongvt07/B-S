@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Lock, LogIn } from 'lucide-react';
+import { Lock, LogIn } from '@/components/icons';
 import { useCurrentUser } from '@/lib/hooks/useAuth';
 import { useAuthModal } from '@/lib/hooks/useAuthModal';
 import { cn } from '@/lib/utils';

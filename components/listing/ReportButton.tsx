@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Flag, CheckCircle2, X } from 'lucide-react';
+import { Flag, CheckCircle2, X } from '@/components/icons';
 import { Modal, Button, Input } from '@/components/ui';
 import { reportApi, REPORT_REASONS, type ReportReason } from '@/lib/api/reports';
 
