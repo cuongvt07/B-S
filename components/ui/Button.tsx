@@ -16,7 +16,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-primary text-white hover:bg-primary-hover active:bg-primary-active disabled:bg-primary-disabled disabled:text-ink-muted',
+    'bg-champagne text-champagne-ink font-semibold hover:bg-champagne-hover active:bg-champagne-active disabled:bg-primary-disabled disabled:text-ink-muted',
   ghost:
     'bg-transparent text-primary hover:text-primary-hover active:text-primary-active disabled:text-ink-muted',
   outline:
@@ -63,7 +63,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {loading ? (
         <span
           aria-hidden
-          className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+          className="h-4 w-4 animate-spin rounded-full border-2 border-current/40 border-t-current"
         />
       ) : (
         leftIcon

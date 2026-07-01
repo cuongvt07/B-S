@@ -31,7 +31,7 @@ export function NotFoundSearch() {
       />
       <button
         type="submit"
-        className="ml-2 inline-flex items-center whitespace-nowrap rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+        className="ml-2 inline-flex items-center whitespace-nowrap rounded-sm bg-champagne px-4 py-2 text-sm font-semibold text-champagne-ink transition hover:bg-champagne-hover"
       >
         Tìm kiếm
       </button>

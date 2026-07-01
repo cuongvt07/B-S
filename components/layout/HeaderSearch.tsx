@@ -134,7 +134,7 @@ export function HeaderSearch({ placeholder }: { placeholder?: string }) {
         </div>
         <button
           type="submit"
-          className="ml-2 inline-flex shrink-0 items-center whitespace-nowrap rounded-sm bg-primary px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover"
+          className="ml-2 inline-flex shrink-0 items-center whitespace-nowrap rounded-sm bg-champagne px-4 py-1.5 text-xs font-semibold text-champagne-ink transition-colors hover:bg-champagne-hover"
         >
           Tìm kiếm
         </button>

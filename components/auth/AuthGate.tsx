@@ -99,7 +99,7 @@ export function AuthGate({
             <button
               type="button"
               onClick={() => openLogin()}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm bg-primary px-3 py-2 text-xs font-semibold text-white transition hover:bg-primary-hover"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm bg-champagne px-3 py-2 text-xs font-semibold text-champagne-ink transition hover:bg-champagne-hover"
             >
               <LogIn size={14} /> Đăng nhập
             </button>

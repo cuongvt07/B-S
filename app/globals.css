@@ -366,9 +366,9 @@
   transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .home-search__tabs button[aria-selected='true'] {
-  color: #0F3D8C;
-  background: #F5A623;
-  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.28);
+  color: #10263D;
+  background: #C8A96E;
+  box-shadow: 0 4px 12px rgba(200, 169, 110, 0.32);
 }
 .home-search__bar {
   display: grid;
@@ -493,14 +493,14 @@
   margin: 6px;
   padding: 0 18px;
   border-radius: 11px;
-  color: #fff;
-  background: linear-gradient(135deg, #F5A623, #D98A00);
-  box-shadow: 0 8px 18px rgba(245, 166, 35, 0.3);
+  color: #10263D;
+  background: linear-gradient(135deg, #C8A96E, #B8965A);
+  box-shadow: 0 8px 18px rgba(200, 169, 110, 0.35);
   font-size: 13px;
   font-weight: 700;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
-.home-search__submit:hover { transform: translateY(-1px); box-shadow: 0 11px 23px rgba(245, 166, 35, 0.4); }
+.home-search__submit:hover { transform: translateY(-1px); box-shadow: 0 11px 23px rgba(200, 169, 110, 0.5); }
 .home-search__popular {
   display: flex;
   align-items: center;
@@ -1038,17 +1038,17 @@
   margin-top: 20px;
   padding: 0 18px;
   border-radius: 999px;
-  color: #fff;
-  background: #0966ff;
-  box-shadow: 0 9px 22px rgba(9, 102, 255, 0.22);
+  color: #10263D;
+  background: #C8A96E;
+  box-shadow: 0 9px 22px rgba(200, 169, 110, 0.3);
   font-size: 12px;
   font-weight: 800;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .featured-regions__cta:hover {
-  color: #fff;
+  color: #10263D;
   transform: translateY(-2px);
-  box-shadow: 0 13px 28px rgba(9, 102, 255, 0.3);
+  box-shadow: 0 13px 28px rgba(200, 169, 110, 0.42);
 }
 .featured-regions__card {
   position: relative;
@@ -1314,13 +1314,13 @@
   }
 }
 
-/* "Đăng tin" CTA — solid amber, distinct from the primary blue used elsewhere.
-   Real-estate sites typically reserve the loudest color for the post-listing action. */
+/* "Đăng tin" CTA — champagne gold with navy ink, the elegant primary action. */
 .bds-cta-amber {
-  background: #F5A623;
+  background: #C8A96E;
+  color: #10263D !important;
 }
 .bds-cta-amber:hover {
-  background: #D98A00;
+  background: #BE9B58;
 }
 
 /* Subtle fade-in for menus and overlays */

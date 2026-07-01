@@ -155,7 +155,7 @@ export function AccountMenu() {
                   closeMenu();
                   openLogin();
                 }}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-hover"
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm bg-champagne px-3 py-2 text-sm font-semibold text-champagne-ink hover:bg-champagne-hover"
               >
                 <LogIn size={14} /> Đăng nhập
               </button>

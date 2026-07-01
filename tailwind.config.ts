@@ -45,6 +45,15 @@ const config: Config = {
           soft: '#FEF3DD',
           ink: '#5C3D00',
         },
+        // Champagne — the elegant CTA color (buttons revolve around this).
+        // Warm metallic gold on a deep navy ink for a premium, "sang" feel.
+        champagne: {
+          DEFAULT: '#C8A96E',
+          hover: '#BE9B58',
+          active: '#A9854A',
+          soft: '#F6EFE1',
+          ink: '#10263D',
+        },
         accent: {
           DEFAULT: '#3B82F6',
           soft: '#EFF6FF',

@@ -44,7 +44,7 @@ export default function NotFound() {
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/"
-              className="unstyled inline-flex items-center gap-2 rounded-sm bg-primary px-5 py-3 text-sm font-semibold text-white shadow-raised transition hover:bg-primary-hover"
+              className="unstyled inline-flex items-center gap-2 rounded-sm bg-champagne px-5 py-3 text-sm font-semibold text-champagne-ink shadow-raised transition hover:bg-champagne-hover"
             >
               <Home size={16} /> Về trang chủ
             </Link>

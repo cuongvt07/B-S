@@ -35,7 +35,7 @@ export default function FavoritesPage() {
           action={
             <Link
               href="/tin-dang"
-              className="unstyled inline-flex items-center justify-center rounded-sm bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover"
+              className="unstyled inline-flex items-center justify-center rounded-sm bg-champagne px-4 py-3 text-sm font-semibold text-champagne-ink hover:bg-champagne-hover"
             >
               Xem tin đăng
             </Link>
@@ -53,7 +53,7 @@ export default function FavoritesPage() {
               action={
                 <Link
                   href="/tin-dang"
-                  className="unstyled inline-flex items-center justify-center rounded-sm bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover"
+                  className="unstyled inline-flex items-center justify-center rounded-sm bg-champagne px-4 py-3 text-sm font-semibold text-champagne-ink hover:bg-champagne-hover"
                 >
                   Tìm tin đăng
                 </Link>

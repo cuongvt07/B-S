@@ -128,7 +128,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           {v.contact.phone ? (
             <a
               href={`tel:${v.contact.phone}`}
-              className="flex items-center justify-center gap-2 rounded-sm bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+              className="flex items-center justify-center gap-2 rounded-sm bg-champagne px-4 py-2.5 text-sm font-semibold text-champagne-ink hover:bg-champagne-hover"
             >
               <Phone size={16} /> {maskPhone(v.contact.phone)} · Gọi
             </a>

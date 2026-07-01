@@ -108,7 +108,7 @@ export default async function BrokerPackagePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-brand py-16 text-white sm:py-20">
+      <section className="relative overflow-hidden bg-surface-subtle py-16 text-ink sm:py-20">
         {/* Background image */}
         <div
           className="pointer-events-none absolute inset-0 bg-cover bg-center"
@@ -116,29 +116,29 @@ export default async function BrokerPackagePage() {
             backgroundImage: "url('/bg/bg-6.jpg')",
           }}
         />
-        {/* Navy overlay keeps text readable over the photo */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/95 via-brand/90 to-brand-active/95" />
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-gold/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+        {/* Frosted white overlay keeps text readable over the photo */}
+        <div className="pointer-events-none absolute inset-0 bg-white/82 backdrop-blur-md" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-champagne/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
         <div className="container-app relative text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-sm bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold-ink">
+          <span className="inline-flex items-center gap-1.5 rounded-sm bg-champagne px-3 py-1 text-xs font-semibold uppercase tracking-wide text-champagne-ink">
             <Sparkles size={13} /> Dành cho môi giới
           </span>
-          <h1 className="mt-4 text-3xl font-bold !text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] sm:text-5xl">
+          <h1 className="mt-4 text-3xl font-bold !text-ink-strong sm:text-5xl">
             Đăng nhiều tin hơn mỗi ngày — Tiếp cận nhiều khách hơn
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.3)] sm:text-lg">
+          <p className="mx-auto mt-3 max-w-2xl text-base text-ink-muted sm:text-lg">
             Nâng cấp gói để tăng số tin đăng mỗi ngày. Chưa hỗ trợ thanh toán online —
             liên hệ Zalo hoặc hotline để được kích hoạt nhanh chóng.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a href={ZALO_HREF} target="_blank" rel="noopener noreferrer" className="unstyled">
-              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-gold px-8 py-3 text-base font-semibold text-gold-ink transition-colors hover:bg-gold-hover">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-champagne px-8 py-3 text-base font-semibold text-champagne-ink transition-colors hover:bg-champagne-hover">
                 <MessageCircle size={18} /> Liên hệ Zalo
               </span>
             </a>
             <a href={TEL_HREF} className="unstyled">
-              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm border border-white/40 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm border border-champagne px-6 py-3 text-base font-semibold text-champagne-ink transition-colors hover:bg-champagne-soft">
                 <Phone size={18} /> {contactPhone}
               </span>
             </a>
@@ -163,7 +163,7 @@ export default async function BrokerPackagePage() {
               }
             >
               {t.primary && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-gold-ink">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-champagne px-3 py-1 text-xs font-semibold text-champagne-ink">
                   Phổ biến nhất
                 </span>
               )}
@@ -204,8 +204,8 @@ export default async function BrokerPackagePage() {
                     className={
                       'inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-sm px-4 py-3 text-base font-semibold transition-colors ' +
                       (t.primary
-                        ? 'bg-brand text-white hover:bg-brand-hover'
-                        : 'border border-brand text-brand hover:bg-brand-soft')
+                        ? 'bg-champagne text-champagne-ink hover:bg-champagne-hover'
+                        : 'border border-champagne text-champagne-ink hover:bg-champagne-soft')
                     }
                   >
                     <MessageCircle size={16} /> {t.cta}
@@ -217,7 +217,7 @@ export default async function BrokerPackagePage() {
         </div>
 
         {/* Payment notice */}
-        <div className="mx-auto mt-8 max-w-3xl rounded-md border border-gold/50 bg-gold-soft px-5 py-4 text-sm text-gold-ink">
+        <div className="mx-auto mt-8 max-w-3xl rounded-md border border-champagne/50 bg-champagne-soft px-5 py-4 text-sm text-champagne-ink">
           <p className="font-semibold">Lưu ý về thanh toán</p>
           <p className="mt-1 leading-relaxed">
             Hệ thống hiện <strong>chưa hỗ trợ thanh toán online</strong>. Để mua hoặc gia hạn gói,
@@ -264,7 +264,7 @@ export default async function BrokerPackagePage() {
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a href={ZALO_HREF} target="_blank" rel="noopener noreferrer" className="unstyled">
-              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-gold px-8 py-3 text-base font-semibold text-gold-ink transition-colors hover:bg-gold-hover">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-champagne px-8 py-3 text-base font-semibold text-champagne-ink transition-colors hover:bg-champagne-hover">
                 <MessageCircle size={18} /> Liên hệ Zalo
               </span>
             </a>

@@ -80,13 +80,13 @@ export default async function SeoLandingPage({ params }: PageProps) {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/bg/bg-6.jpg')" }}
         />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-brand via-brand/80 to-brand/20" />
-        <div className="relative z-10 p-6 text-white sm:p-8">
-          <h1 className="text-xl font-semibold !text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.3)] sm:text-2xl">
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/82 to-white/40 backdrop-blur-[2px]" />
+        <div className="relative z-10 p-6 text-ink sm:p-8">
+          <h1 className="text-xl font-semibold !text-ink-strong sm:text-2xl">
             {title}
           </h1>
-          <p className="mt-2 text-sm text-white/90">
-            Tìm thấy <strong className="text-white">{result.meta.total}</strong> tin đăng phù hợp
+          <p className="mt-2 text-sm text-ink-muted">
+            Tìm thấy <strong className="text-champagne-ink">{result.meta.total}</strong> tin đăng phù hợp
             {city ? ` tại ${city.name}` : ''}. Cập nhật mới nhất từ cộng đồng người đăng và môi giới xác thực.
           </p>
         </div>

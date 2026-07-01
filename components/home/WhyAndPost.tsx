@@ -44,25 +44,25 @@ export function WhyAndPost() {
         {/* Đăng tin miễn phí */}
         <Link
           href="/tai-khoan/dang-tin"
-          className="unstyled group relative min-h-[160px] overflow-hidden rounded-md p-5 text-white shadow-raised"
+          className="unstyled group relative min-h-[160px] overflow-hidden rounded-md p-5 text-ink shadow-raised"
         >
           <div
             aria-hidden
             className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
             style={{ backgroundImage: "url('/bg/bg-1.jpg')" }}
           />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-brand via-brand/90 to-brand/65" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-white/92 via-white/82 to-white/50 backdrop-blur-[2px]" />
           <div className="relative z-10 flex h-full flex-col justify-between gap-4">
             <div>
-              <span className="icon-chip grid h-10 w-10 place-items-center rounded-md bg-gold text-gold-ink">
+              <span className="icon-chip grid h-10 w-10 place-items-center rounded-md bg-champagne text-champagne-ink">
                 <Megaphone size={20} />
               </span>
-              <h3 className="mt-3 text-lg font-bold !text-white">Đăng tin miễn phí</h3>
-              <p className="mt-1 text-sm text-white/80">
+              <h3 className="mt-3 text-lg font-bold !text-ink-strong">Đăng tin miễn phí</h3>
+              <p className="mt-1 text-sm text-ink-muted">
                 Tiếp cận hàng nghìn khách hàng mỗi ngày — đăng tin chỉ trong 1 phút.
               </p>
             </div>
-            <span className="inline-flex w-fit items-center gap-2 rounded-sm bg-gold px-4 py-2 text-sm font-semibold text-gold-ink transition-colors group-hover:bg-gold-hover">
+            <span className="inline-flex w-fit items-center gap-2 rounded-sm bg-champagne px-4 py-2 text-sm font-semibold text-champagne-ink transition-colors group-hover:bg-champagne-hover">
               Đăng tin ngay <ArrowRight size={16} />
             </span>
           </div>

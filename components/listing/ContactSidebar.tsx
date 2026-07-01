@@ -109,7 +109,7 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
         )}
         <Button
           type="submit"
-          className="h-11 w-full !bg-brand hover:!bg-brand-hover active:!bg-brand-active"
+          className="h-11 w-full"
           loading={lead.isPending}
           leftIcon={<Send size={16} className="shrink-0" />}
         >
