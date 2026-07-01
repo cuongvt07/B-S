@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
@@ -41,46 +41,44 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
     lead.mutate();
   }
 
+  const contact = listing.contact;
+  const maskedPhone = maskPhone(contact.phone);
+
   return (
     <aside className="space-y-4 rounded-md border border-brdr bg-white p-4 shadow-raised">
+      {/* Thông tin người đăng */}
       <div>
         <p className="text-xs uppercase tracking-wide text-ink-muted">Liên hệ người đăng</p>
-        <p className="mt-1 text-lg font-semibold text-ink">
-          {listing.contact.name || 'Môi giới / chủ nhà'}
-        </p>
-        <p className="mt-1 text-sm font-semibold text-price no-break">
-          {formatPrice(listing.price, listing.priceUnit)}
-        </p>
+        <p className="mt-1 font-semibold text-ink">{contact.name}</p>
       </div>
 
-      <AuthGate>
-        <div className="space-y-2">
-          {/* Listing phone is always masked — contact via Zalo or the request form. */}
-          <div className="flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-brand/30 bg-brand-soft px-4 text-sm font-semibold text-brand">
-            <Phone size={18} className="shrink-0" />
-            <span className="tracking-wider">{maskPhone(listing.contact.phone)}</span>
-            <Lock size={13} className="shrink-0 opacity-70" />
-          </div>
-          {listing.contact.zalo && (
-            <a
-              href={`https://zalo.me/${listing.contact.zalo.replace(/\D/g, '')}`}
-              target="_blank"
-              rel="noreferrer"
-              className="unstyled flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-gold px-4 text-sm font-semibold text-gold-ink transition-colors hover:bg-gold-hover"
-            >
-              <MessageCircle size={18} className="shrink-0" /> Chat Zalo
-            </a>
-          )}
-          <p className="text-center text-xs text-ink-muted">
-            Số điện thoại được bảo mật. Vui lòng liên hệ qua Zalo hoặc gửi yêu cầu tư vấn bên dưới.
-          </p>
-        </div>
-      </AuthGate>
+      {/* Nút gọi / Zalo */}
+      <div className="flex gap-2">
+        <a
+          href={`tel:${contact.phone}`}
+          className="unstyled flex flex-1 items-center justify-center gap-2 rounded-sm border border-brdr bg-white py-2.5 text-sm font-semibold text-ink transition hover:border-primary hover:text-primary"
+        >
+          <Phone size={16} /> {maskedPhone}
+        </a>
+        {contact.zalo && (
+          <a
+            href={`https://zalo.me/${contact.zalo.replace(/\D/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="unstyled flex flex-1 items-center justify-center gap-2 rounded-sm py-2.5 text-sm font-semibold text-white transition"
+            style={{ background: '#0068ff' }}
+          >
+            <MessageCircle size={16} /> Zalo
+          </a>
+        )}
+      </div>
 
-      <form onSubmit={submitLead} className="space-y-3 border-t border-brdr pt-4">
-        <p className="text-sm font-semibold text-ink">Yêu cầu tư vấn tin này</p>
+      {/* Form gửi yêu cầu */}
+      <form onSubmit={submitLead} className="space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Gửi yêu cầu tư vấn</p>
         <Input
           label="Họ tên"
+          type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -114,10 +112,12 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
           className="h-11 w-full !bg-brand hover:!bg-brand-hover active:!bg-brand-active"
           loading={lead.isPending}
         >
-          <Send size={16} className="shrink-0" /> Gửi yêu cầu
+          <Send size={16} className="shrink-0" />
+          Gửi yêu cầu
         </Button>
       </form>
 
+      {/* Báo cáo */}
       <div className="flex justify-center border-t border-brdr pt-3">
         <ReportButton
           targetType="listing"

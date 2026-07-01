@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Flag, CheckCircle2 } from 'lucide-react';
+import { Flag, CheckCircle2, X } from 'lucide-react';
 import { Modal, Button, Input } from '@/components/ui';
 import { reportApi, REPORT_REASONS, type ReportReason } from '@/lib/api/reports';
 
@@ -10,7 +10,6 @@ type Props = {
   targetType: 'listing' | 'user';
   listingId?: number;
   reportedUserId?: number;
-  /** Render as a subtle text link (default) or a full button. */
   variant?: 'link' | 'button';
   label?: string;
 };
@@ -53,28 +52,35 @@ export function ReportButton({
 
   function close() {
     setOpen(false);
-    // reset after the close animation
     setTimeout(() => {
       setDone(false);
       setError(null);
       setDetail('');
+      setName('');
+      setPhone('');
       setReason('tin_ao');
     }, 200);
   }
+
+  const reasons = targetType === 'listing'
+    ? REPORT_REASONS
+    : REPORT_REASONS.filter((r) => ['ngon_tu', 'anh_vi_pham', 'sai_thong_tin', 'khac'].includes(r.value));
 
   return (
     <>
       {variant === 'button' ? (
         <Button type="button" variant="outline" onClick={() => setOpen(true)}>
-          <Flag size={16} /> {label}
+          <Flag size={16} />
+          {label}
         </Button>
       ) : (
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-danger"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-danger transition-colors"
         >
-          <Flag size={13} /> {label}
+          <Flag size={13} />
+          {label}
         </button>
       )}
 
@@ -83,17 +89,13 @@ export function ReportButton({
         onClose={close}
         size="sm"
         title={targetType === 'listing' ? 'Báo cáo tin đăng' : 'Báo cáo tài khoản'}
-        description={
-          done
-            ? undefined
-            : 'Cho chúng tôi biết vấn đề bạn gặp với nội dung này. Báo cáo được gửi tới quản trị viên.'
-        }
+        description={done ? undefined : 'Cho chúng tôi biết vấn đề bạn gặp với nội dung này. Báo cáo được gửi tới quản trị viên.'}
       >
         {done ? (
-          <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <CheckCircle2 size={40} className="text-price" />
-            <p className="text-sm font-semibold text-ink">Đã gửi báo cáo. Cảm ơn bạn!</p>
-            <p className="text-sm text-ink-muted">
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <CheckCircle2 size={44} className="text-green-500" />
+            <p className="text-base font-semibold text-ink">Đã gửi báo cáo. Cảm ơn bạn!</p>
+            <p className="text-sm text-ink-muted max-w-xs">
               Quản trị viên sẽ xem xét và xử lý trong thời gian sớm nhất.
             </p>
             <Button type="button" onClick={close} className="mt-2">
@@ -102,16 +104,19 @@ export function ReportButton({
           </div>
         ) : (
           <form onSubmit={submit} className="space-y-4">
+            {/* Lý do */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-ink">Lý do báo cáo</label>
+              <label className="mb-2 block text-sm font-medium text-ink">
+                Lý do báo cáo <span className="text-danger">*</span>
+              </label>
               <div className="grid grid-cols-2 gap-2">
-                {REPORT_REASONS.map((r) => (
+                {reasons.map((r) => (
                   <label
                     key={r.value}
                     className={
-                      'flex cursor-pointer items-center gap-2 rounded-sm border px-3 py-2 text-sm ' +
+                      'flex cursor-pointer items-center gap-2 rounded-sm border px-3 py-2 text-sm transition-colors ' +
                       (reason === r.value
-                        ? 'border-primary bg-primary/5 text-ink'
+                        ? 'border-primary bg-primary/5 text-ink font-medium'
                         : 'border-brdr text-ink-muted hover:border-primary/50')
                     }
                   >
@@ -129,9 +134,11 @@ export function ReportButton({
               </div>
             </div>
 
+            {/* Mô tả chi tiết */}
             <div>
               <label className="mb-1 block text-sm font-medium text-ink">
-                Mô tả chi tiết <span className="text-ink-muted">(không bắt buộc)</span>
+                Mô tả chi tiết{' '}
+                <span className="text-ink-muted">(không bắt buộc)</span>
               </label>
               <textarea
                 value={detail}
@@ -139,10 +146,11 @@ export function ReportButton({
                 rows={3}
                 maxLength={2000}
                 placeholder="Mô tả cụ thể vấn đề..."
-                className="w-full rounded-sm border border-brdr px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+                className="w-full rounded-sm border border-brdr px-3 py-2 text-sm text-ink outline-none focus:border-primary resize-none"
               />
             </div>
 
+            {/* Thông tin người báo cáo (không bắt buộc) */}
             <div className="grid grid-cols-2 gap-2">
               <Input
                 label="Tên của bạn"
@@ -151,20 +159,35 @@ export function ReportButton({
                 placeholder="Không bắt buộc"
               />
               <Input
-                label="SĐT liên hệ"
+                label="Số điện thoại"
+                type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Không bắt buộc"
               />
             </div>
 
-            {error && <p className="text-sm text-danger">{error}</p>}
+            {error && (
+              <p className="rounded-sm bg-red-50 px-3 py-2 text-xs text-danger flex items-center gap-1.5">
+                <X size={13} /> {error}
+              </p>
+            )}
 
-            <div className="flex justify-end gap-2 pt-1">
-              <Button type="button" variant="outline" onClick={close}>
+            <div className="flex gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={close}
+              >
                 Hủy
               </Button>
-              <Button type="submit" variant="danger" loading={mutation.isPending}>
+              <Button
+                type="submit"
+                className="flex-1"
+                loading={mutation.isPending}
+              >
+                <Flag size={14} />
                 Gửi báo cáo
               </Button>
             </div>

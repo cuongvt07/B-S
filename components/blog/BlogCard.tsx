@@ -1,10 +1,9 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import Image from 'next/image';
 import { Clock, ArrowRight } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/utils/format';
 import type { Blog } from '@/types';
 
-// Fallback cover when a post has no image — keeps cards visually consistent.
 const FALLBACK_COVER = '/bg/bg-3.jpg';
 
 export function BlogCard({ blog, variant = 'normal' }: { blog: Blog; variant?: 'normal' | 'featured' }) {

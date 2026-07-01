@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -13,42 +13,24 @@ interface Props {
 
 export function BlogSlider({ blogs, emptyText }: Props) {
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const total = blogs.length;
 
-  const update = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    setCanPrev(el.scrollLeft > 4);
-    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  }, []);
+  // Reset về 0 khi danh sách thay đổi
+  useEffect(() => { setCurrent(0); }, [total]);
 
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    update();
-    const onScroll = () => update();
-    el.addEventListener('scroll', onScroll, { passive: true });
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener('scroll', onScroll);
-      ro.disconnect();
-    };
-  }, [update, blogs.length]);
-
-  const step = useCallback(
-    (direction: -1 | 1) => {
+  const goTo = useCallback(
+    (idx: number) => {
       const el = trackRef.current;
       if (!el) return;
-      const card = el.querySelector<HTMLElement>('[data-card]');
-      if (!card) return;
-      const cardW = card.offsetWidth;
-      const curIdx = Math.round(el.scrollLeft / cardW);
-      const target = Math.max(0, Math.min(blogs.length - 1, curIdx + direction));
-      el.scrollTo({ left: target * cardW, behavior: 'smooth' });
+      const clamped = Math.max(0, Math.min(total - 1, idx));
+      setCurrent(clamped);
+      const card = el.children[clamped] as HTMLElement | undefined;
+      if (card) {
+        el.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
+      }
     },
-    [blogs.length]
+    [total]
   );
 
   if (!blogs.length) {
@@ -61,46 +43,70 @@ export function BlogSlider({ blogs, emptyText }: Props) {
 
   return (
     <div className="relative">
+      {/* Track — ẩn scrollbar, mỗi card chiếm 100% width */}
       <div
         ref={trackRef}
-        className="-mx-2 flex snap-x snap-mandatory items-stretch overflow-x-auto overscroll-x-contain pb-2 [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory overflow-x-hidden"
         style={{ scrollbarWidth: 'none' }}
       >
         {blogs.map((b) => (
           <div
             key={b.id}
-            data-card
-            className="flex snap-start shrink-0 basis-full px-2 sm:basis-1/2 lg:basis-1/3"
+            className="w-full shrink-0 snap-start"
           >
             <BlogCard blog={b} />
           </div>
         ))}
       </div>
 
-      <button
-        type="button"
-        aria-label="Bài trước"
-        onClick={() => step(-1)}
-        disabled={!canPrev}
-        className={cn(
-          'absolute -left-4 top-[40%] hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-brdr bg-white shadow-elevated transition md:grid',
-          canPrev ? 'opacity-100 hover:border-primary hover:text-primary' : 'opacity-0 pointer-events-none'
-        )}
-      >
-        <ChevronLeft size={18} />
-      </button>
-      <button
-        type="button"
-        aria-label="Bài sau"
-        onClick={() => step(1)}
-        disabled={!canNext}
-        className={cn(
-          'absolute -right-4 top-[40%] hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-brdr bg-white shadow-elevated transition md:grid',
-          canNext ? 'opacity-100 hover:border-primary hover:text-primary' : 'opacity-0 pointer-events-none'
-        )}
-      >
-        <ChevronRight size={18} />
-      </button>
+      {/* Điều hướng prev / next */}
+      {total > 1 && (
+        <>
+          <button
+            type="button"
+            aria-label="Bài trước"
+            onClick={() => goTo(current - 1)}
+            disabled={current === 0}
+            className={cn(
+              'absolute -left-4 top-[40%] hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-brdr bg-white shadow-elevated transition md:grid',
+              current === 0 ? 'pointer-events-none opacity-0' : 'opacity-100 hover:border-primary hover:text-primary'
+            )}
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <button
+            type="button"
+            aria-label="Bài sau"
+            onClick={() => goTo(current + 1)}
+            disabled={current === total - 1}
+            className={cn(
+              'absolute -right-4 top-[40%] hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-brdr bg-white shadow-elevated transition md:grid',
+              current === total - 1 ? 'pointer-events-none opacity-0' : 'opacity-100 hover:border-primary hover:text-primary'
+            )}
+          >
+            <ChevronRight size={18} />
+          </button>
+        </>
+      )}
+
+      {/* Dot indicators */}
+      {total > 1 && (
+        <div className="mt-3 flex justify-center gap-1.5">
+          {blogs.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Bài ${i + 1}`}
+              onClick={() => goTo(i)}
+              className={cn(
+                'h-1.5 rounded-full transition-all',
+                i === current ? 'w-5 bg-primary' : 'w-1.5 bg-brdr hover:bg-ink-muted'
+              )}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
