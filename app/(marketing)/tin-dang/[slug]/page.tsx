@@ -65,12 +65,12 @@ export default async function ListingDetailPage({ params }: PageProps) {
   // and query the owner's listings directly by ownerId instead of pulling a
   // large page and filtering client-side.
   const [similar, ownerListingsResult] = await Promise.all([
-    listListings({ propertyType: l.propertyType, cityCode: l.cityCode, pageSize: 4 }),
+    listListings({ propertyType: l.propertyType, cityCode: l.cityCode, pageSize: 5 }),
     /^\d+$/.test(l.ownerId)
       ? listListings({ ownerId: l.ownerId, pageSize: 5 })
       : Promise.resolve({ data: [], meta: { page: 1, pageSize: 5, total: 0, totalPages: 0 } }),
   ]);
-  const relatedListings = similar.data.filter((s) => s.id !== l.id).slice(0, 3);
+  const relatedListings = similar.data.filter((s) => s.id !== l.id).slice(0, 4);
   const ownerListings = ownerListingsResult.data.filter((s) => s.id !== l.id).slice(0, 4);
 
   const url = `${SITE.url}/tin-dang/${l.slug}`;
@@ -289,7 +289,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
       {relatedListings.length > 0 && (
         <section className="mt-12">
           <h2 className="mb-4 text-lg font-semibold">Tin đăng tương tự</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedListings.map((r) => (
               <ListingCard key={r.id} listing={r} />
             ))}

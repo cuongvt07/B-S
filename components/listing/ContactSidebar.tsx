@@ -111,8 +111,8 @@ export function ContactSidebar({ listing }: { listing: Listing }) {
           type="submit"
           className="h-11 w-full !bg-brand hover:!bg-brand-hover active:!bg-brand-active"
           loading={lead.isPending}
+          leftIcon={<Send size={16} className="shrink-0" />}
         >
-          <Send size={16} className="shrink-0" />
           Gửi yêu cầu
         </Button>
       </form>

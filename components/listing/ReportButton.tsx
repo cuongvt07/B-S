@@ -28,10 +28,21 @@ export function ReportButton({
   const [phone, setPhone] = useState('');
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const missingTarget =
+    (targetType === 'listing' && listingId === undefined) ||
+    (targetType === 'user' && reportedUserId === undefined);
 
   const mutation = useMutation({
-    mutationFn: () =>
-      reportApi.submit({
+    mutationFn: () => {
+      if (missingTarget) {
+        throw new Error(
+          targetType === 'listing'
+            ? 'Không xác định được tin đăng cần báo cáo.'
+            : 'Không xác định được tài khoản cần báo cáo.'
+        );
+      }
+
+      return reportApi.submit({
         target_type: targetType,
         listing_id: listingId,
         reported_user_id: reportedUserId,
@@ -39,7 +50,8 @@ export function ReportButton({
         detail: detail.trim() || undefined,
         reporter_name: name.trim() || undefined,
         reporter_phone: phone.trim() || undefined,
-      }),
+      });
+    },
     onSuccess: () => setDone(true),
     onError: (e) => setError(e instanceof Error ? e.message : 'Gửi báo cáo thất bại'),
   });
@@ -47,6 +59,14 @@ export function ReportButton({
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (missingTarget) {
+      setError(
+        targetType === 'listing'
+          ? 'Không xác định được tin đăng cần báo cáo.'
+          : 'Không xác định được tài khoản cần báo cáo.'
+      );
+      return;
+    }
     mutation.mutate();
   }
 
@@ -62,15 +82,15 @@ export function ReportButton({
     }, 200);
   }
 
-  const reasons = targetType === 'listing'
-    ? REPORT_REASONS
-    : REPORT_REASONS.filter((r) => ['ngon_tu', 'anh_vi_pham', 'sai_thong_tin', 'khac'].includes(r.value));
-
   return (
     <>
       {variant === 'button' ? (
-        <Button type="button" variant="outline" onClick={() => setOpen(true)}>
-          <Flag size={16} />
+        <Button
+          type="button"
+          variant="outline"
+          leftIcon={<Flag size={16} className="shrink-0" />}
+          onClick={() => setOpen(true)}
+        >
           {label}
         </Button>
       ) : (
@@ -79,7 +99,7 @@ export function ReportButton({
           onClick={() => setOpen(true)}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-danger transition-colors"
         >
-          <Flag size={13} />
+          <Flag size={13} className="shrink-0" />
           {label}
         </button>
       )}
@@ -89,28 +109,36 @@ export function ReportButton({
         onClose={close}
         size="sm"
         title={targetType === 'listing' ? 'Báo cáo tin đăng' : 'Báo cáo tài khoản'}
-        description={done ? undefined : 'Cho chúng tôi biết vấn đề bạn gặp với nội dung này. Báo cáo được gửi tới quản trị viên.'}
+        description={
+          done
+            ? undefined
+            : 'Cho chúng tôi biết vấn đề bạn gặp với nội dung này. Báo cáo được gửi tới quản trị viên.'
+        }
       >
         {done ? (
-          <div className="flex flex-col items-center gap-3 py-6 text-center">
-            <CheckCircle2 size={44} className="text-green-500" />
-            <p className="text-base font-semibold text-ink">Đã gửi báo cáo. Cảm ơn bạn!</p>
-            <p className="text-sm text-ink-muted max-w-xs">
-              Quản trị viên sẽ xem xét và xử lý trong thời gian sớm nhất.
+          <div className="flex flex-col items-center gap-3 py-4 text-center">
+            <CheckCircle2 size={40} className="text-price" />
+            <p className="text-sm font-semibold text-ink">Đã gửi báo cáo. Cảm ơn bạn!</p>
+            <p className="text-sm text-ink-muted">
+              Quản trị viên sẽ xem xét và xử lý trong vòng 24 giờ.
             </p>
-            <Button type="button" onClick={close} className="mt-2">
+            <Button
+              type="button"
+              variant="outline"
+              leftIcon={<X size={14} className="shrink-0" />}
+              onClick={close}
+              className="mt-2"
+            >
               Đóng
             </Button>
           </div>
         ) : (
           <form onSubmit={submit} className="space-y-4">
-            {/* Lý do */}
+            {/* Lý do báo cáo */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-ink">
-                Lý do báo cáo <span className="text-danger">*</span>
-              </label>
+              <label className="mb-2 block text-sm font-medium text-ink">Lý do báo cáo</label>
               <div className="grid grid-cols-2 gap-2">
-                {reasons.map((r) => (
+                {REPORT_REASONS.map((r) => (
                   <label
                     key={r.value}
                     className={
@@ -134,11 +162,11 @@ export function ReportButton({
               </div>
             </div>
 
-            {/* Mô tả chi tiết */}
+            {/* Chi tiết */}
             <div>
               <label className="mb-1 block text-sm font-medium text-ink">
                 Mô tả chi tiết{' '}
-                <span className="text-ink-muted">(không bắt buộc)</span>
+                <span className="font-normal text-ink-muted">(không bắt buộc)</span>
               </label>
               <textarea
                 value={detail}
@@ -146,11 +174,11 @@ export function ReportButton({
                 rows={3}
                 maxLength={2000}
                 placeholder="Mô tả cụ thể vấn đề..."
-                className="w-full rounded-sm border border-brdr px-3 py-2 text-sm text-ink outline-none focus:border-primary resize-none"
+                className="w-full rounded-sm border border-brdr px-3 py-2 text-sm text-ink outline-none focus:border-primary"
               />
             </div>
 
-            {/* Thông tin người báo cáo (không bắt buộc) */}
+            {/* Thông tin người báo cáo */}
             <div className="grid grid-cols-2 gap-2">
               <Input
                 label="Tên của bạn"
@@ -168,17 +196,15 @@ export function ReportButton({
             </div>
 
             {error && (
-              <p className="rounded-sm bg-red-50 px-3 py-2 text-xs text-danger flex items-center gap-1.5">
-                <X size={13} /> {error}
-              </p>
+              <p className="rounded-sm bg-danger/5 px-3 py-2 text-xs text-danger">{error}</p>
             )}
 
             <div className="flex gap-2 pt-1">
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
                 onClick={close}
+                className="flex-1"
               >
                 Hủy
               </Button>
@@ -186,8 +212,8 @@ export function ReportButton({
                 type="submit"
                 className="flex-1"
                 loading={mutation.isPending}
+                leftIcon={<Flag size={14} className="shrink-0" />}
               >
-                <Flag size={14} />
                 Gửi báo cáo
               </Button>
             </div>
