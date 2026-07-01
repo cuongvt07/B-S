@@ -65,7 +65,7 @@ export default async function HomePage() {
       </Reveal>
 
       <Reveal>
-        <BlogStrip blogs={blogResult.data} />
+        <BlogStrip data={{ bds: blogResult.data, xe: [] }} />
       </Reveal>
     </>
   );
