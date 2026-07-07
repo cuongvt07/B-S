@@ -20,7 +20,8 @@
   }
 
   body {
-    @apply bg-background text-on-light font-sans text-base;
+    @apply bg-background font-sans text-base;
+    color: var(--text-on-light);
     font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
   }
 
@@ -43,7 +44,7 @@
     text-underline-offset: 2px;
   }
   a:hover {
-    @apply text-primary-hover;
+    @apply text-primary-light;
   }
   a.unstyled,
   a.unstyled:hover {
@@ -57,7 +58,8 @@
   h4,
   h5,
   h6 {
-    @apply font-semibold text-on-light;
+    @apply font-semibold;
+    color: var(--text-on-light);
     /* Balance headings so the last line isn't a single orphan word on mobile. */
     text-wrap: balance;
   }

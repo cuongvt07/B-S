@@ -40,14 +40,6 @@ const config: Config = {
           soft: '#F5F5F5',          // Xám nhạt - disabled state
         },
         
-        // Text colors - tự động theo nền
-        text: {
-          'on-dark': '#FFFFFF',         // Chữ trắng trên nền tối
-          'on-dark-muted': '#E5E7EB',   // Chữ xám nhạt trên nền tối
-          'on-light': '#1A1A1A',        // Chữ đen trên nền sáng
-          'on-light-muted': '#6B7280',  // Chữ xám đậm trên nền sáng
-        },
-        
         // Background
         background: {
           DEFAULT: '#FFFFFF',       // Nền trắng chính
@@ -130,6 +122,13 @@ const config: Config = {
           DEFAULT: '#FFFFFF',
           subtle: '#F7F8FA',
         },
+      },
+      textColor: {
+        // Text colors cho Tailwind classes
+        'on-dark': '#FFFFFF',
+        'on-dark-muted': '#E5E7EB',
+        'on-light': '#1A1A1A',
+        'on-light-muted': '#6B7280',
       },
       fontFamily: {
         sans: [
