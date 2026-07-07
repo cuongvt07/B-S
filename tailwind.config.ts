@@ -24,69 +24,111 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // ── Brand design system ──
-        // Primary = Navy, Secondary = Gold, Accent = Sky.
+        // ── Brand design system theo logo Gold ──
+        // Primary = Gold (đồng bộ logo), CTA = Navy đen (tương phản cao)
         primary: {
-          DEFAULT: '#0F3D8C',
-          hover: '#0A2F6B',
-          active: '#0A2F6B',
-          disabled: '#CBD5E1',
+          DEFAULT: '#B8860B',       // Gold đậm - logo chính
+          light: '#C99A3D',         // Gold nhạt - gradient, hover
+          dark: '#8A6D1F',          // Gold tối - shadow, borders
+          soft: '#FAF7F0',          // Kem vàng nhạt - background phụ
         },
+        
+        // CTA - Nút hành động chính (đen sang trọng, tương phản mạnh với gold)
+        cta: {
+          DEFAULT: '#1A1A1A',       // Đen - nút chính
+          hover: '#333333',         // Đen nhạt - hover
+          soft: '#F5F5F5',          // Xám nhạt - disabled state
+        },
+        
+        // Text colors - tự động theo nền
+        text: {
+          'on-dark': '#FFFFFF',         // Chữ trắng trên nền tối
+          'on-dark-muted': '#E5E7EB',   // Chữ xám nhạt trên nền tối
+          'on-light': '#1A1A1A',        // Chữ đen trên nền sáng
+          'on-light-muted': '#6B7280',  // Chữ xám đậm trên nền sáng
+        },
+        
+        // Background
+        background: {
+          DEFAULT: '#FFFFFF',       // Nền trắng chính
+          cream: '#FAF7F0',         // Nền kem ánh vàng - section xen kẽ
+          subtle: '#F7F8FA',        // Nền xám rất nhạt
+        },
+        
+        // Border & dividers
+        border: {
+          DEFAULT: '#E8E2D5',       // Viền kem vàng nhạt
+          light: '#F3EFEA',         // Viền rất nhạt
+          focus: 'rgba(184,134,11,0.35)', // Focus state với gold
+        },
+        
+        // VIP badges - phân cấp rõ ràng với gold
+        vip: {
+          3: '#B8860B',             // VIP 3: Gold đậm (chữ trắng)
+          2: '#D4AF6A',             // VIP 2: Gold vừa (chữ đen)
+          1: '#E8D9B5',             // VIP 1: Vàng kem (chữ đen)
+        },
+        
+        // Accent - link, tag phụ
+        accent: {
+          DEFAULT: '#1E88E5',       // Xanh dương - link, info
+          hover: '#1565C0',         // Xanh đậm - hover
+          soft: '#E3F2FD',          // Xanh nhạt - background
+        },
+        
+        // Price - nổi bật với gold
+        price: {
+          DEFAULT: '#B8860B',       // Gold đậm
+          soft: '#FAF7F0',          // Nền kem
+        },
+        
+        // Semantic colors
+        success: {
+          DEFAULT: '#16A34A',       // Xanh lá - thành công
+          soft: '#F0FDF4',          // Nền xanh nhạt
+        },
+        danger: {
+          DEFAULT: '#DC2626',       // Đỏ - lỗi
+          soft: '#FEF2F2',          // Nền đỏ nhạt
+        },
+        warning: {
+          DEFAULT: '#F59E0B',       // Cam - cảnh báo
+          soft: '#FFFBEB',          // Nền cam nhạt
+        },
+        
+        // Legacy aliases (giữ tương thích với code cũ)
         brand: {
-          DEFAULT: '#0F3D8C',
-          hover: '#1E5DB8',
-          active: '#0A2F6B',
-          soft: '#EAF1FB',
+          DEFAULT: '#B8860B',       // Alias cho primary gold
+          hover: '#C99A3D',
+          active: '#8A6D1F',
+          soft: '#FAF7F0',
         },
         gold: {
-          DEFAULT: '#F5A623',
-          hover: '#D98A00',
-          active: '#D98A00',
-          soft: '#FEF3DD',
-          ink: '#5C3D00',
+          DEFAULT: '#B8860B',       // Đồng bộ với primary
+          hover: '#C99A3D',
+          active: '#8A6D1F',
+          soft: '#FAF7F0',
+          ink: '#1A1A1A',
         },
-        // Champagne — the elegant CTA color (buttons revolve around this).
-        // Warm metallic gold on a deep navy ink for a premium, "sang" feel.
         champagne: {
-          DEFAULT: '#C8A96E',
-          hover: '#BE9B58',
-          active: '#A9854A',
-          soft: '#F6EFE1',
-          ink: '#10263D',
-        },
-        accent: {
-          DEFAULT: '#3B82F6',
-          soft: '#EFF6FF',
+          DEFAULT: '#B8860B',       // Map sang gold (thay vì màu champagne cũ)
+          hover: '#C99A3D',
+          active: '#8A6D1F',
+          soft: '#FAF7F0',
+          ink: '#1A1A1A',
         },
         ink: {
-          DEFAULT: '#1E293B',
-          strong: '#0F172A',
-          muted: '#64748B',
+          DEFAULT: '#1A1A1A',       // Chữ đen chính
+          strong: '#0F172A',        // Đen đậm
+          muted: '#6B7280',         // Xám
         },
         brdr: {
-          DEFAULT: '#E5E7EB',
-          focus: 'rgba(59,130,246,0.35)',
+          DEFAULT: '#E8E2D5',       // Alias cho border
+          focus: 'rgba(184,134,11,0.35)',
         },
         surface: {
           DEFAULT: '#FFFFFF',
-          subtle: '#F7F9FC',
-        },
-        // Price is navy + bold per the design.
-        price: {
-          DEFAULT: '#0F3D8C',
-          soft: '#EAF1FB',
-        },
-        success: {
-          DEFAULT: '#16A34A',
-          soft: '#F0FDF4',
-        },
-        vip: {
-          DEFAULT: '#F5A623',
-          soft: '#FEF3DD',
-        },
-        danger: {
-          DEFAULT: '#DC2626',
-          soft: '#FEF2F2',
+          subtle: '#F7F8FA',
         },
       },
       fontFamily: {

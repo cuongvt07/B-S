@@ -5,6 +5,12 @@
 @layer base {
   :root {
     color-scheme: light;
+    
+    /* ── Auto-contrast text colors theo nền ── */
+    --text-on-dark: #FFFFFF;
+    --text-on-dark-muted: #E5E7EB;
+    --text-on-light: #1A1A1A;
+    --text-on-light-muted: #6B7280;
   }
 
   html {
@@ -14,7 +20,7 @@
   }
 
   body {
-    @apply bg-surface-subtle text-ink font-sans text-base;
+    @apply bg-background text-on-light font-sans text-base;
     font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
   }
 
@@ -51,7 +57,7 @@
   h4,
   h5,
   h6 {
-    @apply font-semibold text-ink;
+    @apply font-semibold text-on-light;
     /* Balance headings so the last line isn't a single orphan word on mobile. */
     text-wrap: balance;
   }
@@ -1515,4 +1521,84 @@
 .bds-marker[data-vip='1'].is-selected {
   background: #b45309;
   border-color: #b45309;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   🎨 AUTO-CONTRAST TEXT UTILITIES
+   Tự động điều chỉnh màu chữ theo nền tối/sáng
+   ──────────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* Áp dụng cho nền tối (đen, navy, gold đậm) */
+  .text-auto-dark {
+    color: var(--text-on-dark);
+  }
+  
+  .text-auto-dark-muted {
+    color: var(--text-on-dark-muted);
+  }
+  
+  /* Áp dụng cho nền sáng (trắng, kem, gold nhạt) */
+  .text-auto-light {
+    color: var(--text-on-light);
+  }
+  
+  .text-auto-light-muted {
+    color: var(--text-on-light-muted);
+  }
+  
+  /* Utility classes cho các background với text tương ứng */
+  .bg-dark-surface {
+    @apply bg-cta text-on-dark;
+  }
+  
+  .bg-gold-surface {
+    @apply bg-primary text-on-dark;
+  }
+  
+  .bg-light-surface {
+    @apply bg-background text-on-light;
+  }
+  
+  .bg-cream-surface {
+    @apply bg-background-cream text-on-light;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   🏷️ VIP BADGE STYLES với auto-contrast
+   ──────────────────────────────────────────────────────────────── */
+
+@layer components {
+  .badge-vip-3 {
+    @apply bg-vip-3 text-on-dark font-bold px-3 py-1 rounded-md;
+  }
+  
+  .badge-vip-2 {
+    @apply bg-vip-2 text-on-light font-bold px-3 py-1 rounded-md;
+  }
+  
+  .badge-vip-1 {
+    @apply bg-vip-1 text-on-light font-semibold px-3 py-1 rounded-md;
+  }
+  
+  /* CTA Button với contrast cao */
+  .btn-cta-primary {
+    @apply bg-cta text-on-dark font-bold px-6 py-3 rounded-md transition-all duration-200;
+    @apply hover:bg-cta-hover hover:shadow-lg;
+  }
+  
+  .btn-cta-gold {
+    @apply bg-primary text-on-dark font-bold px-6 py-3 rounded-md transition-all duration-200;
+    @apply hover:bg-primary-light hover:shadow-lg;
+  }
+  
+  /* Price display với gold color */
+  .price-display {
+    @apply text-primary font-bold text-lg;
+  }
+  
+  .price-badge {
+    @apply bg-primary-soft text-primary font-bold px-3 py-1.5 rounded-md;
+  }
 }
