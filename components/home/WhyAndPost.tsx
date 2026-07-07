@@ -44,25 +44,26 @@ export function WhyAndPost() {
         {/* Đăng tin miễn phí */}
         <Link
           href="/tai-khoan/dang-tin"
-          className="unstyled group relative min-h-[160px] overflow-hidden rounded-md p-5 text-ink shadow-raised"
+          className="unstyled group relative min-h-[160px] overflow-hidden rounded-md p-5 shadow-raised"
         >
           <div
             aria-hidden
             className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
             style={{ backgroundImage: "url('/bg/bg-1.jpg')" }}
           />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-white/92 via-white/82 to-white/50 backdrop-blur-[2px]" />
+          {/* Overlay tối với chữ trắng để đọc rõ trên mọi ảnh nền */}
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-ink-strong/90 via-ink/85 to-ink-strong/75" />
           <div className="relative z-10 flex h-full flex-col justify-between gap-4">
             <div>
-              <span className="icon-chip grid h-10 w-10 place-items-center rounded-md bg-champagne text-champagne-ink">
+              <span className="icon-chip grid h-10 w-10 place-items-center rounded-md bg-primary text-white">
                 <Megaphone size={20} />
               </span>
-              <h3 className="mt-3 text-lg font-bold !text-ink-strong">Đăng tin miễn phí</h3>
-              <p className="mt-1 text-sm text-ink-muted">
+              <h3 className="mt-3 text-lg font-bold text-white">Đăng tin miễn phí</h3>
+              <p className="mt-1 text-sm text-white/80">
                 Tiếp cận hàng nghìn khách hàng mỗi ngày — đăng tin chỉ trong 1 phút.
               </p>
             </div>
-            <span className="inline-flex w-fit items-center gap-2 rounded-sm bg-champagne px-4 py-2 text-sm font-semibold text-champagne-ink transition-colors group-hover:bg-champagne-hover">
+            <span className="inline-flex w-fit items-center gap-2 rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-primary-light">
               Đăng tin ngay <ArrowRight size={16} />
             </span>
           </div>

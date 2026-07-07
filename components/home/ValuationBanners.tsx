@@ -35,26 +35,26 @@ function BannerCard({ b }: { b: Banner }) {
   return (
     <Link
       href={b.href}
-      className="unstyled group relative min-h-[170px] overflow-hidden rounded-md p-5 text-ink shadow-raised"
+      className="unstyled group relative min-h-[170px] overflow-hidden rounded-md p-5 shadow-raised"
     >
       <div
         aria-hidden
         className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
         style={{ backgroundImage: `url('${b.image}')` }}
       />
-      {/* Frosted white: opaque on the left (text reads) fading to reveal the photo. */}
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/80 to-white/40 backdrop-blur-[2px]" />
+      {/* Overlay tối với chữ trắng để đọc rõ */}
+      <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink-strong/90 via-ink/80 to-ink-strong/60" />
       <div className="relative z-10 flex h-full flex-col justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="icon-chip grid h-11 w-11 shrink-0 place-items-center rounded-md bg-champagne text-champagne-ink">
+          <span className="icon-chip grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary text-white">
             <Icon size={22} />
           </span>
           <div>
-            <h3 className="text-lg font-bold !text-ink-strong">{b.title}</h3>
-            <p className="mt-1 text-sm text-ink-muted">{b.desc}</p>
+            <h3 className="text-lg font-bold text-white">{b.title}</h3>
+            <p className="mt-1 text-sm text-white/80">{b.desc}</p>
           </div>
         </div>
-        <span className="inline-flex w-fit items-center gap-2 rounded-sm bg-champagne px-4 py-2 text-sm font-semibold text-champagne-ink transition-colors group-hover:bg-champagne-hover">
+        <span className="inline-flex w-fit items-center gap-2 rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-primary-light">
           {b.cta} <ArrowRight size={16} />
         </span>
       </div>

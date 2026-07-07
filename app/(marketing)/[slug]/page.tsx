@@ -74,19 +74,19 @@ export default async function SeoLandingPage({ params }: PageProps) {
         ]}
       />
 
-      <header className="relative mt-4 overflow-hidden rounded-md border border-brdr">
+      <header className="relative mt-4 overflow-hidden rounded-md border border-border">
         <div
           aria-hidden
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/bg/bg-6.jpg')" }}
         />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/82 to-white/40 backdrop-blur-[2px]" />
-        <div className="relative z-10 p-6 text-ink sm:p-8">
-          <h1 className="text-xl font-semibold !text-ink-strong sm:text-2xl">
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink-strong/90 via-ink/85 to-ink-strong/70" />
+        <div className="relative z-10 p-6 sm:p-8">
+          <h1 className="text-xl font-semibold text-white sm:text-2xl">
             {title}
           </h1>
-          <p className="mt-2 text-sm text-ink-muted">
-            Tìm thấy <strong className="text-champagne-ink">{result.meta.total}</strong> tin đăng phù hợp
+          <p className="mt-2 text-sm text-white/85">
+            Tìm thấy <strong className="text-primary">{result.meta.total}</strong> tin đăng phù hợp
             {city ? ` tại ${city.name}` : ''}. Cập nhật mới nhất từ cộng đồng người đăng và môi giới xác thực.
           </p>
         </div>

@@ -108,7 +108,7 @@ export default async function BrokerPackagePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-surface-subtle py-16 text-ink sm:py-20">
+      <section className="relative overflow-hidden py-16 sm:py-20">
         {/* Background image */}
         <div
           className="pointer-events-none absolute inset-0 bg-cover bg-center"
@@ -116,29 +116,29 @@ export default async function BrokerPackagePage() {
             backgroundImage: "url('/bg/bg-6.jpg')",
           }}
         />
-        {/* Frosted white overlay keeps text readable over the photo */}
-        <div className="pointer-events-none absolute inset-0 bg-white/82 backdrop-blur-md" />
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-champagne/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
+        {/* Overlay tối với chữ trắng */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-ink-strong/92 via-ink/88 to-ink-strong/85" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
         <div className="container-app relative text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-sm bg-champagne px-3 py-1 text-xs font-semibold uppercase tracking-wide text-champagne-ink">
+          <span className="inline-flex items-center gap-1.5 rounded-sm bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
             <Sparkles size={13} /> Dành cho môi giới
           </span>
-          <h1 className="mt-4 text-3xl font-bold !text-ink-strong sm:text-5xl">
+          <h1 className="mt-4 text-3xl font-bold text-white sm:text-5xl">
             Đăng nhiều tin hơn mỗi ngày — Tiếp cận nhiều khách hơn
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-ink-muted sm:text-lg">
+          <p className="mx-auto mt-3 max-w-2xl text-base text-white/85 sm:text-lg">
             Nâng cấp gói để tăng số tin đăng mỗi ngày. Chưa hỗ trợ thanh toán online —
             liên hệ Zalo hoặc hotline để được kích hoạt nhanh chóng.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a href={ZALO_HREF} target="_blank" rel="noopener noreferrer" className="unstyled">
-              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-champagne px-8 py-3 text-base font-semibold text-champagne-ink transition-colors hover:bg-champagne-hover">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-primary px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-light">
                 <MessageCircle size={18} /> Liên hệ Zalo
               </span>
             </a>
             <a href={TEL_HREF} className="unstyled">
-              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm border border-champagne px-6 py-3 text-base font-semibold text-champagne-ink transition-colors hover:bg-champagne-soft">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm border border-white/40 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10">
                 <Phone size={18} /> {contactPhone}
               </span>
             </a>
@@ -257,14 +257,14 @@ export default async function BrokerPackagePage() {
 
       {/* CTA bottom */}
       <section className="container-app py-12">
-        <div className="overflow-hidden rounded-md bg-brand px-6 py-10 text-center text-white">
-          <h2 className="text-2xl font-semibold !text-white">Sẵn sàng nâng cấp gói đăng tin?</h2>
+        <div className="overflow-hidden rounded-md bg-primary px-6 py-10 text-center">
+          <h2 className="text-2xl font-semibold text-white">Sẵn sàng nâng cấp gói đăng tin?</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-white/85">
             Liên hệ ngay để được tư vấn và kích hoạt gói phù hợp với nhu cầu của bạn.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a href={ZALO_HREF} target="_blank" rel="noopener noreferrer" className="unstyled">
-              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-champagne px-8 py-3 text-base font-semibold text-champagne-ink transition-colors hover:bg-champagne-hover">
+              <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-sm bg-cta px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-cta-hover">
                 <MessageCircle size={18} /> Liên hệ Zalo
               </span>
             </a>

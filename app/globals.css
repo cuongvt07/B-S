@@ -1584,12 +1584,12 @@
   
   /* CTA Button với contrast cao */
   .btn-cta-primary {
-    @apply bg-cta text-on-dark font-bold px-6 py-3 rounded-md transition-all duration-200;
+    @apply bg-cta text-white font-bold px-6 py-3 rounded-md transition-all duration-200;
     @apply hover:bg-cta-hover hover:shadow-lg;
   }
   
   .btn-cta-gold {
-    @apply bg-primary text-on-dark font-bold px-6 py-3 rounded-md transition-all duration-200;
+    @apply bg-primary text-white font-bold px-6 py-3 rounded-md transition-all duration-200;
     @apply hover:bg-primary-light hover:shadow-lg;
   }
   
