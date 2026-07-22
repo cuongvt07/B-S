@@ -5,6 +5,7 @@ import { Providers } from './providers';
 import { COMPANY, SITE } from '@/lib/constants';
 import { JsonLd } from '@/components/seo';
 import { SocialProofToast } from '@/components/layout';
+import { MaintenanceOverlay } from '@/components/MaintenanceOverlay'; // TẠM THỜI — bảo trì
 import { getSiteSettings } from '@/lib/server-data';
 import './globals.css';
 
@@ -55,6 +56,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const analyticsId = seo.analytics_id?.trim() || '';
   const isGtm = analyticsId.startsWith('GTM-');
   const isGa4 = analyticsId.startsWith('G-');
+
+  // TẠM THỜI — bật lớp phủ bảo trì bằng env MAINTENANCE_MODE=1 (hoặc true).
+  const maintenanceFlag = (process.env.MAINTENANCE_MODE || '').trim().toLowerCase();
+  const isMaintenance = maintenanceFlag === '1' || maintenanceFlag === 'true';
 
   return (
     <html lang="vi" className={inter.variable}>
@@ -111,6 +116,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {children}
           <SocialProofToast />
         </Providers>
+        {/* TẠM THỜI — lớp phủ bảo trì, bật bằng env MAINTENANCE_MODE=1 */}
+        {isMaintenance && <MaintenanceOverlay />}
       </body>
     </html>
   );
