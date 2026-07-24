@@ -10,9 +10,17 @@ import {
 } from '@/components/home';
 import { Reveal } from '@/components/ui';
 import { RecentlyViewed } from '@/components/listing';
+import { JsonLd, websiteSchema } from '@/components/seo';
+import { SITE } from '@/lib/constants';
+import type { Metadata } from 'next';
 import { getHomeBlogs, listListings, listVehicles } from '@/lib/server-data';
 
 export const revalidate = 300;
+
+// Self-canonical cho trang chủ (title/description kế thừa từ layout).
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
 
 export default async function HomePage() {
   const [featured, vehicles, blogResult] = await Promise.all([
@@ -26,6 +34,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={websiteSchema({ name: SITE.name, url: SITE.url })} />
       <HeroSearch />
       <CategoryTiles />
 

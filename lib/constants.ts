@@ -143,7 +143,7 @@ export const VEHICLE_SORT_OPTIONS = [
 export const SITE = {
   name: 'VM Phú Thịnh Land',
   tagline: 'Nền tảng tin đăng bất động sản hàng đầu',
-  url: 'https://bds.vn',
+  url: 'https://vmphuthinhland.com',
   contactPhone: '0922 255 544',
   contactEmail: 'vmphuthinhland@gmail.com',
 };

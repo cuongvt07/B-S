@@ -31,6 +31,7 @@ export function FeaturedListingsGrid({ title, description, listings, href, prior
         )}
       </div>
       <CardCarousel
+        perView={2}
         items={listings.map((l, i) => (
           <ListingCard key={l.id} listing={l} priority={i < (priorityCount ?? 0)} />
         ))}

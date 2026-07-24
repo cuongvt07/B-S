@@ -46,6 +46,62 @@ export function listingSchema(listing: {
   };
 }
 
+export function vehicleSchema(vehicle: {
+  type: 'car' | 'motorbike';
+  title: string;
+  description: string;
+  images: { url: string }[];
+  price: number;
+  brand?: string;
+  modelName?: string;
+  year?: number;
+  mileage?: number;
+  fuelTypeLabel?: string;
+  transmissionLabel?: string;
+  url: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': vehicle.type === 'motorbike' ? 'Motorcycle' : 'Car',
+    name: vehicle.title,
+    description: vehicle.description,
+    image: vehicle.images.map((i) => i.url),
+    url: vehicle.url,
+    ...(vehicle.brand ? { brand: { '@type': 'Brand', name: vehicle.brand } } : {}),
+    ...(vehicle.modelName ? { model: vehicle.modelName } : {}),
+    ...(vehicle.year ? { vehicleModelDate: String(vehicle.year), productionDate: String(vehicle.year) } : {}),
+    ...(vehicle.mileage !== undefined
+      ? { mileageFromOdometer: { '@type': 'QuantitativeValue', value: vehicle.mileage, unitCode: 'KMT' } }
+      : {}),
+    ...(vehicle.fuelTypeLabel ? { fuelType: vehicle.fuelTypeLabel } : {}),
+    ...(vehicle.transmissionLabel ? { vehicleTransmission: vehicle.transmissionLabel } : {}),
+    offers: {
+      '@type': 'Offer',
+      price: vehicle.price,
+      priceCurrency: 'VND',
+      availability: 'https://schema.org/InStock',
+    },
+  };
+}
+
+/** WebSite + SearchAction — bật ô tìm kiếm sitelinks trên Google. */
+export function websiteSchema(site: { name: string; url: string }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: site.name,
+    url: site.url,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${site.url}/tin-dang?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
 export function articleSchema(article: {
   title: string;
   description: string;

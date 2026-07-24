@@ -5,7 +5,8 @@ import { notFound } from 'next/navigation';
 import { Calendar, Gauge, Settings2, Fuel, Palette, Users, MapPin, Phone } from '@/components/icons';
 import { getVehicle, listVehicles } from '@/lib/server-data';
 import { VehicleCard } from '@/components/vehicle';
-import { Breadcrumbs } from '@/components/seo';
+import { Breadcrumbs, JsonLd, vehicleSchema, breadcrumbSchema } from '@/components/seo';
+import { SITE } from '@/lib/constants';
 import { formatPrice, formatNumber, formatTimeAgo, maskPhone } from '@/lib/utils/format';
 
 interface PageProps {
@@ -149,6 +150,30 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           </div>
         </section>
       )}
+
+      <JsonLd
+        data={vehicleSchema({
+          type: v.vehicleType,
+          title: v.title,
+          description: v.description,
+          images: v.images,
+          price: v.price,
+          brand: v.brand,
+          modelName: v.modelName,
+          year: v.year,
+          mileage: v.mileage,
+          fuelTypeLabel: v.fuelTypeLabel,
+          transmissionLabel: v.transmissionLabel,
+          url: `${SITE.url}/xe/${v.slug}`,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: 'Trang chủ', url: SITE.url },
+          { name: 'Xe cộ', url: `${SITE.url}/xe` },
+          { name: v.title, url: `${SITE.url}/xe/${v.slug}` },
+        ])}
+      />
     </div>
   );
 }

@@ -6,13 +6,15 @@ import { cn } from '@/lib/utils';
 
 interface Props {
   items: ReactNode[];
+  /** Số thẻ hiển thị/khung trên desktop: 4 (mặc định) hoặc 2 (thẻ lớn). */
+  perView?: 2 | 4;
 }
 
 /**
  * Slider ngang dùng chung cho các khối thẻ (tin BĐS, xe...).
- * Hiển thị 4 item/lượt trên desktop, cuộn snap, có nút trước/sau.
+ * Mặc định 4 item/lượt trên desktop; perView=2 cho thẻ lớn. Cuộn snap, có nút trước/sau.
  */
-export function CardCarousel({ items }: Props) {
+export function CardCarousel({ items, perView = 4 }: Props) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
@@ -62,7 +64,10 @@ export function CardCarousel({ items }: Props) {
           <div
             key={i}
             data-card
-            className="flex snap-start shrink-0 basis-1/2 px-2 md:basis-1/3 lg:basis-1/4"
+            className={cn(
+              'flex snap-start shrink-0 px-2',
+              perView === 2 ? 'basis-full sm:basis-1/2' : 'basis-1/2 md:basis-1/3 lg:basis-1/4'
+            )}
           >
             {item}
           </div>
