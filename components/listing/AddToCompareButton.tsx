@@ -2,6 +2,7 @@
 
 import { GitCompare } from '@/components/icons';
 import { useCompare } from '@/lib/hooks/useCompare';
+import { toast } from '@/lib/hooks/useToast';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -23,7 +24,7 @@ export function AddToCompareButton({ listingId, className }: Props) {
         e.preventDefault();
         e.stopPropagation();
         if (!active && ids.length >= 3) {
-          alert('Chỉ so sánh tối đa 3 tin');
+          toast.info('Chỉ so sánh tối đa 3 tin');
           return;
         }
         toggle(listingId);

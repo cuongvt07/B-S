@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { Send } from '@/components/icons';
 import { Button, Input } from '@/components/ui';
 import { leadApi } from '@/lib/api/leads';
+import { toast } from '@/lib/hooks/useToast';
 
 const schema = z.object({
   name: z.string().min(2, 'Họ tên tối thiểu 2 ký tự'),
@@ -39,7 +40,7 @@ export function ContactForm() {
         phone: values.phone,
         message: `[${values.subject}] ${values.message}`,
       });
-      alert('Đã gửi yêu cầu, chúng tôi sẽ liên hệ sớm.');
+      toast.success('Đã gửi yêu cầu, chúng tôi sẽ liên hệ sớm.');
       reset();
     } catch (e: unknown) {
       setServerError(e instanceof Error ? e.message : 'Gửi yêu cầu thất bại');

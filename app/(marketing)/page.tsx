@@ -10,7 +10,7 @@ import {
 } from '@/components/home';
 import { Reveal } from '@/components/ui';
 import { RecentlyViewed } from '@/components/listing';
-import { listBlogs, listListings, listVehicles } from '@/lib/server-data';
+import { getHomeBlogs, listListings, listVehicles } from '@/lib/server-data';
 
 export const revalidate = 300;
 
@@ -19,7 +19,7 @@ export default async function HomePage() {
     // Backend sorts by VIP tier (vip3→2→1→normal), newest within a tier.
     listListings({ sort: 'vip', pageSize: 8 }),
     listVehicles({ pageSize: 8, sortBy: 'vip', sortOrder: 'desc' }),
-    listBlogs({ pageSize: 8 }),
+    getHomeBlogs(4),
   ]);
 
   const featuredListings = featured.data;
@@ -65,7 +65,7 @@ export default async function HomePage() {
       </Reveal>
 
       <Reveal>
-        <BlogStrip data={{ bds: blogResult.data, xe: [] }} />
+        <BlogStrip data={blogResult} />
       </Reveal>
     </>
   );

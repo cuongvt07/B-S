@@ -1,5 +1,6 @@
 export * from './Button';
 export * from './ShineButton';
+export * from './Toaster';
 export * from './Input';
 export * from './Select';
 export * from './Card';

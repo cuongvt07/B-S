@@ -303,6 +303,22 @@ export async function listBlogs(
   return paginate(filtered, params.page ?? 1, params.pageSize ?? 10);
 }
 
+/**
+ * Blog cho block "Tin tức" trang chủ — BĐS + Xe cùng lúc qua /blogs/split.
+ * Fallback về mock (chỉ BĐS) khi API lỗi.
+ */
+export async function getHomeBlogs(limit = 4): Promise<{ bds: Blog[]; xe: Blog[] }> {
+  try {
+    return await realServerFetch<{ bds: Blog[]; xe: Blog[] }>('/blogs/split', { limit });
+  } catch (err) {
+    console.error('[server-data] getHomeBlogs failed, using fallback:', err);
+    const sorted = [...blogsData].sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    );
+    return { bds: sorted.slice(0, limit), xe: [] };
+  }
+}
+
 // ── Vehicles (ô tô / xe máy) ──
 export interface VehicleQuery {
   vehicleType?: 'car' | 'motorbike';

@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { makeQueryClient } from '@/lib/query-client';
 import { IconContext } from '@/components/icons';
+import { Toaster } from '@/components/ui/Toaster';
 
 export function Providers({ children }: { children: ReactNode }) {
   const [client] = useState(() => makeQueryClient());
@@ -16,6 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
           props still override this default. */}
       <IconContext.Provider value={{ weight: 'regular' }}>
         {children}
+        <Toaster />
         {process.env.NODE_ENV === 'development' && (
           <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
         )}

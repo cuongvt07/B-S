@@ -6,7 +6,6 @@ import {
   Facebook,
   Youtube,
   MessageCircle,
-  Smartphone,
   ArrowUp,
 } from '@/components/icons';
 import { COMPANY, SITE } from '@/lib/constants';
@@ -205,31 +204,27 @@ export function Footer({
 
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wide text-white/60">
-              Tải ứng dụng
+              Kết nối nhanh
             </h4>
             <p className="mt-3 text-sm text-white/70">
-              Đăng tin và quản lý BĐS mọi lúc trên di động.
+              Cần hỗ trợ? Liên hệ với chúng tôi qua các kênh dưới đây.
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-col gap-2">
               <a
-                href="#"
-                className="unstyled inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/15"
+                href={`https://zalo.me/${zaloPhone.replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="unstyled inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm text-white hover:bg-white/15"
               >
-                <Smartphone size={16} />
-                <span>
-                  <span className="block text-[10px] text-white/60">Tải về trên</span>
-                  <span className="block font-semibold">App Store</span>
-                </span>
+                <MessageCircle size={16} className="shrink-0" />
+                <span>Chat Zalo: {zaloPhone}</span>
               </a>
               <a
-                href="#"
-                className="unstyled inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/15"
+                href={`tel:${hotline.replace(/\s/g, '')}`}
+                className="unstyled inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm text-white hover:bg-white/15"
               >
-                <Smartphone size={16} />
-                <span>
-                  <span className="block text-[10px] text-white/60">Có trên</span>
-                  <span className="block font-semibold">Google Play</span>
-                </span>
+                <Phone size={16} className="shrink-0" />
+                <span>Hotline: {hotline}</span>
               </a>
             </div>
           </div>
