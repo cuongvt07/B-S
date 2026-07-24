@@ -8,8 +8,8 @@
  * to `@/components/icons` — the JSX stays identical.
  *
  * Global appearance (weight/size/color) is set once via `<IconContext.Provider>`
- * in the root layout. Phosphor's default weight here is `duotone` for a softer,
- * more premium look than Lucide's uniform strokes.
+ * in the root layout. Phosphor's default weight here is `regular` — clean single
+ * strokes (Lucide-like), matching the Manrope + navy/gold system.
  *
  * Note: Phosphor uses `weight="fill"` instead of `fill="currentColor"`, and has
  * no `strokeWidth` prop. A few call sites were adjusted accordingly.

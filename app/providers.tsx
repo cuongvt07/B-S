@@ -11,9 +11,10 @@ export function Providers({ children }: { children: ReactNode }) {
   const [client] = useState(() => makeQueryClient());
   return (
     <QueryClientProvider client={client}>
-      {/* Site-wide icon look: Phosphor duotone for a softer, more premium feel.
-          Per-icon `weight`/`size` props still override this default. */}
-      <IconContext.Provider value={{ weight: 'duotone' }}>
+      {/* Site-wide icon look: Phosphor regular — nét line sạch, gọn (giống
+          Lucide/SaaS), hợp Manrope + tone navy/gold. Per-icon `weight`/`size`
+          props still override this default. */}
+      <IconContext.Provider value={{ weight: 'regular' }}>
         {children}
         {process.env.NODE_ENV === 'development' && (
           <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
