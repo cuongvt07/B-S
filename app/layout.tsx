@@ -43,9 +43,10 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     robots: { index: seo.robots_index, follow: seo.robots_index },
     icons: branding.favicon ? { icon: branding.favicon } : undefined,
-    verification: seo.google_site_verification
-      ? { google: seo.google_site_verification }
-      : undefined,
+    verification: {
+      // Ưu tiên giá trị nhập từ CMS; mặc định dùng mã xác minh Google Search Console.
+      google: seo.google_site_verification || 'QpGOzRD5HK6ZogECs1_sxlTXSZ3TX2lb2ld4hvWIv-8',
+    },
     other: seo.facebook_app_id ? { 'fb:app_id': seo.facebook_app_id } : undefined,
   };
 }
