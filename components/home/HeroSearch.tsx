@@ -171,7 +171,8 @@ export function HeroSearch() {
                 alt={index === bannerIndex ? 'Bất động sản mua bán và cho thuê' : ''}
                 fill
                 priority={index === 0}
-                sizes="(max-width: 768px) 55vw, 480px"
+                quality={90}
+                sizes="(max-width: 1024px) 100vw, 1180px"
                 className={`home-room-banner__image${index === bannerIndex ? ' is-active' : ''}`}
               />
             ))}
