@@ -1,11 +1,31 @@
 ﻿import Link from 'next/link';
 import { ArrowRight, Building2, Car } from '@/components/icons';
 import type { Blog } from '@/types';
-import { BlogSlider } from '@/components/blog/BlogSlider';
+import { CardCarousel } from '@/components/ui';
+import { BlogCard } from '@/components/blog/BlogCard';
 
 interface BlogSplitData {
   bds: Blog[];
   xe: Blog[];
+}
+
+/** Slider blog 2 thẻ/khung (desktop) — dùng chung CardCarousel như tin BĐS. */
+function BlogColumnSlider({ blogs, emptyText }: { blogs: Blog[]; emptyText: string }) {
+  if (!blogs.length) {
+    return (
+      <div className="rounded-md border border-dashed border-brdr p-8 text-center text-ink-muted">
+        {emptyText}
+      </div>
+    );
+  }
+  return (
+    <CardCarousel
+      perView={2}
+      items={blogs.map((b) => (
+        <BlogCard key={b.id} blog={b} />
+      ))}
+    />
+  );
 }
 
 export function BlogStrip({ data }: { data: BlogSplitData }) {
@@ -32,7 +52,7 @@ export function BlogStrip({ data }: { data: BlogSplitData }) {
               Xem tất cả <ArrowRight size={14} />
             </Link>
           </div>
-          <BlogSlider blogs={data.bds} emptyText="Chưa có tin bất động sản." />
+          <BlogColumnSlider blogs={data.bds} emptyText="Chưa có tin bất động sản." />
         </div>
 
         {/* ── Cột phải: Tin Xe ── */}
@@ -54,7 +74,7 @@ export function BlogStrip({ data }: { data: BlogSplitData }) {
               Xem tất cả <ArrowRight size={14} />
             </Link>
           </div>
-          <BlogSlider blogs={data.xe} emptyText="Chưa có tin xe." />
+          <BlogColumnSlider blogs={data.xe} emptyText="Chưa có tin xe." />
         </div>
 
       </div>
