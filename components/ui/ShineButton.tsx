@@ -27,7 +27,7 @@ export const ShineButton = forwardRef<HTMLButtonElement, ShineButtonProps>(funct
   ref
 ) {
   return (
-    <button ref={ref} type={type} className={cn('btn-shine', className)} {...props}>
+    <button ref={ref} type={type} className={cn('btn-shine-skin btn-shine', className)} {...props}>
       {children}
       {icon === undefined ? DefaultIcon : icon}
     </button>

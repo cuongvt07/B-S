@@ -15,14 +15,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    'bg-cta text-white font-semibold hover:bg-cta-hover active:bg-cta-hover disabled:bg-cta-soft disabled:text-on-light-muted',
+  // Primary = nút CTA "shine" vàng/trắng/đen (da ở class .btn-shine-skin, globals.css).
+  primary: 'btn-shine-skin font-semibold',
   ghost:
-    'bg-transparent text-primary hover:text-primary-light active:text-primary-dark disabled:text-on-light-muted',
+    'rounded-sm transition-colors bg-transparent text-primary hover:text-primary-light active:text-primary-dark disabled:text-on-light-muted',
   outline:
-    'bg-transparent border border-border text-on-light hover:bg-background-subtle disabled:opacity-50',
+    'rounded-sm transition-colors bg-transparent border border-border text-on-light hover:bg-background-subtle disabled:opacity-50',
   danger:
-    'bg-danger text-white hover:opacity-90 active:opacity-80 disabled:bg-cta-soft disabled:text-on-light-muted',
+    'rounded-sm transition-colors bg-danger text-white hover:opacity-90 active:opacity-80 disabled:bg-cta-soft disabled:text-on-light-muted',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -51,7 +51,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-sm transition-colors',
+        'inline-flex items-center justify-center gap-2',
         'disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],

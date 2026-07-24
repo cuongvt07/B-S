@@ -172,52 +172,46 @@
 }
 
 /* ── Nút CTA hiệu ứng "shine" (Uiverse) — bảng màu vàng / trắng / đen ──
-   Dùng qua <ShineButton>. Vàng = nền brand, trắng = chữ + viền + tia sáng,
-   đen = đổ bóng. */
-.btn-shine {
+   Vàng = nền brand, trắng = chữ + viền + tia sáng, đen = đổ bóng.
+
+   `.btn-shine-skin` = phần "da" (màu, viền, bóng, tia sáng quét) — dùng chung
+   cho variant primary của <Button> (giữ nguyên padding/size/loading/icon) và
+   cho <ShineButton>. `.btn-shine` = thêm bố cục cho <ShineButton> đứng riêng. */
+.btn-shine-skin {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0.5rem 1.25rem;
+  overflow: hidden;
   border-radius: 9999px;
-  font-weight: 700;
-  font-size: 15px;
-  line-height: 1.2;
   color: #ffffff;                 /* trắng */
   background-color: #B8860B;      /* vàng (brand gold) */
   border: 3px solid #ffffff4d;    /* viền trắng mờ */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* bóng đen */
-  cursor: pointer;
   outline: none;
-  overflow: hidden;
   transition: transform 0.3s ease-in-out, border-color 0.3s ease-in-out,
     background-color 0.3s ease-in-out;
 }
-.btn-shine:hover {
+.btn-shine-skin:not(:disabled):hover {
   transform: scale(1.05);
   border-color: #ffffffe6;        /* viền trắng rõ hơn */
   background-color: #C99A3D;       /* vàng sáng hơn khi hover */
 }
-.btn-shine:active {
-  transform: scale(1.0);
+.btn-shine-skin:not(:disabled):active {
+  transform: scale(1);
 }
-.btn-shine:disabled {
+.btn-shine-skin:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   transform: none;
 }
-.btn-shine__icon {
+.btn-shine-skin .btn-shine__icon {
   width: 24px;
   height: 24px;
   flex: none;
   transition: transform 0.3s ease-in-out;
 }
-.btn-shine:not(:disabled):hover .btn-shine__icon {
+.btn-shine-skin:not(:disabled):hover .btn-shine__icon {
   transform: translateX(4px);
 }
-.btn-shine::before {
+.btn-shine-skin::before {
   content: '';
   position: absolute;
   top: 0;
@@ -233,9 +227,23 @@
     rgba(255, 255, 255, 0) 70%
   );
 }
-.btn-shine:not(:disabled):hover::before {
+.btn-shine-skin:not(:disabled):hover::before {
   animation: btn-shine-sweep 1.5s ease-out infinite;
 }
+
+/* Bố cục cho <ShineButton> khi đứng độc lập (Button đã có sẵn padding/size). */
+.btn-shine {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
 @keyframes btn-shine-sweep {
   0% {
     left: -100px;
@@ -248,14 +256,14 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn-shine,
-  .btn-shine__icon {
+  .btn-shine-skin,
+  .btn-shine-skin .btn-shine__icon {
     transition: none;
   }
-  .btn-shine:hover {
+  .btn-shine-skin:not(:disabled):hover {
     transform: none;
   }
-  .btn-shine:not(:disabled):hover::before {
+  .btn-shine-skin:not(:disabled):hover::before {
     animation: none;
   }
 }
