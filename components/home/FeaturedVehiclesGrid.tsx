@@ -6,7 +6,7 @@ import { CardCarousel } from '@/components/ui';
 
 export function FeaturedVehiclesGrid({
   vehicles,
-  title = 'Xe nổi bật',
+  title = 'Xe Nổi Bật',
   description = 'Ô tô & xe máy mới đăng — giá tốt, cập nhật liên tục',
   href = '/xe',
   showTypeLinks = false,
@@ -24,7 +24,7 @@ export function FeaturedVehiclesGrid({
     <section className="container-app py-8">
       <div className="mb-4 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold uppercase text-ink sm:text-2xl">{title}</h2>
+          <h2 className="text-xl font-semibold text-ink sm:text-2xl">{title}</h2>
           <p className="mt-1 text-sm text-ink-muted">{description}</p>
         </div>
         <div className="flex items-center gap-2">

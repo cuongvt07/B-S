@@ -35,7 +35,7 @@ export default async function HomePage() {
 
       <Reveal>
         <FeaturedListingsGrid
-          title="Bất động sản nổi bật"
+          title="Bất Động Sản Nổi Bật"
           description={`${featured.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị`}
           listings={featuredListings}
           href="/tin-dang"
@@ -45,7 +45,7 @@ export default async function HomePage() {
 
       <Reveal>
         <FeaturedVehiclesGrid
-          title="Xe cộ nổi bật"
+          title="Xe Cộ Nổi Bật"
           description="Ô tô & xe máy mới đăng — cập nhật liên tục"
           vehicles={vehicles.data}
           href="/xe"

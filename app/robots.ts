@@ -19,7 +19,15 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/tai-khoan/'],
+        // Chặn khu vực riêng tư + trang tiện ích không cần index.
+        disallow: [
+          '/api/',
+          '/tai-khoan/',
+          '/so-sanh',
+          '/dang-nhap',
+          '/dang-ky',
+          '/tin-dang/map',
+        ],
       },
     ],
     sitemap: `${base}/sitemap.xml`,
