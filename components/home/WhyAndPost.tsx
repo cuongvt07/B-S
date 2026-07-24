@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   BadgeCheck,
   RefreshCw,
@@ -46,10 +47,13 @@ export function WhyAndPost() {
           href="/tai-khoan/dang-tin"
           className="unstyled group relative min-h-[160px] overflow-hidden rounded-md p-5 shadow-raised"
         >
-          <div
+          <Image
+            src="/bg/bg-1.jpg"
+            alt=""
             aria-hidden
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-            style={{ backgroundImage: "url('/bg/bg-1.jpg')" }}
+            fill
+            sizes="(max-width: 1024px) 100vw, 420px"
+            className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
           />
           {/* Overlay tối với chữ trắng để đọc rõ trên mọi ảnh nền */}
           <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-ink-strong/90 via-ink/85 to-ink-strong/75" />

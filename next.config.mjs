@@ -15,6 +15,10 @@ const REAL_API = resolveRealApi();
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    // Phục vụ AVIF/WebP cho mọi ảnh qua next/image (nhẹ hơn JPEG 40-70%).
+    formats: ['image/avif', 'image/webp'],
+    // Ảnh đã tối ưu được cache tối thiểu 30 ngày ở CDN/edge.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'plus.unsplash.com' },

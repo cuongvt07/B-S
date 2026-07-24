@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Home, Car, ArrowRight } from '@/components/icons';
 import type { LucideIcon } from '@/components/icons';
 
@@ -37,10 +38,13 @@ function BannerCard({ b }: { b: Banner }) {
       href={b.href}
       className="unstyled group relative min-h-[170px] overflow-hidden rounded-md p-5 shadow-raised"
     >
-      <div
+      <Image
+        src={b.image}
+        alt=""
         aria-hidden
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-        style={{ backgroundImage: `url('${b.image}')` }}
+        fill
+        sizes="(max-width: 768px) 100vw, 400px"
+        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
       />
       {/* Overlay tối với chữ trắng để đọc rõ */}
       <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink-strong/90 via-ink/80 to-ink-strong/60" />
@@ -70,10 +74,13 @@ export function ValuationBanners() {
 
         {/* Middle showcase image */}
         <div className="group relative min-h-[170px] overflow-hidden rounded-md shadow-raised">
-          <div
+          <Image
+            src="/bg/hero-1.jpg"
+            alt=""
             aria-hidden
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-            style={{ backgroundImage: "url('/bg/hero-1.jpg')" }}
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+            className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
           />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent" />
         </div>

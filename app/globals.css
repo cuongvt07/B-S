@@ -468,13 +468,16 @@
 }
 .home-room-banner__photo img {
   object-fit: cover;
-  /* Tăng tương phản + độ nét cảm nhận cho ảnh nền độ phân giải thấp. */
-  filter: saturate(1.18) contrast(1.1) brightness(1.03);
+  /* Tăng tương phản nhẹ. Filter nhẹ hơn → ít tốn GPU khi ảnh đang scale. */
+  filter: saturate(1.1) contrast(1.05);
 }
 .home-room-banner__image {
   opacity: 0;
   transform: scale(1.06);
   transition: opacity 0.7s ease, transform 0.7s ease;
+  /* Đẩy ảnh lên compositor layer riêng để opacity/transform chạy mượt trên GPU. */
+  will-change: opacity, transform;
+  backface-visibility: hidden;
 }
 .home-room-banner__image.is-active {
   opacity: 1;
