@@ -33,10 +33,11 @@ const sizeShape: Record<ContactSize, { box: string; iconBox: string; icon: numbe
     label: 'hidden',
   },
   md: {
-    // pill with auto-width when label shown
-    box: 'h-9 px-3 rounded-full text-xs gap-1.5',
-    iconBox: 'h-9 w-9 rounded-full',
-    icon: 14,
+    // pill with auto-width when label shown — h-11 để khớp chiều cao <Button> md
+    // (nút "Xem chi tiết") khi đứng cạnh nhau trong popup/panel.
+    box: 'h-11 px-4 rounded-full text-sm gap-2',
+    iconBox: 'h-11 w-11 rounded-full',
+    icon: 16,
     label: 'inline font-semibold',
   },
   lg: {
