@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Inter } from 'next/font/google';
+import { Manrope } from 'next/font/google';
 import { Providers } from './providers';
 import { COMPANY, SITE } from '@/lib/constants';
 import { JsonLd } from '@/components/seo';
@@ -8,7 +8,7 @@ import { SocialProofToast } from '@/components/layout';
 import { getSiteSettings } from '@/lib/server-data';
 import './globals.css';
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ['latin', 'vietnamese'],
   display: 'swap',
   variable: '--font-sans',
@@ -57,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isGa4 = analyticsId.startsWith('G-');
 
   return (
-    <html lang="vi" className={inter.variable}>
+    <html lang="vi" className={manrope.variable}>
       <head>
         {isGtm && (
           <Script id="gtm" strategy="afterInteractive">

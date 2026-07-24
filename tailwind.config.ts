@@ -27,10 +27,15 @@ const config: Config = {
         // ── Brand design system theo logo Gold ──
         // Primary = Gold (đồng bộ logo), CTA = Navy đen (tương phản cao)
         primary: {
-          DEFAULT: '#B8860B',       // Gold đậm - logo chính
-          light: '#C99A3D',         // Gold nhạt - gradient, hover
-          dark: '#8A6D1F',          // Gold tối - shadow, borders
-          soft: '#FAF7F0',          // Kem vàng nhạt - background phụ
+          DEFAULT: '#C99B45',       // Gold (spec) - logo chính
+          light: '#D8B76A',         // Gold nhạt - gradient, hover
+          dark: '#A97724',          // Gold tối (gold-dark spec) - shadow, borders
+          soft: '#FAF6EC',          // Kem vàng nhạt - background phụ
+        },
+        // Navy thương hiệu (spec)
+        navy: {
+          DEFAULT: '#071A3A',
+          light: '#10294F',
         },
         
         // CTA - Nút hành động chính (đen sang trọng, tương phản mạnh với gold)
@@ -51,13 +56,13 @@ const config: Config = {
         border: {
           DEFAULT: '#E8E2D5',       // Viền kem vàng nhạt
           light: '#F3EFEA',         // Viền rất nhạt
-          focus: 'rgba(184,134,11,0.35)', // Focus state với gold
+          focus: 'rgba(201,155,69,0.35)', // Focus state với gold (spec)
         },
         
         // VIP badges - phân cấp rõ ràng với gold
         vip: {
-          3: '#B8860B',             // VIP 3: Gold đậm (chữ trắng)
-          2: '#D4AF6A',             // VIP 2: Gold vừa (chữ đen)
+          3: '#C99B45',             // VIP 3: Gold đậm (chữ trắng)
+          2: '#D8B76A',             // VIP 2: Gold vừa (chữ đen)
           1: '#E8D9B5',             // VIP 1: Vàng kem (chữ đen)
         },
         
@@ -70,8 +75,8 @@ const config: Config = {
         
         // Price - nổi bật với gold
         price: {
-          DEFAULT: '#B8860B',       // Gold đậm
-          soft: '#FAF7F0',          // Nền kem
+          DEFAULT: '#A97724',       // Gold-dark (spec) - giá nổi bật
+          soft: '#FAF6EC',          // Nền kem
         },
         
         // Semantic colors
@@ -90,33 +95,33 @@ const config: Config = {
         
         // Legacy aliases (giữ tương thích với code cũ)
         brand: {
-          DEFAULT: '#B8860B',       // Alias cho primary gold
-          hover: '#C99A3D',
-          active: '#8A6D1F',
-          soft: '#FAF7F0',
+          DEFAULT: '#C99B45',       // Alias cho primary gold (spec)
+          hover: '#D8B76A',
+          active: '#A97724',
+          soft: '#FAF6EC',
         },
         gold: {
-          DEFAULT: '#B8860B',       // Đồng bộ với primary
-          hover: '#C99A3D',
-          active: '#8A6D1F',
-          soft: '#FAF7F0',
-          ink: '#1A1A1A',
+          DEFAULT: '#C99B45',       // Đồng bộ với primary (spec)
+          hover: '#D8B76A',
+          active: '#A97724',
+          soft: '#FAF6EC',
+          ink: '#101828',
         },
         champagne: {
-          DEFAULT: '#B8860B',       // Map sang gold (thay vì màu champagne cũ)
-          hover: '#C99A3D',
-          active: '#8A6D1F',
-          soft: '#FAF7F0',
-          ink: '#1A1A1A',
+          DEFAULT: '#C99B45',       // Map sang gold (spec)
+          hover: '#D8B76A',
+          active: '#A97724',
+          soft: '#FAF6EC',
+          ink: '#101828',
         },
         ink: {
-          DEFAULT: '#1A1A1A',       // Chữ đen chính
-          strong: '#0F172A',        // Đen đậm
-          muted: '#6B7280',         // Xám
+          DEFAULT: '#101828',       // Chữ chính (spec text-primary)
+          strong: '#0B1220',        // Đen đậm
+          muted: '#667085',         // Xám (spec text-muted)
         },
         brdr: {
           DEFAULT: '#E8E2D5',       // Alias cho border
-          focus: 'rgba(184,134,11,0.35)',
+          focus: 'rgba(201,155,69,0.35)',
         },
         surface: {
           DEFAULT: '#FFFFFF',
@@ -124,11 +129,13 @@ const config: Config = {
         },
       },
       textColor: {
-        // Text colors cho Tailwind classes
+        // Text colors cho Tailwind classes (spec scale)
         'on-dark': '#FFFFFF',
         'on-dark-muted': '#E5E7EB',
-        'on-light': '#1A1A1A',
-        'on-light-muted': '#6B7280',
+        'on-light': '#101828',            // text-primary
+        'on-light-secondary': '#475467',  // text-secondary
+        'on-light-muted': '#667085',      // text-muted
+        'on-light-faint': '#98A2B3',      // text-light
       },
       fontFamily: {
         sans: [

@@ -6,11 +6,27 @@
   :root {
     color-scheme: light;
     
-    /* ── Auto-contrast text colors theo nền ── */
+    /* ── Auto-contrast text colors theo nền (spec scale) ── */
     --text-on-dark: #FFFFFF;
     --text-on-dark-muted: #E5E7EB;
-    --text-on-light: #1A1A1A;
-    --text-on-light-muted: #6B7280;
+    --text-on-light: #101828;        /* text-primary */
+    --text-on-light-muted: #667085;  /* text-muted */
+
+    /* ── Design tokens (Phú Thịnh Land typography system) ── */
+    --text-secondary: #475467;
+    --text-light: #98A2B3;
+    --navy: #071A3A;
+    --navy-light: #10294F;
+    --gold: #C99B45;
+    --gold-dark: #A97724;
+
+    /* Thang chữ */
+    --heading-h1: clamp(40px, 5vw, 68px);
+    --heading-h2: clamp(28px, 3.2vw, 42px);
+    --heading-h3: clamp(22px, 2.2vw, 30px);
+    --line-tight: 1.05;
+    --line-heading: 1.18;
+    --line-body: 1.65;
   }
 
   html {
@@ -23,6 +39,17 @@
     @apply bg-background font-sans text-base;
     color: var(--text-on-light);
     font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
+    /* Manrope đọc gọn hơn khi siết nhẹ khoảng cách chữ (spec). */
+    letter-spacing: -0.005em;
+  }
+
+  /* Heading — siết tracking + cân chữ theo hệ Manrope (spec). Chỉ chỉnh
+     letter-spacing/weight/wrap, KHÔNG đổi font-size/margin để không phá layout
+     các component Tailwind sẵn có. */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
   }
 
   button,
@@ -182,7 +209,7 @@
   overflow: hidden;
   border-radius: 9999px;
   color: #ffffff;                 /* trắng */
-  background-color: #B8860B;      /* vàng (brand gold) */
+  background-color: #C99B45;      /* vàng (brand gold spec) */
   border: 3px solid #ffffff4d;    /* viền trắng mờ */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* bóng đen */
   outline: none;
@@ -192,7 +219,7 @@
 .btn-shine-skin:not(:disabled):hover {
   transform: scale(1.05);
   border-color: #ffffffe6;        /* viền trắng rõ hơn */
-  background-color: #C99A3D;       /* vàng sáng hơn khi hover */
+  background-color: #D8B76A;       /* vàng sáng hơn khi hover */
 }
 .btn-shine-skin:not(:disabled):active {
   transform: scale(1);
@@ -282,7 +309,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 82% 18%, rgba(245, 166, 35, 0.14), transparent 42%);
+  background: radial-gradient(circle at 82% 18%, rgba(201, 155, 69, 0.14), transparent 42%);
   z-index: 1;
 }
 .home-room-banner__content {
@@ -298,7 +325,7 @@
   padding: 5px 14px;
   border-radius: 999px;
   color: #5c4400;
-  background: #F5A623;
+  background: #C99B45;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -317,8 +344,8 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 18px rgba(0, 0, 0, 0.4);
 }
 .home-room-banner__title-accent {
-  color: #FFB324;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 24px rgba(245, 166, 35, 0.45);
+  color: #D8B76A;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 24px rgba(201, 155, 69, 0.45);
 }
 .home-room-banner__tagline {
   display: inline-block;
@@ -350,7 +377,7 @@
 }
 .home-room-banner__stats strong {
   display: block;
-  color: #F5A623;
+  color: #D8B76A;
   font-size: 20px;
   font-weight: 800;
   line-height: 1.1;
@@ -395,16 +422,16 @@
   width: 3px;
   height: 60%;
   border-radius: 999px;
-  background: #F5A623;
+  background: #C99B45;
 }
 .home-room-banner__float strong {
   display: block;
-  color: #FFC44D;
+  color: #D8B76A;
   font-size: 22px;
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.01em;
-  text-shadow: 0 1px 8px rgba(245, 166, 35, 0.35);
+  text-shadow: 0 1px 8px rgba(201, 155, 69, 0.35);
 }
 .home-room-banner__float small {
   color: rgba(255, 255, 255, 0.82);
@@ -482,7 +509,7 @@
   background: rgba(255, 255, 255, 0.65);
   transition: width 0.2s, background 0.2s;
 }
-.home-room-banner__dots button[aria-current='true'] { width: 34px; background: #F5A623; }
+.home-room-banner__dots button[aria-current='true'] { width: 34px; background: #C99B45; }
 /* Homepage search — compact property search docked to the banner edge. */
 .home-search {
   position: relative;
