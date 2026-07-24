@@ -1,10 +1,12 @@
 import type { MetadataRoute } from 'next';
 import { SITE } from '@/lib/constants';
 import { getSiteSettings } from '@/lib/server-data';
+import { requestBaseUrl } from '@/lib/seo-base';
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const { seo } = await getSiteSettings();
-  const base = seo.canonical_base || SITE.url;
+  // Khớp host đang phục vụ để link sitemap trong robots.txt đúng domain.
+  const base = requestBaseUrl(seo.canonical_base || SITE.url);
 
   // When indexing is disabled in the CMS, block all crawlers site-wide.
   if (!seo.robots_index) {

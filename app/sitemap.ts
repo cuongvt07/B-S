@@ -3,13 +3,15 @@ import { categories } from '@/mocks/data/categories';
 import { cities } from '@/mocks/data/cities';
 import { SITE } from '@/lib/constants';
 import { listListings, listVehicles, listBlogs, getSiteSettings } from '@/lib/server-data';
+import { requestBaseUrl } from '@/lib/seo-base';
 
 // Revalidate the sitemap at most every 30 minutes.
 export const revalidate = 1800;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getSiteSettings();
-  const base = (settings.seo.canonical_base || SITE.url).replace(/\/$/, '');
+  // Khớp host đang phục vụ (apex/www) để tránh lỗi GSC "URL không được phép".
+  const base = requestBaseUrl(settings.seo.canonical_base || SITE.url);
   const now = new Date();
 
   // Dynamic content from the live API (functions fall back safely on error).
