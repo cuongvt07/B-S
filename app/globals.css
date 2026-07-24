@@ -17,8 +17,8 @@
     --text-light: #98A2B3;
     --navy: #071A3A;
     --navy-light: #10294F;
-    --gold: #C99B45;
-    --gold-dark: #A97724;
+    --gold: #E3A81D;
+    --gold-dark: #B07C14;
 
     /* Thang chữ */
     --heading-h1: clamp(40px, 5vw, 68px);
@@ -209,7 +209,7 @@
   overflow: hidden;
   border-radius: 9999px;
   color: #ffffff;                 /* trắng */
-  background-color: #C99B45;      /* vàng (brand gold spec) */
+  background-color: #E3A81D;      /* vàng (brand gold spec) */
   border: 3px solid #ffffff4d;    /* viền trắng mờ */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* bóng đen */
   outline: none;
@@ -219,7 +219,7 @@
 .btn-shine-skin:not(:disabled):hover {
   transform: scale(1.05);
   border-color: #ffffffe6;        /* viền trắng rõ hơn */
-  background-color: #D8B76A;       /* vàng sáng hơn khi hover */
+  background-color: #F2C24E;       /* vàng sáng hơn khi hover */
 }
 .btn-shine-skin:not(:disabled):active {
   transform: scale(1);
@@ -309,7 +309,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 82% 18%, rgba(201, 155, 69, 0.14), transparent 42%);
+  background: radial-gradient(circle at 82% 18%, rgba(227, 168, 29, 0.14), transparent 42%);
   z-index: 1;
 }
 .home-room-banner__content {
@@ -325,7 +325,7 @@
   padding: 5px 14px;
   border-radius: 999px;
   color: #5c4400;
-  background: #C99B45;
+  background: #E3A81D;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -344,8 +344,8 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 18px rgba(0, 0, 0, 0.4);
 }
 .home-room-banner__title-accent {
-  color: #D8B76A;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 24px rgba(201, 155, 69, 0.45);
+  color: #F2C24E;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 24px rgba(227, 168, 29, 0.45);
 }
 .home-room-banner__tagline {
   display: inline-block;
@@ -377,7 +377,7 @@
 }
 .home-room-banner__stats strong {
   display: block;
-  color: #D8B76A;
+  color: #F2C24E;
   font-size: 20px;
   font-weight: 800;
   line-height: 1.1;
@@ -422,16 +422,16 @@
   width: 3px;
   height: 60%;
   border-radius: 999px;
-  background: #C99B45;
+  background: #E3A81D;
 }
 .home-room-banner__float strong {
   display: block;
-  color: #D8B76A;
+  color: #F2C24E;
   font-size: 22px;
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.01em;
-  text-shadow: 0 1px 8px rgba(201, 155, 69, 0.35);
+  text-shadow: 0 1px 8px rgba(227, 168, 29, 0.35);
 }
 .home-room-banner__float small {
   color: rgba(255, 255, 255, 0.82);
@@ -509,7 +509,7 @@
   background: rgba(255, 255, 255, 0.65);
   transition: width 0.2s, background 0.2s;
 }
-.home-room-banner__dots button[aria-current='true'] { width: 34px; background: #C99B45; }
+.home-room-banner__dots button[aria-current='true'] { width: 34px; background: #E3A81D; }
 /* Homepage search — compact property search docked to the banner edge. */
 .home-search {
   position: relative;

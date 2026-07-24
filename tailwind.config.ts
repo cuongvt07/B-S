@@ -27,9 +27,9 @@ const config: Config = {
         // ── Brand design system theo logo Gold ──
         // Primary = Gold (đồng bộ logo), CTA = Navy đen (tương phản cao)
         primary: {
-          DEFAULT: '#C99B45',       // Gold (spec) - logo chính
-          light: '#D8B76A',         // Gold nhạt - gradient, hover
-          dark: '#A97724',          // Gold tối (gold-dark spec) - shadow, borders
+          DEFAULT: '#E3A81D',       // Gold (spec) - logo chính
+          light: '#F2C24E',         // Gold nhạt - gradient, hover
+          dark: '#B07C14',          // Gold tối (gold-dark spec) - shadow, borders
           soft: '#FAF6EC',          // Kem vàng nhạt - background phụ
         },
         // Navy thương hiệu (spec)
@@ -56,13 +56,13 @@ const config: Config = {
         border: {
           DEFAULT: '#E8E2D5',       // Viền kem vàng nhạt
           light: '#F3EFEA',         // Viền rất nhạt
-          focus: 'rgba(201,155,69,0.35)', // Focus state với gold (spec)
+          focus: 'rgba(227, 168, 29,0.35)', // Focus state với gold (spec)
         },
         
         // VIP badges - phân cấp rõ ràng với gold
         vip: {
-          3: '#C99B45',             // VIP 3: Gold đậm (chữ trắng)
-          2: '#D8B76A',             // VIP 2: Gold vừa (chữ đen)
+          3: '#E3A81D',             // VIP 3: Gold đậm (chữ trắng)
+          2: '#F2C24E',             // VIP 2: Gold vừa (chữ đen)
           1: '#E8D9B5',             // VIP 1: Vàng kem (chữ đen)
         },
         
@@ -75,7 +75,7 @@ const config: Config = {
         
         // Price - nổi bật với gold
         price: {
-          DEFAULT: '#A97724',       // Gold-dark (spec) - giá nổi bật
+          DEFAULT: '#B07C14',       // Gold-dark (spec) - giá nổi bật
           soft: '#FAF6EC',          // Nền kem
         },
         
@@ -95,22 +95,22 @@ const config: Config = {
         
         // Legacy aliases (giữ tương thích với code cũ)
         brand: {
-          DEFAULT: '#C99B45',       // Alias cho primary gold (spec)
-          hover: '#D8B76A',
-          active: '#A97724',
+          DEFAULT: '#E3A81D',       // Alias cho primary gold (spec)
+          hover: '#F2C24E',
+          active: '#B07C14',
           soft: '#FAF6EC',
         },
         gold: {
-          DEFAULT: '#C99B45',       // Đồng bộ với primary (spec)
-          hover: '#D8B76A',
-          active: '#A97724',
+          DEFAULT: '#E3A81D',       // Đồng bộ với primary (spec)
+          hover: '#F2C24E',
+          active: '#B07C14',
           soft: '#FAF6EC',
           ink: '#101828',
         },
         champagne: {
-          DEFAULT: '#C99B45',       // Map sang gold (spec)
-          hover: '#D8B76A',
-          active: '#A97724',
+          DEFAULT: '#E3A81D',       // Map sang gold (spec)
+          hover: '#F2C24E',
+          active: '#B07C14',
           soft: '#FAF6EC',
           ink: '#101828',
         },
@@ -121,7 +121,7 @@ const config: Config = {
         },
         brdr: {
           DEFAULT: '#E8E2D5',       // Alias cho border
-          focus: 'rgba(201,155,69,0.35)',
+          focus: 'rgba(227, 168, 29,0.35)',
         },
         surface: {
           DEFAULT: '#FFFFFF',

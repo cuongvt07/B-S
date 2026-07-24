@@ -25,10 +25,13 @@ const variantClasses: Record<ButtonVariant, string> = {
     'rounded-sm transition-colors bg-danger text-white hover:opacity-90 active:opacity-80 disabled:bg-cta-soft disabled:text-on-light-muted',
 };
 
+// Chiều cao cố định để mọi variant (viền 1px hay 3px) cao BẰNG NHAU khi đứng
+// cạnh nhau — box-sizing: border-box nên viền nằm trong chiều cao. Căn giữa theo
+// flex nên không cần padding dọc.
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'px-3 py-2 text-sm min-h-[36px]',
-  md: 'px-4 py-3 text-base min-h-[44px]',
-  lg: 'px-8 py-3 text-base font-semibold min-h-[48px]',
+  sm: 'h-9 px-3 text-sm',
+  md: 'h-11 px-4 text-base',
+  lg: 'h-12 px-8 text-base font-semibold',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
