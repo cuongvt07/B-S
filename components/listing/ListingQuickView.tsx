@@ -67,7 +67,7 @@ export function ListingQuickView({ open, onClose, listing }: Props) {
           />
           {listing.vipTier !== 'normal' && (
             <div className="pointer-events-none absolute left-3 top-3 z-10">
-              <Badge variant="vip">
+              <Badge variant="vipGlass">
                 <Star size={12} fill="currentColor" />
                 VIP {listing.vipTier.replace('vip', '')}
               </Badge>

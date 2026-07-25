@@ -52,7 +52,7 @@ export const ListingCard = memo(function ListingCard({
 
           {isVip && (
             <div className="pointer-events-none absolute left-2 top-2 z-10">
-              <Badge variant="vip">
+              <Badge variant="vipGlass">
                 <Star size={12} fill="currentColor" />
                 VIP {listing.vipTier.replace('vip', '')}
               </Badge>

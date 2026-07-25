@@ -32,7 +32,7 @@ export function VehicleCard({ vehicle, priority }: { vehicle: Vehicle; priority?
         )}
         {isVip && (
           <div className="pointer-events-none absolute left-2 top-2 z-10">
-            <Badge variant="vip">
+            <Badge variant="vipGlass">
               <Star size={12} fill="currentColor" />
               VIP {vehicle.vipTier.replace('vip', '')}
             </Badge>

@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-export type BadgeVariant = 'default' | 'vip' | 'success' | 'danger' | 'outline';
+export type BadgeVariant = 'default' | 'vip' | 'vipGlass' | 'success' | 'danger' | 'outline';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
@@ -10,7 +10,10 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 
 const variantClasses: Record<BadgeVariant, string> = {
   default: 'bg-surface-subtle text-ink',
-  vip: 'bg-vip-soft text-vip border border-vip/20',
+  // Trên nền sáng (trang chi tiết, so sánh, hồ sơ): gold trên nền vàng nhạt.
+  vip: 'bg-primary/10 text-primary border border-primary/25',
+  // Đè trên ảnh (card tin/xe): nền trắng mờ + chữ/icon vàng, dễ nhìn.
+  vipGlass: 'bg-white/85 text-primary border border-white/70 shadow-raised backdrop-blur-sm',
   success: 'bg-price-soft text-price',
   danger: 'bg-danger-soft text-danger',
   outline: 'bg-transparent border border-brdr text-ink',
