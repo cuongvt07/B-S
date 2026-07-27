@@ -26,9 +26,12 @@ const nextConfig = {
       // Real API (MediaBDS) hosts
       { protocol: 'https', hostname: 'vmphuthinhland.com' },
       { protocol: 'https', hostname: '*.vmphuthinhland.com' },
-      // Long Vân S3 — where actual listing photos live
+      // Long Vân S3 — ảnh cũ vẫn nằm ở đây
       { protocol: 'https', hostname: 's3-hcm5-r1.longvan.net' },
       { protocol: 'https', hostname: '*.longvan.net' },
+      // AZ Cloud (FPT) S3 — nơi ảnh tin đăng MỚI được lưu (bucket vm24h)
+      { protocol: 'https', hostname: 'vn-fpt.azcloudstorage.com' },
+      { protocol: 'https', hostname: '*.azcloudstorage.com' },
     ],
   },
   // Proxy Laravel API endpoints so browser sees them as same-origin.
