@@ -53,7 +53,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { seo } = await getSiteSettings();
-  const analyticsId = seo.analytics_id?.trim() || '';
+  // Ưu tiên id nhập từ CMS; mặc định dùng Google tag GA4 đã cấp.
+  const analyticsId = seo.analytics_id?.trim() || 'G-3C6FDQ4L2E';
   const isGtm = analyticsId.startsWith('GTM-');
   const isGa4 = analyticsId.startsWith('G-');
 
