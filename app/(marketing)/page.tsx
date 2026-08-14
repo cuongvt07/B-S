@@ -48,7 +48,6 @@ export default async function HomePage() {
           description={`${featured.meta.total.toLocaleString('vi-VN')} tin đăng đang hiển thị`}
           listings={featuredListings}
           href="/tin-dang"
-          priorityCount={4}
         />
       </Reveal>
 

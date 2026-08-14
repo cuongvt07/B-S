@@ -127,6 +127,7 @@ export function PromoBanner({ listings = [] }: { listings?: Listing[] }) {
             src={property.image}
             alt={property.title}
             fill
+            quality={72}
             sizes="(max-width: 768px) 100vw, 52vw"
             className="object-cover"
           />
