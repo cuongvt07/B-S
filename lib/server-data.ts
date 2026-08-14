@@ -155,7 +155,7 @@ const SITE_SETTINGS_FALLBACK: SiteSettings = {
     keywords: 'bất động sản, nhà đất, cho thuê, mua bán, căn hộ, đất nền',
     og_image: '',
     robots_index: true,
-    canonical_base: 'https://vmphuthinhland.com',
+    canonical_base: 'https://vm24h.vn',
     google_site_verification: '',
     facebook_app_id: '',
     twitter_handle: '',
