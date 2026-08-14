@@ -48,9 +48,16 @@ export function generateMetadata({ searchParams }: PageProps): Metadata {
   const kind = parseKind(searchParams.loai);
   const page = parsePage(searchParams.page);
   const title = kind === 'car' ? 'Mua bán ô tô' : kind === 'motorbike' ? 'Mua bán xe máy' : 'Mua bán xe cộ';
+  // Canonical giữ 'loai' + 'page' (chiều có ý nghĩa), bỏ tham số lọc/sắp xếp
+  // nhiễu → gom các biến thể, tránh "trùng lặp chưa chọn canonical".
+  const cp = new URLSearchParams();
+  if (kind) cp.set('loai', kind);
+  if (page > 1) cp.set('page', String(page));
+  const cqs = cp.toString();
   return {
     title: page > 1 ? `${title} — Trang ${page}` : title,
     description: 'Tin đăng mua bán ô tô, xe máy cũ và mới — cập nhật liên tục.',
+    alternates: { canonical: cqs ? `/xe?${cqs}` : '/xe' },
   };
 }
 
