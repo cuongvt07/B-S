@@ -22,6 +22,7 @@ import {
   Building,
   Car,
   ChevronRight,
+  Wallet,
 } from '@/components/icons';
 import { Drawer } from '@/components/ui';
 import { INLINE_CATEGORIES } from './InlineCategories';
@@ -126,6 +127,15 @@ export function MobileDrawer({ open, onClose }: Props) {
         className="unstyled bds-cta-amber mt-4 inline-flex w-full items-center justify-center gap-2 rounded-sm px-4 py-2.5 text-sm font-semibold text-white"
       >
         <PlusCircle size={16} /> Đăng tin
+      </Link>
+
+      {/* Ví sinh lời — module Vault (tích lũy/rút tiền), route riêng /vault */}
+      <Link
+        href="/vault"
+        onClick={onClose}
+        className="unstyled mt-2 inline-flex w-full items-center justify-center gap-2 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100"
+      >
+        <Wallet size={16} /> Ví sinh lời
       </Link>
 
       {/* Categories */}

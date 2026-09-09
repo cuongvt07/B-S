@@ -46,6 +46,7 @@ export {
   User,
   UserPlus,
   Users,
+  Wallet,
   Wrench,
   X,
   FileText,

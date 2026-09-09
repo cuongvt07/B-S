@@ -44,6 +44,7 @@ const NAV: NavItem[] = [
     ],
   },
   { label: 'Xe cộ', href: '/xe' },
+  { label: 'Ví sinh lời', href: '/vault' },
   { label: 'Tin tức', href: '/blog' },
   {
     label: 'Dự án',
