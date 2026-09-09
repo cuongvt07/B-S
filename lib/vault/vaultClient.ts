@@ -38,6 +38,18 @@ export function setVaultToken(token: string | null): void {
   }
 }
 
+/**
+ * Gọi khi BẤT KỲ request nào (không chỉ /auth/me) trả 401 — nghĩa là token đã
+ * hết hạn/bị thu hồi giữa chừng. Xoá token ngay để tránh vòng lặp gọi API với
+ * token hỏng; useVaultAuthFlag đăng ký listener này 1 lần ở layout (app).
+ */
+type UnauthorizedListener = () => void;
+let onUnauthorized: UnauthorizedListener | null = null;
+
+export function setVaultUnauthorizedHandler(fn: UnauthorizedListener | null): void {
+  onUnauthorized = fn;
+}
+
 interface VaultFetchOptions extends Omit<RequestInit, 'body'> {
   query?: Record<string, unknown>;
   body?: unknown;
@@ -58,24 +70,46 @@ export async function vaultFetch<T>(path: string, init: VaultFetchOptions = {}):
   const { query, body, headers, ...rest } = init;
   const token = getVaultToken();
 
-  const res = await fetch(buildUrl(path, query), {
-    ...rest,
-    method: init.method ?? (body ? 'POST' : 'GET'),
-    headers: {
-      Accept: 'application/json',
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-    // Cố ý KHÔNG có credentials: 'include' — Vault không dùng cookie.
-  });
+  let res: Response;
+  try {
+    res = await fetch(buildUrl(path, query), {
+      ...rest,
+      method: init.method ?? (body ? 'POST' : 'GET'),
+      headers: {
+        Accept: 'application/json',
+        ...(body ? { 'Content-Type': 'application/json' } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+      // Cố ý KHÔNG có credentials: 'include' — Vault không dùng cookie.
+    });
+  } catch {
+    // fetch() tự throw (mất mạng hoàn toàn, không phải lỗi HTTP) — phân biệt
+    // rõ với lỗi server: KHÔNG chắc request đã tới server hay chưa, nên
+    // status=0 để nơi gọi (vd rut-tien) biết đây là trường hợp "không rõ đã
+    // tạo giao dịch hay chưa", tránh khuyến khích bấm thử lại ngay lập tức.
+    throw new VaultApiError(
+      'Không kết nối được máy chủ. Vui lòng kiểm tra mạng và xem lại lịch sử giao dịch trước khi thử lại.',
+      0,
+    );
+  }
 
   const isJson = res.headers.get('content-type')?.includes('application/json');
   const payload = isJson ? await res.json().catch(() => null) : null;
 
   if (!res.ok) {
-    const message = payload?.message || `Lỗi máy chủ (${res.status})`;
+    // Bắt 401 TOÀN CỤC — không chỉ ở /auth/me. Nếu token hết hạn/bị thu hồi
+    // giữa lúc đang dùng (vd bấm rút tiền), báo cho listener để tự đăng xuất
+    // ngay thay vì để nguyên token hỏng, gây lặp lỗi 401 ở mọi request sau.
+    if (res.status === 401 && token) {
+      onUnauthorized?.();
+    }
+
+    const message =
+      res.status === 401
+        ? 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại'
+        : payload?.message || `Lỗi máy chủ (${res.status})`;
     throw new VaultApiError(message, res.status, payload?.errors);
   }
 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Bank, CheckCircle } from '@phosphor-icons/react';
 import { useVaultAccounts, useCreateVaultDeposit } from '@/lib/vault/useVaultData';
+import { useIdempotencyKey } from '@/lib/vault/useIdempotencyKey';
 import { formatVnd } from '@/lib/vault/format';
 import { VaultApiError } from '@/lib/vault/vaultClient';
 
@@ -21,6 +22,7 @@ export default function VaultDepositPage() {
   const [success, setSuccess] = useState(false);
 
   const amount = Number(amountInput.replace(/\D/g, '')) || 0;
+  const idempotencyKey = useIdempotencyKey(amount);
 
   async function handleConfirm() {
     setError(null);
@@ -30,7 +32,7 @@ export default function VaultDepositPage() {
       return;
     }
     try {
-      await createDeposit.mutateAsync({ vaultId: flexibleVault.id, amount });
+      await createDeposit.mutateAsync({ vaultId: flexibleVault.id, amount, idempotencyKey });
       setSuccess(true);
     } catch (e) {
       setError(e instanceof VaultApiError ? e.message : 'Nạp tiền thất bại, thử lại sau');
@@ -39,7 +41,7 @@ export default function VaultDepositPage() {
 
   if (success) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 text-center">
+      <div className="mx-auto flex min-h-screen sm:min-h-full max-w-md flex-col items-center justify-center px-6 text-center">
         <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-vaultgreen-soft text-vaultgreen">
           <CheckCircle size={36} weight="fill" />
         </span>

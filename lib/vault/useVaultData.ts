@@ -105,10 +105,19 @@ export function useAddVaultBankAccount() {
 export function useCreateVaultWithdrawal() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: { vaultId: number; bankAccountId: number; amount: number }) =>
+    // idempotencyKey PHẢI do nơi gọi sinh 1 LẦN DUY NHẤT khi mở form (xem
+    // lib/vault/useIdempotencyKey.ts) và giữ nguyên cho mọi lần bấm lại của
+    // CÙNG một giao dịch — double-tap/mất mạng-rồi-thử-lại sẽ gửi lại đúng
+    // key này, để BE nhận diện là trùng thay vì tạo lệnh rút tiền thứ 2.
+    mutationFn: (input: { vaultId: number; bankAccountId: number; amount: number; idempotencyKey: string }) =>
       vaultFetch<{ id: number; status: string }>('/withdrawals', {
         method: 'POST',
-        body: { vault_id: input.vaultId, bank_account_id: input.bankAccountId, amount: input.amount },
+        body: {
+          vault_id: input.vaultId,
+          bank_account_id: input.bankAccountId,
+          amount: input.amount,
+          idempotency_key: input.idempotencyKey,
+        },
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['vault', 'summary'] });
@@ -121,10 +130,11 @@ export function useCreateVaultWithdrawal() {
 export function useCreateVaultDeposit() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: { vaultId: number; amount: number }) =>
+    // Xem ghi chú idempotencyKey ở useCreateVaultWithdrawal — áp dụng tương tự.
+    mutationFn: (input: { vaultId: number; amount: number; idempotencyKey: string }) =>
       vaultFetch<{ id: number; status: string }>('/deposits', {
         method: 'POST',
-        body: { vault_id: input.vaultId, amount: input.amount },
+        body: { vault_id: input.vaultId, amount: input.amount, idempotency_key: input.idempotencyKey },
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['vault', 'summary'] });

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Question, Bank, Plus, CheckCircle, Fingerprint, Warning } from '@phosphor-icons/react';
 import { useVaultAccounts, useVaultBankAccounts, useCreateVaultWithdrawal } from '@/lib/vault/useVaultData';
+import { useIdempotencyKey } from '@/lib/vault/useIdempotencyKey';
 import { formatVnd } from '@/lib/vault/format';
 import { VaultApiError } from '@/lib/vault/vaultClient';
 
@@ -29,6 +30,12 @@ export default function VaultWithdrawPage() {
   const balanceAfter = Math.max(0, available - amount);
   const otherVaultsLocked = (vaults?.length ?? 0) > 1;
 
+  // Key ổn định cho ĐÚNG cặp (số tiền, tài khoản nhận) này — double-tap hoặc
+  // bấm lại sau lỗi mạng sẽ gửi lại cùng key, BE nhận diện là cùng 1 giao dịch
+  // thay vì tạo lệnh rút tiền thứ 2. Đổi số tiền/tài khoản = giao dịch khác
+  // nên tự sinh key mới (đúng ý định).
+  const idempotencyKey = useIdempotencyKey(`${amount}:${activeBankId ?? ''}`);
+
   async function handleConfirm() {
     setError(null);
     if (!flexibleVault || !activeBankId) return;
@@ -46,6 +53,7 @@ export default function VaultWithdrawPage() {
         vaultId: flexibleVault.id,
         bankAccountId: activeBankId,
         amount,
+        idempotencyKey,
       });
       setSuccess(true);
     } catch (e) {
@@ -55,7 +63,7 @@ export default function VaultWithdrawPage() {
 
   if (success) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 text-center">
+      <div className="mx-auto flex min-h-screen sm:min-h-full max-w-md flex-col items-center justify-center px-6 text-center">
         <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-vaultgreen-soft text-vaultgreen">
           <CheckCircle size={36} weight="fill" />
         </span>

@@ -10,7 +10,7 @@ import {
   Gift,
   UserCircle,
 } from '@phosphor-icons/react';
-import { useVaultAuthFlag, useVaultMe } from '@/lib/vault/useVaultAuth';
+import { useVaultAuthFlag, useVaultMe, useVaultUnauthorizedRedirect } from '@/lib/vault/useVaultAuth';
 
 const TABS = [
   { href: '/vault', label: 'Vaults', icon: House, exact: true },
@@ -25,30 +25,43 @@ export default function VaultAppLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
   const hasToken = useVaultAuthFlag((s) => s.hasToken);
   const { data: me, isLoading, isError } = useVaultMe();
+  useVaultUnauthorizedRedirect(); // tự đăng xuất nếu BẤT KỲ request Vault nào (không riêng /auth/me) trả 401 giữa chừng
 
   useEffect(() => {
     if (!hasToken) {
       router.replace('/vault/dang-nhap');
       return;
     }
-    if (!isLoading && isError) {
+    // Ưu tiên kiểm tra isError trước — nếu query đã fail (vd 401), không đợi
+    // "!me" nữa (me luôn undefined khi lỗi) để tránh kẹt màn hình loading vô
+    // hạn trước khi effect này kịp chạy.
+    if (isError) {
       router.replace('/vault/dang-nhap');
     }
-  }, [hasToken, isLoading, isError, router]);
+  }, [hasToken, isError, router]);
 
-  if (!hasToken || isLoading || !me) {
+  if (!hasToken || isError) {
+    return null; // sắp điều hướng ngay (useEffect ở trên) — không cần hiện gì.
+  }
+
+  if (isLoading || !me) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex h-full min-h-screen items-center justify-center sm:min-h-0">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-vaultgreen border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    // min-h-screen cho mobile thật (đứng riêng, không có khung cha); trên
+    // desktop nằm trong .vault-frame (overflow-y-auto cố định chiều cao) nên
+    // đổi sang h-full để không tự tạo thanh cuộn thứ 2 lồng bên trong khung.
+    <div className="flex min-h-screen flex-col sm:h-full sm:min-h-0">
       <div className="flex-1 pb-20">{children}</div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#EAECF0] bg-white px-2 pb-[env(safe-area-inset-bottom)]">
+      {/* sticky (không phải fixed) — dính đáy of khung .vault-frame trên
+          desktop lẫn đáy viewport trên mobile, không cần code riêng 2 case. */}
+      <nav className="sticky inset-x-0 bottom-0 z-40 border-t border-[#EAECF0] bg-white px-2 pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto grid max-w-md grid-cols-5">
           {TABS.map((tab) => {
             const active = 'exact' in tab && tab.exact ? pathname === tab.href : pathname.startsWith(tab.href);

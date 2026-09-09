@@ -1,9 +1,10 @@
 'use client';
 
 import { create } from 'zustand';
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { getVaultToken, setVaultToken, vaultFetch } from './vaultClient';
+import { getVaultToken, setVaultToken, setVaultUnauthorizedHandler, vaultFetch } from './vaultClient';
 
 export interface VaultUser {
   id: number;
@@ -85,6 +86,27 @@ export function useVaultRegister() {
       qc.setQueryData(['vault-me'], data.user);
     },
   });
+}
+
+/**
+ * Đăng ký 1 lần ở layout (app) — khi BẤT KỲ request Vault nào (không riêng
+ * /auth/me) trả 401, xoá token + đưa về đăng nhập ngay lập tức. Xử lý đúng
+ * case "token hết hạn giữa chừng khi đang dùng" (vd đang rút tiền).
+ */
+export function useVaultUnauthorizedRedirect() {
+  const qc = useQueryClient();
+  const setHasToken = useVaultAuthFlag((s) => s.setHasToken);
+  const router = useRouter();
+
+  useEffect(() => {
+    setVaultUnauthorizedHandler(() => {
+      setVaultToken(null);
+      setHasToken(false);
+      qc.setQueryData(['vault-me'], null);
+      router.replace('/vault/dang-nhap');
+    });
+    return () => setVaultUnauthorizedHandler(null);
+  }, [qc, setHasToken, router]);
 }
 
 export function useVaultLogout() {

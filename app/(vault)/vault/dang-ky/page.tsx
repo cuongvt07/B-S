@@ -52,7 +52,7 @@ function VaultRegisterForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-6 py-10">
+    <div className="flex min-h-screen sm:min-h-full flex-col justify-center px-6 py-10">
       <div className="mx-auto w-full max-w-sm">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-vaultgreen text-2xl font-black text-white shadow-lg">

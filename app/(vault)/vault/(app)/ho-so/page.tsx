@@ -5,6 +5,7 @@ import { SlidersHorizontal, Bell, PencilSimple, ShieldCheck, LockKey, CaretRight
 import { useVaultMe, useVaultLogout } from '@/lib/vault/useVaultAuth';
 import { useVaultSummary, useVaultBankAccounts, useAddVaultBankAccount } from '@/lib/vault/useVaultData';
 import { formatVnd } from '@/lib/vault/format';
+import { VaultApiError } from '@/lib/vault/vaultClient';
 
 const BANKS = [
   { code: 'VCB', name: 'Vietcombank' },
@@ -28,13 +29,19 @@ export default function VaultProfilePage() {
   const [faceIdOn, setFaceIdOn] = useState(me?.faceIdEnabled ?? false);
   const [darkMode, setDarkMode] = useState(false);
   const [bankForm, setBankForm] = useState({ bankCode: 'VCB', accountNumber: '', accountName: '' });
+  const [bankError, setBankError] = useState<string | null>(null);
 
   async function handleAddBank(e: React.FormEvent) {
     e.preventDefault();
+    setBankError(null);
     if (!bankForm.accountNumber || !bankForm.accountName) return;
-    await addBankAccount.mutateAsync(bankForm);
-    setBankForm({ bankCode: 'VCB', accountNumber: '', accountName: '' });
-    setShowAddBank(false);
+    try {
+      await addBankAccount.mutateAsync(bankForm);
+      setBankForm({ bankCode: 'VCB', accountNumber: '', accountName: '' });
+      setShowAddBank(false);
+    } catch (e) {
+      setBankError(e instanceof VaultApiError ? e.message : 'Thêm tài khoản thất bại, thử lại sau');
+    }
   }
 
   return (
@@ -157,6 +164,7 @@ export default function VaultProfilePage() {
             onChange={(e) => setBankForm((f) => ({ ...f, accountName: e.target.value }))}
             className="w-full rounded-xl border border-[#E4E7EC] px-3 py-2.5 text-sm uppercase"
           />
+          {bankError && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{bankError}</p>}
           <button
             type="submit"
             disabled={addBankAccount.isPending}
