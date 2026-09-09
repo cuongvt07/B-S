@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { SlidersHorizontal, Bell, PencilSimple, ShieldCheck, LockKey, CaretRight, Fingerprint, DeviceMobile, Headset, Moon, FileText, SignOut, Plus } from '@phosphor-icons/react';
 import { useVaultMe, useVaultLogout } from '@/lib/vault/useVaultAuth';
 import { useVaultSummary, useVaultBankAccounts, useAddVaultBankAccount } from '@/lib/vault/useVaultData';
@@ -92,12 +93,15 @@ export default function VaultProfilePage() {
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <div className="rounded-xl bg-[#F8FAF9] p-2.5">
+          <Link href="/vault/xac-thuc" className="rounded-xl bg-[#F8FAF9] p-2.5">
             <p className="flex items-center gap-1 text-[11px] text-[#667085]">
               <ShieldCheck size={12} className="text-vaultgreen" /> Xác thực eKYC
             </p>
-            <p className="text-sm font-bold text-[#0B1220]">Cấp độ {me?.ekycLevel ?? 0}</p>
-          </div>
+            <p className="text-sm font-bold text-[#0B1220]">
+              Cấp độ {me?.ekycLevel ?? 0}
+              {Number(me?.ekycLevel ?? 0) < 2 && <span className="ml-1 text-xs font-semibold text-vaultgreen">Nâng cấp →</span>}
+            </p>
+          </Link>
           <div className="rounded-xl bg-[#F8FAF9] p-2.5">
             <p className="flex items-center gap-1 text-[11px] text-[#667085]">
               <LockKey size={12} className="text-vaultgreen" /> Điểm an toàn két

@@ -180,3 +180,46 @@ export function useCreateVaultDeposit() {
     },
   });
 }
+
+export interface VaultEkycStatus {
+  status: 'none' | 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
+  submittedAt?: string;
+  reviewedAt?: string | null;
+  ekycLevel: string;
+}
+
+export function useVaultEkyc() {
+  return useQuery({
+    queryKey: ['vault', 'ekyc'],
+    queryFn: () => vaultFetch<VaultEkycStatus>('/ekyc'),
+  });
+}
+
+export interface SubmitVaultEkycInput {
+  idNumber: string;
+  fullName: string;
+  dateOfBirth: string; // yyyy-mm-dd
+  frontImage: File;
+  backImage: File;
+}
+
+export function useSubmitVaultEkyc() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: SubmitVaultEkycInput) => {
+      // multipart/form-data — 2 ảnh CCCD không thể gửi qua JSON thuần.
+      const form = new FormData();
+      form.append('id_number', input.idNumber);
+      form.append('full_name', input.fullName);
+      form.append('date_of_birth', input.dateOfBirth);
+      form.append('front_image', input.frontImage);
+      form.append('back_image', input.backImage);
+
+      return vaultFetch<{ id: number; status: string }>('/ekyc', { method: 'POST', body: form });
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vault', 'ekyc'] });
+    },
+  });
+}

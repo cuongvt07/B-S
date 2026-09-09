@@ -70,6 +70,11 @@ export async function vaultFetch<T>(path: string, init: VaultFetchOptions = {}):
   const { query, body, headers, ...rest } = init;
   const token = getVaultToken();
 
+  // FormData (upload file, vd nộp ảnh CCCD) phải gửi NGUYÊN, KHÔNG JSON.stringify
+  // và KHÔNG tự set Content-Type — trình duyệt tự thêm boundary đúng chuẩn
+  // multipart/form-data, tự set thủ công sẽ làm hỏng request.
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+
   let res: Response;
   try {
     res = await fetch(buildUrl(path, query), {
@@ -77,11 +82,11 @@ export async function vaultFetch<T>(path: string, init: VaultFetchOptions = {}):
       method: init.method ?? (body ? 'POST' : 'GET'),
       headers: {
         Accept: 'application/json',
-        ...(body ? { 'Content-Type': 'application/json' } : {}),
+        ...(body && !isFormData ? { 'Content-Type': 'application/json' } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: isFormData ? (body as FormData) : body ? JSON.stringify(body) : undefined,
       // Cố ý KHÔNG có credentials: 'include' — Vault không dùng cookie.
     });
   } catch {
