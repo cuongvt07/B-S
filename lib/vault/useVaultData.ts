@@ -51,6 +51,43 @@ export interface VaultBankAccountItem {
   isVerified: boolean;
 }
 
+interface AccrueCheckResult {
+  skipped: boolean;
+  reason?: string;
+  vaultsProcessed?: number;
+  daysAccrued?: number;
+}
+
+/**
+ * "Cron giả lập qua FE" — gọi 1 lần khi Dashboard mount để BE tự bù lãi mọi
+ * ngày còn thiếu (xem VaultCronController::accrueCheck ở BE). Thay thế
+ * `php artisan schedule:run` trên hosting không cấu hình được cron thật.
+ *
+ * An toàn khi gọi nhiều lần/nhiều user: BE tự throttle 60s + idempotent theo
+ * ngày, nên không cần lo gọi trùng hay tốn tài nguyên.
+ */
+export function useVaultAccrueCheck() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => vaultFetch<AccrueCheckResult>('/cron/accrue-check', { method: 'POST' }),
+    onSuccess: (result) => {
+      // Chỉ refetch nếu THỰC SỰ có lãi mới được cộng — tránh invalidate vô ích
+      // mỗi lần mở app khi không có gì thay đổi.
+      if (!result.skipped && (result.daysAccrued ?? 0) > 0) {
+        qc.invalidateQueries({ queryKey: ['vault', 'summary'] });
+        qc.invalidateQueries({ queryKey: ['vault', 'vaults'] });
+        qc.invalidateQueries({ queryKey: ['vault', 'interest-chart'] });
+        qc.invalidateQueries({ queryKey: ['vault', 'activity'] });
+      }
+    },
+    // Lỗi ở đây (vd mất mạng) không quan trọng — Dashboard vẫn hiển thị bình
+    // thường với dữ liệu cũ, lần mở app sau sẽ tự bù tiếp. Không cần báo lỗi
+    // cho user.
+    onError: () => {},
+  });
+}
+
 export function useVaultSummary() {
   return useQuery({
     queryKey: ['vault', 'summary'],

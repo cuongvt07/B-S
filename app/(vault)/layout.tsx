@@ -12,15 +12,17 @@ export const metadata: Metadata = {
 
 export default function VaultRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#E7ECEA] text-[#0B1220] sm:flex sm:items-center sm:justify-center sm:py-6">
+    <div className="h-dvh bg-[#E7ECEA] text-[#0B1220] sm:flex sm:items-center sm:justify-center">
       {/*
         Vault là giao diện MOBILE-FIRST. Trên màn hình rộng (>=640px), đóng
         khung lại như đang mở trên điện thoại (max-w cố định + shadow viền)
         thay vì trải full-width — tránh input/nút bị kéo dãn xấu trên PC.
-        `vault-frame` (tên class neo) để layout con (app)/layout.tsx định vị
-        bottom nav THEO KHUNG này trên desktop, thay vì dính theo viewport.
+        Khung cao ĐỦ 100dvh (trừ viền để không chạm mép màn hình) — không còn
+        bị che/cắt nội dung, cuộn xảy ra BÊN TRONG khung (overflow-y-auto) chứ
+        không phải khung tự hụt. `vault-frame` (tên class neo) để layout con
+        (app)/layout.tsx định vị bottom nav THEO KHUNG này trên desktop.
       */}
-      <div className="vault-frame relative min-h-screen w-full bg-[#F4F7F5] sm:min-h-[860px] sm:max-h-[92vh] sm:w-[430px] sm:overflow-y-auto sm:rounded-[2.5rem] sm:shadow-2xl sm:ring-1 sm:ring-black/5">
+      <div className="vault-frame relative h-dvh w-full overflow-y-auto bg-[#F4F7F5] sm:my-4 sm:h-[calc(100dvh-2rem)] sm:w-[430px] sm:rounded-[2.5rem] sm:shadow-2xl sm:ring-1 sm:ring-black/5">
         {children}
       </div>
     </div>

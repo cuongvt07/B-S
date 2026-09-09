@@ -11,6 +11,7 @@ import {
   UserCircle,
 } from '@phosphor-icons/react';
 import { useVaultAuthFlag, useVaultMe, useVaultUnauthorizedRedirect } from '@/lib/vault/useVaultAuth';
+import { useVaultAccrueCheck } from '@/lib/vault/useVaultData';
 
 const TABS = [
   { href: '/vault', label: 'Vaults', icon: House, exact: true },
@@ -26,6 +27,18 @@ export default function VaultAppLayout({ children }: { children: React.ReactNode
   const hasToken = useVaultAuthFlag((s) => s.hasToken);
   const { data: me, isLoading, isError } = useVaultMe();
   useVaultUnauthorizedRedirect(); // tự đăng xuất nếu BẤT KỲ request Vault nào (không riêng /auth/me) trả 401 giữa chừng
+  const accrueCheck = useVaultAccrueCheck();
+
+  useEffect(() => {
+    // "Cron giả lập qua FE" — chạy 1 lần khi vào bất kỳ trang nào trong module
+    // Vault (không chỉ Dashboard), ngay khi đã xác nhận đăng nhập thành công.
+    // Thay thế `php artisan schedule:run` trên hosting không cấu hình được
+    // cron thật — xem VaultCronController::accrueCheck ở BE.
+    if (me) {
+      accrueCheck.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me?.id]);
 
   useEffect(() => {
     if (!hasToken) {
