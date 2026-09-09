@@ -46,6 +46,13 @@ const nextConfig = {
         source: '/sanctum/:path*',
         destination: `${REAL_API}/sanctum/:path*`,
       },
+      // Module Vault (tích lũy/rút tiền) — proxy riêng, chạy trên cùng backend
+      // Laravel nhưng dùng Bearer token thuần, KHÔNG liên quan cookie Sanctum
+      // ở trên (route đích /api/vault/v1/* nằm ở routes/vault.php bên Laravel).
+      {
+        source: '/api/vault/v1/:path*',
+        destination: `${REAL_API}/api/vault/v1/:path*`,
+      },
     ];
   },
 };

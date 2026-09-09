@@ -37,6 +37,16 @@ const config: Config = {
           DEFAULT: '#071A3A',
           light: '#10294F',
         },
+
+        // Module Vault (tích lũy/rút tiền) — theme xanh lá RIÊNG, tách khỏi
+        // brand vàng/navy của site chính. Chỉ dùng trong app/(vault)/**.
+        vaultgreen: {
+          DEFAULT: '#0F7A4F',   // xanh lá đậm — nền thẻ tổng tài sản
+          dark: '#0B5C3B',      // gradient tối hơn
+          light: '#16A34A',     // xanh lá tươi — nút CTA, số dương
+          soft: '#F0FDF4',      // nền phụ xanh nhạt
+          gold: '#F5C451',      // vàng nhấn (nút "Nạp cất giữ", badge VIP)
+        },
         
         // CTA - Nút hành động chính (đen sang trọng, tương phản mạnh với gold)
         cta: {
