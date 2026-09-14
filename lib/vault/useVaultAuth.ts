@@ -16,6 +16,7 @@ export interface VaultUser {
   vaultCode: string;
   referralCode: string;
   ekycLevel: string;
+  phoneVerified: boolean;
   faceIdEnabled: boolean;
   hasPinSet: boolean;
   dailyWithdrawalLimit: number;
@@ -84,6 +85,30 @@ export function useVaultRegister() {
       setVaultToken(data.token);
       setHasToken(true);
       qc.setQueryData(['vault-me'], data.user);
+    },
+  });
+}
+
+/** Xác thực SĐT bằng OTP (purpose=verify_phone) — nâng eKYC lên cấp 1. */
+export function useVerifyVaultPhone() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { otpCode: string }) =>
+      vaultFetch<VaultUser>('/auth/verify-phone', { method: 'POST', body: { otp_code: input.otpCode } }),
+    onSuccess: (user) => {
+      qc.setQueryData(['vault-me'], user);
+    },
+  });
+}
+
+/** Đặt/đổi PIN — bắt buộc OTP (purpose=set_pin) xác nhận trước, xem BE. */
+export function useSetVaultPin() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { pin: string; otpCode: string }) =>
+      vaultFetch<null>('/auth/pin', { method: 'POST', body: { pin: input.pin, otp_code: input.otpCode } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vault-me'] });
     },
   });
 }

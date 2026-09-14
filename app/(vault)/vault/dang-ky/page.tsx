@@ -45,7 +45,7 @@ function VaultRegisterForm() {
     setServerError(null);
     try {
       await register_.mutateAsync(values);
-      router.replace('/vault');
+      router.replace('/vault/xac-thuc-sdt');
     } catch (e) {
       setServerError(e instanceof VaultApiError ? e.message : 'Đăng ký thất bại, thử lại sau');
     }

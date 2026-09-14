@@ -4,8 +4,15 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Question, Bank, Plus, CheckCircle, Fingerprint, Warning } from '@phosphor-icons/react';
-import { useVaultAccounts, useVaultBankAccounts, useCreateVaultWithdrawal } from '@/lib/vault/useVaultData';
+import {
+  useVaultAccounts,
+  useVaultBankAccounts,
+  useCreateVaultWithdrawal,
+  useConfirmVaultWithdrawal,
+  useRequestVaultOtp,
+} from '@/lib/vault/useVaultData';
 import { useIdempotencyKey } from '@/lib/vault/useIdempotencyKey';
+import { OtpInput, useResendCooldown } from '@/lib/vault/OtpInput';
 import { formatVnd } from '@/lib/vault/format';
 import { VaultApiError } from '@/lib/vault/vaultClient';
 
@@ -16,12 +23,22 @@ export default function VaultWithdrawPage() {
   const { data: vaults } = useVaultAccounts();
   const { data: bankAccounts } = useVaultBankAccounts();
   const createWithdrawal = useCreateVaultWithdrawal();
+  const confirmWithdrawal = useConfirmVaultWithdrawal();
+  const requestOtp = useRequestVaultOtp();
 
   const flexibleVault = useMemo(() => vaults?.find((v) => v.type === 'flexible') ?? vaults?.[0], [vaults]);
   const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
   const [amountInput, setAmountInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  // step 'form' -> nhập số tiền + chọn NH + PIN; 'otp' -> nhập mã OTP đã gửi.
+  const [step, setStep] = useState<'form' | 'otp'>('form');
+  const [pin, setPin] = useState('');
+  const [pendingWithdrawalId, setPendingWithdrawalId] = useState<number | null>(null);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpSentAt, setOtpSentAt] = useState<number | null>(null);
+  const otpCooldown = useResendCooldown(otpSentAt);
 
   const defaultBank = bankAccounts?.find((b) => b.isDefault) ?? bankAccounts?.[0];
   const activeBankId = selectedBankId ?? defaultBank?.id ?? null;
@@ -36,7 +53,7 @@ export default function VaultWithdrawPage() {
   // nên tự sinh key mới (đúng ý định).
   const idempotencyKey = useIdempotencyKey(`${amount}:${activeBankId ?? ''}`);
 
-  async function handleConfirm() {
+  async function handleInitiate() {
     setError(null);
     if (!flexibleVault || !activeBankId) return;
     if (amount < 50_000) {
@@ -47,17 +64,47 @@ export default function VaultWithdrawPage() {
       setError('Số tiền vượt quá số dư khả dụng');
       return;
     }
+    if (!pin.match(/^\d{6}$/)) {
+      setError('Vui lòng nhập đúng mã PIN 6 chữ số');
+      return;
+    }
 
     try {
-      await createWithdrawal.mutateAsync({
+      const withdrawal = await createWithdrawal.mutateAsync({
         vaultId: flexibleVault.id,
         bankAccountId: activeBankId,
         amount,
+        pin,
         idempotencyKey,
       });
-      setSuccess(true);
+      setPendingWithdrawalId(withdrawal.id);
+      setOtpSentAt(Date.now());
+      setStep('otp');
     } catch (e) {
       setError(e instanceof VaultApiError ? e.message : 'Rút tiền thất bại, thử lại sau');
+    }
+  }
+
+  async function handleConfirmOtp() {
+    setError(null);
+    if (!pendingWithdrawalId) return;
+    try {
+      await confirmWithdrawal.mutateAsync({ withdrawalId: pendingWithdrawalId, code: otpCode });
+      setSuccess(true);
+    } catch (e) {
+      setError(e instanceof VaultApiError ? e.message : 'Xác nhận thất bại, thử lại sau');
+    }
+  }
+
+  async function handleResendOtp() {
+    setError(null);
+    if (!pendingWithdrawalId) return;
+    try {
+      await requestOtp.mutateAsync({ purpose: 'withdrawal', referenceId: pendingWithdrawalId });
+      setOtpSentAt(Date.now());
+      setOtpCode('');
+    } catch (e) {
+      setError(e instanceof VaultApiError ? e.message : 'Gửi lại mã thất bại, thử lại sau');
     }
   }
 
@@ -77,6 +124,48 @@ export default function VaultWithdrawPage() {
         >
           Về trang chủ
         </Link>
+      </div>
+    );
+  }
+
+  if (step === 'otp') {
+    return (
+      <div className="mx-auto flex min-h-screen sm:min-h-full max-w-md flex-col justify-center px-6 py-10">
+        <button
+          type="button"
+          onClick={() => setStep('form')}
+          className="mb-6 flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4F7]"
+        >
+          <ArrowLeft size={18} />
+        </button>
+        <h1 className="text-xl font-bold text-[#0B1220]">Xác nhận rút tiền</h1>
+        <p className="mt-2 text-sm text-[#667085]">
+          Nhập mã OTP 6 số vừa được gửi tới số điện thoại của bạn để xác nhận rút {formatVnd(amount)} đ.
+        </p>
+
+        <div className="mt-6">
+          <OtpInput value={otpCode} onChange={setOtpCode} disabled={confirmWithdrawal.isPending} />
+        </div>
+
+        {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
+
+        <button
+          type="button"
+          onClick={handleConfirmOtp}
+          disabled={confirmWithdrawal.isPending || otpCode.length !== 6}
+          className="mt-6 w-full rounded-2xl bg-vaultgreen py-4 text-base font-bold text-white shadow-xl disabled:opacity-50"
+        >
+          {confirmWithdrawal.isPending ? 'Đang xử lý...' : 'Xác nhận rút tiền'}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleResendOtp}
+          disabled={otpCooldown > 0 || requestOtp.isPending}
+          className="mt-4 w-full text-center text-sm font-semibold text-vaultgreen disabled:text-[#98A2B3]"
+        >
+          {otpCooldown > 0 ? `Gửi lại mã sau ${otpCooldown}s` : 'Gửi lại mã'}
+        </button>
       </div>
     );
   }
@@ -242,20 +331,34 @@ export default function VaultWithdrawPage() {
         </div>
       </div>
 
+      {/* Mã PIN xác nhận */}
+      <div className="mt-4 rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-sm">
+        <h2 className="mb-2 font-bold text-[#0B1220]">Mã PIN giao dịch</h2>
+        <input
+          type="password"
+          inputMode="numeric"
+          maxLength={6}
+          value={pin}
+          onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+          placeholder="••••••"
+          className="w-full rounded-xl border-2 border-[#EAECF0] px-4 py-3 text-center text-xl font-bold tracking-[0.5em] outline-none focus:border-vaultgreen"
+        />
+      </div>
+
       {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
 
       <div className="sticky bottom-24 mt-6">
         <button
           type="button"
-          onClick={handleConfirm}
-          disabled={createWithdrawal.isPending || amount <= 0 || !activeBankId}
+          onClick={handleInitiate}
+          disabled={createWithdrawal.isPending || amount <= 0 || !activeBankId || pin.length !== 6}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-vaultgreen py-4 text-base font-bold text-white shadow-xl disabled:opacity-50"
         >
           <Fingerprint size={20} weight="bold" />
           {createWithdrawal.isPending ? 'Đang xử lý...' : `Xác nhận rút ${formatVnd(amount)} đ`}
         </button>
         <p className="mt-2 flex items-center justify-center gap-1 text-center text-xs text-[#98A2B3]">
-          Xác nhận tức thì qua Face ID hoặc mã PIN Vault
+          Cần nhập mã OTP gửi qua SMS ở bước tiếp theo để hoàn tất
         </p>
       </div>
     </div>

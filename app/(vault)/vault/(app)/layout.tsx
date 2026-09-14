@@ -50,11 +50,21 @@ export default function VaultAppLayout({ children }: { children: React.ReactNode
     // hạn trước khi effect này kịp chạy.
     if (isError) {
       router.replace('/vault/dang-nhap');
+      return;
     }
-  }, [hasToken, isError, router]);
+    // Chưa xác thực SĐT (đăng ký dở, tắt app giữa chừng ở màn OTP) — chặn
+    // vào mọi trang trong (app), bắt hoàn tất xác thực trước.
+    if (me && !me.phoneVerified) {
+      router.replace('/vault/xac-thuc-sdt');
+    }
+  }, [hasToken, isError, me, router]);
 
   if (!hasToken || isError) {
     return null; // sắp điều hướng ngay (useEffect ở trên) — không cần hiện gì.
+  }
+
+  if (me && !me.phoneVerified) {
+    return null; // sắp điều hướng sang /vault/xac-thuc-sdt.
   }
 
   if (isLoading || !me) {

@@ -139,28 +139,79 @@ export function useAddVaultBankAccount() {
   });
 }
 
+/**
+ * Bước 1/2 của rút tiền — chỉ TẠO lệnh (status=pending_otp) + BE tự gửi OTP,
+ * CHƯA trừ tiền. Phải gọi tiếp useConfirmVaultWithdrawal với mã OTP để tiền
+ * thực sự rời két (xem CreateVaultWithdrawal::initiate/confirm ở BE).
+ */
 export function useCreateVaultWithdrawal() {
-  const qc = useQueryClient();
   return useMutation({
     // idempotencyKey PHẢI do nơi gọi sinh 1 LẦN DUY NHẤT khi mở form (xem
     // lib/vault/useIdempotencyKey.ts) và giữ nguyên cho mọi lần bấm lại của
     // CÙNG một giao dịch — double-tap/mất mạng-rồi-thử-lại sẽ gửi lại đúng
     // key này, để BE nhận diện là trùng thay vì tạo lệnh rút tiền thứ 2.
-    mutationFn: (input: { vaultId: number; bankAccountId: number; amount: number; idempotencyKey: string }) =>
+    mutationFn: (input: {
+      vaultId: number;
+      bankAccountId: number;
+      amount: number;
+      pin: string;
+      idempotencyKey: string;
+    }) =>
       vaultFetch<{ id: number; status: string }>('/withdrawals', {
         method: 'POST',
         body: {
           vault_id: input.vaultId,
           bank_account_id: input.bankAccountId,
           amount: input.amount,
+          pin: input.pin,
           idempotency_key: input.idempotencyKey,
         },
+      }),
+  });
+}
+
+/** Bước 2/2 — xác nhận OTP đã gửi ở initiate, tiền thực sự được đẩy đi. */
+export function useConfirmVaultWithdrawal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { withdrawalId: number; code: string }) =>
+      vaultFetch<{ id: number; status: string }>(`/withdrawals/${input.withdrawalId}/confirm`, {
+        method: 'POST',
+        body: { code: input.code },
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['vault', 'summary'] });
       qc.invalidateQueries({ queryKey: ['vault', 'vaults'] });
       qc.invalidateQueries({ queryKey: ['vault', 'activity'] });
     },
+  });
+}
+
+export type VaultOtpPurpose = 'verify_phone' | 'set_pin' | 'withdrawal';
+
+/** Gửi (hoặc gửi lại) OTP cho 1 trong 3 purpose dùng chung. */
+export function useRequestVaultOtp() {
+  return useMutation({
+    mutationFn: (input: { purpose: VaultOtpPurpose; referenceId?: number }) =>
+      vaultFetch<{ maskedPhone: string }>('/otp/request', {
+        method: 'POST',
+        body: { purpose: input.purpose, reference_id: input.referenceId },
+      }),
+  });
+}
+
+/**
+ * Verify OTP "trần" (không kèm hành động nào khác) — dùng cho withdrawal khi
+ * muốn kiểm tra mã trước, dù luồng chính thường verify trực tiếp qua
+ * useConfirmVaultWithdrawal (gộp verify + thực thi rút tiền trong 1 lần gọi).
+ */
+export function useVerifyVaultOtp() {
+  return useMutation({
+    mutationFn: (input: { purpose: VaultOtpPurpose; code: string; referenceId?: number }) =>
+      vaultFetch<{ verified: boolean }>('/otp/verify', {
+        method: 'POST',
+        body: { purpose: input.purpose, code: input.code, reference_id: input.referenceId },
+      }),
   });
 }
 
@@ -220,6 +271,41 @@ export function useSubmitVaultEkyc() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['vault', 'ekyc'] });
+    },
+  });
+}
+
+/**
+ * Đổi số điện thoại — 3 bước tuần tự, khớp VaultChangePhoneController ở BE:
+ * start (OTP về số cũ) -> verifyOld (xác nhận số cũ + khai số mới, nhận
+ * sessionToken) -> verifyNew (OTP về số mới + sessionToken -> đổi thật).
+ */
+export function useStartChangeVaultPhone() {
+  return useMutation({
+    mutationFn: () => vaultFetch<null>('/change-phone/start', { method: 'POST' }),
+  });
+}
+
+export function useVerifyOldVaultPhone() {
+  return useMutation({
+    mutationFn: (input: { otpCode: string; newPhone: string }) =>
+      vaultFetch<{ sessionToken: string }>('/change-phone/verify-old', {
+        method: 'POST',
+        body: { otp_code: input.otpCode, new_phone: input.newPhone },
+      }),
+  });
+}
+
+export function useVerifyNewVaultPhone() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { sessionToken: string; otpCode: string }) =>
+      vaultFetch<{ id: number; phone: string }>('/change-phone/verify-new', {
+        method: 'POST',
+        body: { session_token: input.sessionToken, otp_code: input.otpCode },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vault-me'] });
     },
   });
 }

@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { SlidersHorizontal, Bell, PencilSimple, ShieldCheck, LockKey, CaretRight, Fingerprint, DeviceMobile, Headset, Moon, FileText, SignOut, Plus } from '@phosphor-icons/react';
-import { useVaultMe, useVaultLogout } from '@/lib/vault/useVaultAuth';
-import { useVaultSummary, useVaultBankAccounts, useAddVaultBankAccount } from '@/lib/vault/useVaultData';
+import { useVaultMe, useVaultLogout, useSetVaultPin } from '@/lib/vault/useVaultAuth';
+import { useVaultSummary, useVaultBankAccounts, useAddVaultBankAccount, useRequestVaultOtp } from '@/lib/vault/useVaultData';
+import { OtpInput, useResendCooldown } from '@/lib/vault/OtpInput';
 import { formatVnd } from '@/lib/vault/format';
 import { VaultApiError } from '@/lib/vault/vaultClient';
 
@@ -25,8 +26,17 @@ export default function VaultProfilePage() {
   const { data: bankAccounts } = useVaultBankAccounts();
   const addBankAccount = useAddVaultBankAccount();
   const logout = useVaultLogout();
+  const requestOtp = useRequestVaultOtp();
+  const setPin = useSetVaultPin();
 
   const [showAddBank, setShowAddBank] = useState(false);
+  const [showSetPin, setShowSetPin] = useState(false);
+  const [pinStep, setPinStep] = useState<'new-pin' | 'otp'>('new-pin');
+  const [newPin, setNewPin] = useState('');
+  const [pinOtp, setPinOtp] = useState('');
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [pinSentAt, setPinSentAt] = useState<number | null>(null);
+  const pinCooldown = useResendCooldown(pinSentAt);
   const [faceIdOn, setFaceIdOn] = useState(me?.faceIdEnabled ?? false);
   const [darkMode, setDarkMode] = useState(false);
   const [bankForm, setBankForm] = useState({ bankCode: 'VCB', accountNumber: '', accountName: '' });
@@ -42,6 +52,50 @@ export default function VaultProfilePage() {
       setShowAddBank(false);
     } catch (e) {
       setBankError(e instanceof VaultApiError ? e.message : 'Thêm tài khoản thất bại, thử lại sau');
+    }
+  }
+
+  function openSetPin() {
+    setPinError(null);
+    setNewPin('');
+    setPinOtp('');
+    setPinStep('new-pin');
+    setShowSetPin(true);
+  }
+
+  async function handleRequestPinOtp() {
+    setPinError(null);
+    if (!newPin.match(/^\d{6}$/)) {
+      setPinError('Mã PIN phải gồm đúng 6 chữ số');
+      return;
+    }
+    try {
+      await requestOtp.mutateAsync({ purpose: 'set_pin' });
+      setPinSentAt(Date.now());
+      setPinStep('otp');
+    } catch (e) {
+      setPinError(e instanceof VaultApiError ? e.message : 'Gửi mã OTP thất bại, thử lại sau');
+    }
+  }
+
+  async function handleResendPinOtp() {
+    setPinError(null);
+    try {
+      await requestOtp.mutateAsync({ purpose: 'set_pin' });
+      setPinSentAt(Date.now());
+      setPinOtp('');
+    } catch (e) {
+      setPinError(e instanceof VaultApiError ? e.message : 'Gửi lại mã thất bại, thử lại sau');
+    }
+  }
+
+  async function handleConfirmSetPin() {
+    setPinError(null);
+    try {
+      await setPin.mutateAsync({ pin: newPin, otpCode: pinOtp });
+      setShowSetPin(false);
+    } catch (e) {
+      setPinError(e instanceof VaultApiError ? e.message : 'Cập nhật PIN thất bại, thử lại sau');
     }
   }
 
@@ -194,12 +248,26 @@ export default function VaultProfilePage() {
           icon={<LockKey size={18} className="text-vaultgreen" />}
           title="Mã PIN giao dịch (6 chữ số)"
           subtitle="Đổi mã PIN định kỳ bảo vệ két"
+          onClick={openSetPin}
           right={
             <span className="flex items-center gap-1 text-xs font-semibold text-[#667085]">
               {me?.hasPinSet ? 'Đã kích hoạt' : 'Chưa đặt'} <CaretRight size={12} />
             </span>
           }
         />
+        <Link
+          href="/vault/doi-so-dien-thoai"
+          className="flex w-full items-center gap-3 p-3.5 text-left"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-vaultgreen-soft">
+            <DeviceMobile size={18} className="text-vaultgreen" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-[#0B1220]">Đổi số điện thoại</p>
+            <p className="truncate text-xs text-[#98A2B3]">Xác thực OTP cả số cũ &amp; số mới</p>
+          </div>
+          <CaretRight size={14} className="text-[#98A2B3]" />
+        </Link>
       </div>
 
       {/* Tiện ích */}
@@ -222,6 +290,73 @@ export default function VaultProfilePage() {
       >
         <SignOut size={18} /> Đăng xuất tài khoản an toàn
       </button>
+
+      {showSetPin && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
+          <div className="w-full max-w-sm rounded-t-3xl bg-white p-5 sm:rounded-3xl">
+            <h2 className="text-base font-bold text-[#0B1220]">
+              {me?.hasPinSet ? 'Đổi mã PIN giao dịch' : 'Đặt mã PIN giao dịch'}
+            </h2>
+
+            {pinStep === 'new-pin' ? (
+              <>
+                <p className="mt-1 text-sm text-[#667085]">Nhập mã PIN mới gồm 6 chữ số dùng để xác nhận rút tiền.</p>
+                <input
+                  inputMode="numeric"
+                  autoFocus
+                  maxLength={6}
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="••••••"
+                  className="mt-4 w-full rounded-xl border-2 border-[#EAECF0] px-4 py-3 text-center text-2xl font-bold tracking-[0.5em] outline-none focus:border-vaultgreen"
+                />
+                {pinError && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{pinError}</p>}
+                <div className="mt-5 grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowSetPin(false)}
+                    className="rounded-xl bg-[#F2F4F7] py-3 text-sm font-bold text-[#475467]"
+                  >
+                    Huỷ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRequestPinOtp}
+                    disabled={requestOtp.isPending || newPin.length !== 6}
+                    className="rounded-xl bg-vaultgreen py-3 text-sm font-bold text-white disabled:opacity-50"
+                  >
+                    {requestOtp.isPending ? 'Đang gửi mã...' : 'Tiếp tục'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="mt-1 text-sm text-[#667085]">Nhập mã OTP 6 số vừa được gửi tới số điện thoại của bạn để xác nhận.</p>
+                <div className="mt-4">
+                  <OtpInput value={pinOtp} onChange={setPinOtp} disabled={setPin.isPending} />
+                </div>
+                {pinError && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{pinError}</p>}
+                <button
+                  type="button"
+                  onClick={handleConfirmSetPin}
+                  disabled={setPin.isPending || pinOtp.length !== 6}
+                  className="mt-5 w-full rounded-xl bg-vaultgreen py-3 text-sm font-bold text-white disabled:opacity-50"
+                >
+                  {setPin.isPending ? 'Đang xác nhận...' : 'Xác nhận'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResendPinOtp}
+                  disabled={pinCooldown > 0 || requestOtp.isPending}
+                  className="mt-3 w-full text-center text-sm font-semibold text-vaultgreen disabled:text-[#98A2B3]"
+                >
+                  {pinCooldown > 0 ? `Gửi lại mã sau ${pinCooldown}s` : 'Gửi lại mã'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
