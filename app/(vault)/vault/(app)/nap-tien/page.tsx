@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Bank, CheckCircle, ClockCountdown, XCircle } from '@phosphor-icons/react';
+import { ArrowLeft, Bank, CheckCircle, ClockCountdown, DownloadSimple, XCircle } from '@phosphor-icons/react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useVaultAccounts,
@@ -50,6 +50,7 @@ export default function VaultDepositPage() {
 
   const { data: deposit } = useVaultDepositStatus(depositId);
   const remainingSeconds = useCountdownTo(deposit?.status === 'pending_payment' ? deposit.expiresAt : undefined);
+  const [isDownloadingQr, setIsDownloadingQr] = useState(false);
 
   // Vừa chuyển sang success — cập nhật số dư/lịch sử 1 lần (xem ghi chú ở
   // useVaultDepositStatus vì sao không đặt side-effect này trong hook đó).
@@ -69,6 +70,35 @@ export default function VaultDepositPage() {
       return () => clearTimeout(timer);
     }
   }, [deposit?.status, router]);
+
+  /**
+   * Ảnh QR nằm ở domain ngoài (vietqr.app) — không thể dùng <a download>
+   * trực tiếp trên <img src> vì trình duyệt sẽ điều hướng thay vì tải khi
+   * link là cross-origin. Fetch về dạng blob rồi tạo link tải tạm thời;
+   * nếu domain đó chặn CORS (fetch throw), fallback mở ảnh ở tab mới để
+   * user tự bấm giữ/lưu ảnh theo cách thủ công.
+   */
+  async function handleDownloadQr() {
+    if (!deposit?.qrImageUrl) return;
+    setIsDownloadingQr(true);
+    try {
+      const response = await fetch(deposit.qrImageUrl);
+      if (!response.ok) throw new Error('fetch failed');
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `vm24h-qr-${deposit.paymentCode}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(deposit.qrImageUrl, '_blank', 'noopener,noreferrer');
+    } finally {
+      setIsDownloadingQr(false);
+    }
+  }
 
   async function handleConfirm() {
     setError(null);
@@ -135,8 +165,19 @@ export default function VaultDepositPage() {
 
         <div className="rounded-[22px] border border-[#E7ECEA] bg-white p-5 text-center shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
           {deposit.qrImageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={deposit.qrImageUrl} alt="Mã QR chuyển khoản" className="mx-auto w-full max-w-[260px] rounded-2xl border border-[#F0F2F1]" />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={deposit.qrImageUrl} alt="Mã QR chuyển khoản" className="mx-auto w-full max-w-[260px] rounded-2xl border border-[#F0F2F1]" />
+              <button
+                type="button"
+                onClick={handleDownloadQr}
+                disabled={isDownloadingQr}
+                className="mx-auto mt-3 flex items-center gap-1.5 rounded-full bg-[#F4F7F5] px-4 py-2 text-xs font-extrabold text-[#475467] transition hover:bg-[#EDF2EF] disabled:opacity-50"
+              >
+                <DownloadSimple size={15} weight="bold" />
+                {isDownloadingQr ? 'Đang tải...' : 'Tải ảnh QR'}
+              </button>
+            </>
           ) : (
             <p className="py-10 text-sm text-[#667085]">Chưa cấu hình tài khoản nhận tiền, vui lòng thử lại sau.</p>
           )}
