@@ -91,11 +91,11 @@ export default function VaultDepositPage() {
         <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-vaultgreen-soft text-vaultgreen">
           <CheckCircle size={36} weight="fill" />
         </span>
-        <h1 className="text-xl font-bold text-[#0B1220]">Nạp tiền thành công</h1>
+        <h1 className="text-xl font-black tracking-[-0.02em] text-[#0B1220]">Nạp tiền thành công</h1>
         <p className="mt-2 text-sm text-[#667085]">
           {formatVnd(deposit.amount)} đ đã được cộng vào két của bạn.
         </p>
-        <p className="mt-4 text-xs text-[#98A2B3]">Đang chuyển về ví...</p>
+        <p className="mt-4 text-xs font-semibold text-[#98A2B3]">Đang chuyển về ví...</p>
       </div>
     );
   }
@@ -106,11 +106,11 @@ export default function VaultDepositPage() {
         <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500">
           <XCircle size={36} weight="fill" />
         </span>
-        <h1 className="text-xl font-bold text-[#0B1220]">Phiên giao dịch quá hạn</h1>
+        <h1 className="text-xl font-black tracking-[-0.02em] text-[#0B1220]">Phiên giao dịch quá hạn</h1>
         <p className="mt-2 text-sm text-[#667085]">
           Bạn chưa chuyển khoản trong thời gian cho phép. Vui lòng tạo lệnh nạp tiền mới.
         </p>
-        <p className="mt-4 text-xs text-[#98A2B3]">Đang chuyển về trang chủ...</p>
+        <p className="mt-4 text-xs font-semibold text-[#98A2B3]">Đang chuyển về trang chủ...</p>
       </div>
     );
   }
@@ -121,44 +121,44 @@ export default function VaultDepositPage() {
     const seconds = remainingSeconds % 60;
 
     return (
-      <div className="mx-auto max-w-md px-4 pb-8 pt-4">
-        <div className="mb-4 flex items-center gap-3">
+      <div className="mx-auto max-w-md px-4 pb-8 pt-5">
+        <div className="mb-5 flex items-center gap-3">
           <button
             type="button"
             onClick={() => setDepositId(null)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4F7]"
+            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E7ECEA] bg-white text-[#475467] shadow-sm"
           >
             <ArrowLeft size={18} />
           </button>
-          <h1 className="text-base font-bold text-[#0B1220]">Quét mã để nạp tiền</h1>
+          <h1 className="text-[15px] font-extrabold text-[#0B1220]">Quét mã để nạp tiền</h1>
         </div>
 
-        <div className="rounded-2xl border border-[#EAECF0] bg-white p-4 text-center shadow-sm">
+        <div className="rounded-[22px] border border-[#E7ECEA] bg-white p-5 text-center shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
           {deposit.qrImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={deposit.qrImageUrl} alt="Mã QR chuyển khoản" className="mx-auto w-full max-w-[280px] rounded-xl" />
+            <img src={deposit.qrImageUrl} alt="Mã QR chuyển khoản" className="mx-auto w-full max-w-[260px] rounded-2xl border border-[#F0F2F1]" />
           ) : (
             <p className="py-10 text-sm text-[#667085]">Chưa cấu hình tài khoản nhận tiền, vui lòng thử lại sau.</p>
           )}
 
-          <p className="mt-4 text-2xl font-black text-[#0B1220]">{formatVnd(deposit.amount)} đ</p>
+          <p className="mt-4 text-2xl font-black tracking-[-0.02em] text-[#0B1220]">{formatVnd(deposit.amount)} đ</p>
           <p className="mt-1 text-xs text-[#667085]">
-            Nội dung chuyển khoản: <span className="font-bold text-vaultgreen">{deposit.paymentCode}</span>
+            Nội dung chuyển khoản: <span className="font-extrabold text-vaultgreen">{deposit.paymentCode}</span>
           </p>
         </div>
 
-        <div className="mt-4 flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
+        <div className="mt-4 flex items-center gap-2.5 rounded-2xl bg-amber-50 p-3.5 text-xs text-amber-800">
           <ClockCountdown size={18} className="shrink-0 animate-pulse" />
           <span>
             Đang chờ xác nhận chuyển khoản...{' '}
-            <strong className="mono">
+            <strong className="mono font-black">
               Còn {minutes}:{seconds.toString().padStart(2, '0')}
             </strong>
             {' '}— két sẽ tự động cộng tiền ngay khi ngân hàng báo có, không cần tải lại trang.
           </span>
         </div>
 
-        <p className="mt-4 rounded-xl bg-[#F8FAF9] p-3 text-xs text-[#667085]">
+        <p className="mt-4 rounded-2xl bg-[#F8FAF9] p-3.5 text-xs text-[#667085]">
           Vui lòng chuyển khoản ĐÚNG số tiền và giữ nguyên nội dung chuyển khoản (mã {deposit.paymentCode}) để hệ thống tự động khớp giao dịch.
         </p>
       </div>
@@ -166,46 +166,46 @@ export default function VaultDepositPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 pb-8 pt-4">
-      <div className="mb-4 flex items-center gap-3">
-        <button type="button" onClick={() => router.back()} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4F7]">
+    <div className="mx-auto max-w-md px-4 pb-8 pt-5">
+      <div className="mb-5 flex items-center gap-3">
+        <button type="button" onClick={() => router.back()} className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E7ECEA] bg-white text-[#475467] shadow-sm transition hover:border-vaultgreen/30 hover:text-vaultgreen">
           <ArrowLeft size={18} />
         </button>
-        <h1 className="text-base font-bold text-[#0B1220]">Nạp cất giữ</h1>
+        <h1 className="text-[15px] font-extrabold text-[#0B1220]">Nạp cất giữ</h1>
       </div>
 
-      <div className="rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-sm">
+      <div className="rounded-[22px] border border-[#E7ECEA] bg-white p-4 shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-vaultgreen-soft text-vaultgreen">
-            <Bank size={18} />
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-vaultgreen-soft text-vaultgreen">
+            <Bank size={18} weight="bold" />
           </span>
           <div>
-            <p className="text-xs text-[#667085]">Nạp vào két</p>
-            <p className="font-bold text-[#0B1220]">{flexibleVault?.name ?? '—'}</p>
+            <p className="text-[11px] text-[#98A2B3]">Nạp vào két</p>
+            <p className="text-sm font-extrabold text-[#0B1220]">{flexibleVault?.name ?? '—'}</p>
           </div>
         </div>
       </div>
 
-      <div className="mt-4">
-        <h2 className="mb-2 font-bold text-[#0B1220]">Số tiền cần nạp</h2>
-        <div className="flex items-center justify-between rounded-2xl border-2 border-[#EAECF0] bg-white px-4 py-4 focus-within:border-vaultgreen">
+      <div className="mt-5">
+        <h2 className="mb-2 text-sm font-extrabold text-[#0B1220]">Số tiền cần nạp</h2>
+        <div className="flex items-center justify-between rounded-2xl border-2 border-[#E7ECEA] bg-white px-4 py-4 focus-within:border-vaultgreen">
           <input
             inputMode="numeric"
             placeholder="0"
             value={amountInput ? Number(amountInput).toLocaleString('vi-VN') : ''}
             onChange={(e) => setAmountInput(e.target.value.replace(/\D/g, ''))}
-            className="w-full bg-transparent text-2xl font-bold text-[#0B1220] outline-none"
+            className="w-full bg-transparent text-2xl font-black tracking-[-0.02em] text-[#0B1220] outline-none"
           />
-          <span className="text-lg font-bold text-[#98A2B3]">đ</span>
+          <span className="text-lg font-extrabold text-[#98A2B3]">đ</span>
         </div>
-        <div className="mt-2 grid grid-cols-4 gap-2">
+        <div className="mt-2.5 grid grid-cols-4 gap-2">
           {QUICK_AMOUNTS.map((a) => (
             <button
               key={a}
               type="button"
               onClick={() => setAmountInput(String(a))}
-              className={`rounded-xl py-2 text-xs font-bold ${
-                amount === a ? 'bg-vaultgreen text-white' : 'bg-[#F2F4F7] text-[#475467]'
+              className={`rounded-xl py-2 text-xs font-extrabold transition ${
+                amount === a ? 'bg-vaultgreen text-white shadow-sm' : 'bg-[#F4F7F5] text-[#475467] hover:bg-[#EDF2EF]'
               }`}
             >
               {a >= 1_000_000 ? `${a / 1_000_000}tr` : `${a / 1_000}k`}
@@ -214,17 +214,17 @@ export default function VaultDepositPage() {
         </div>
       </div>
 
-      <p className="mt-4 rounded-xl bg-[#F8FAF9] p-3 text-xs text-[#667085]">
+      <p className="mt-4 rounded-2xl bg-[#F8FAF9] p-3.5 text-xs text-[#667085]">
         Nạp tiền qua chuyển khoản ngân hàng (VietQR) — tiền vào két tự động ngay khi ngân hàng xác nhận, thường trong vài giây.
       </p>
 
-      {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-3 rounded-2xl bg-red-50 px-3.5 py-2.5 text-sm font-semibold text-red-600">{error}</p>}
 
       <button
         type="button"
         onClick={handleConfirm}
         disabled={createDeposit.isPending || amount <= 0}
-        className="mt-6 w-full rounded-2xl bg-vaultgreen py-4 text-base font-bold text-white shadow-xl disabled:opacity-50"
+        className="mt-6 w-full rounded-2xl bg-vaultgreen py-4 text-base font-extrabold text-white shadow-[0_18px_32px_rgba(15,122,79,0.28)] transition hover:brightness-105 disabled:opacity-50"
       >
         {createDeposit.isPending ? 'Đang tạo mã QR...' : `Tạo mã QR nạp ${formatVnd(amount)} đ`}
       </button>

@@ -87,8 +87,8 @@ export default function VaultAppLayout({ children }: { children: React.ReactNode
 
       {/* sticky (không phải fixed) — dính đáy of khung .vault-frame trên
           desktop lẫn đáy viewport trên mobile, không cần code riêng 2 case. */}
-      <nav className="sticky inset-x-0 bottom-0 z-40 border-t border-[#EAECF0] bg-white px-2 pb-[env(safe-area-inset-bottom)]">
-        <div className="mx-auto grid max-w-md grid-cols-5">
+      <nav className="sticky inset-x-0 bottom-0 z-40 border-t border-[#E7ECEA] bg-white/95 px-3 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(16,24,40,0.06)] backdrop-blur-xl">
+        <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
           {TABS.map((tab) => {
             const active = 'exact' in tab && tab.exact ? pathname === tab.href : pathname.startsWith(tab.href);
             const isCenter = tab.href === '/vault/giao-dich';
@@ -98,16 +98,18 @@ export default function VaultAppLayout({ children }: { children: React.ReactNode
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="flex flex-col items-center justify-center gap-1 py-2"
+                className={`flex min-h-[62px] flex-col items-center justify-center gap-1 rounded-2xl py-2 transition ${active ? 'bg-vaultgreen-soft/55' : 'hover:bg-[#F7FAF8]'}`}
               >
                 {isCenter ? (
-                  <span className="-mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-vaultgreen text-white shadow-lg">
+                  <span className="-mt-7 flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-vaultgreen text-white shadow-[0_8px_20px_rgba(15,122,79,0.28)]">
                     <Icon size={22} weight="bold" />
                   </span>
                 ) : (
-                  <Icon size={22} weight={active ? 'fill' : 'regular'} className={active ? 'text-vaultgreen' : 'text-[#98A2B3]'} />
+                  <span className={`flex h-8 w-8 items-center justify-center rounded-xl ${active ? 'bg-white text-vaultgreen shadow-sm' : 'text-[#98A2B3]'}`}>
+                    <Icon size={20} weight={active ? 'fill' : 'regular'} />
+                  </span>
                 )}
-                <span className={`text-[10px] font-semibold ${active ? 'text-vaultgreen' : 'text-[#98A2B3]'}`}>
+                <span className={`text-[10px] font-extrabold ${active ? 'text-vaultgreen' : 'text-[#98A2B3]'}`}>
                   {tab.label}
                 </span>
               </Link>

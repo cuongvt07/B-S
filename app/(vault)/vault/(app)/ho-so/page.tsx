@@ -121,108 +121,109 @@ export default function VaultProfilePage() {
   // xem JSX bên dưới dùng chung handleRequestPinOtp cho cả 2 trường hợp.
 
   return (
-    <div className="mx-auto max-w-md px-4 pt-4">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="mx-auto max-w-md px-4 pt-5">
+      <div className="mb-5 flex items-center justify-between">
         <div>
-          <p className="text-xs text-[#667085]">Két Tài Sản &amp; Cá Nhân</p>
-          <h1 className="text-lg font-bold text-[#0B1220]">Hồ sơ &amp; An toàn</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#98A2B3]">Két Tài Sản &amp; Cá Nhân</p>
+          <h1 className="mt-0.5 text-lg font-black tracking-[-0.02em] text-[#0B1220]">Hồ sơ &amp; An toàn</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4F7]">
+          <button type="button" className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E7ECEA] bg-white text-[#475467] shadow-sm transition hover:border-vaultgreen/30 hover:text-vaultgreen">
             <SlidersHorizontal size={16} />
           </button>
-          <button type="button" className="relative flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4F7]">
+          <button type="button" className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E7ECEA] bg-white text-[#475467] shadow-sm transition hover:border-vaultgreen/30 hover:text-vaultgreen">
             <Bell size={16} />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
           </button>
         </div>
       </div>
 
       {/* Card thông tin cá nhân */}
-      <div className="rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-sm">
+      <div className="rounded-[22px] border border-[#E7ECEA] bg-white p-4 shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
         <div className="flex items-center gap-3">
-          <div className="relative h-14 w-14 overflow-hidden rounded-full bg-[#E4E7EC]">
+          <div className="relative h-14 w-14 overflow-hidden rounded-2xl bg-[#E4E7EC]">
             {me?.avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={me.avatarUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xl font-bold text-[#667085]">
+              <div className="flex h-full w-full items-center justify-center text-xl font-extrabold text-[#667085]">
                 {me?.name?.[0]?.toUpperCase()}
               </div>
             )}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <p className="truncate font-bold text-[#0B1220]">{me?.name}</p>
+              <p className="truncate text-[15px] font-extrabold text-[#0B1220]">{me?.name}</p>
               {me?.vipTier !== 'standard' && (
-                <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700">
+                <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-700">
                   {me?.vipTier === 'vip_gold' ? 'VIP Gold' : 'VIP Silver'}
                 </span>
               )}
             </div>
-            <p className="text-xs text-[#667085]">Mã định danh: {me?.vaultCode}</p>
+            <p className="text-xs text-[#98A2B3]">Mã định danh: {me?.vaultCode}</p>
           </div>
-          <button type="button" className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F2F4F7]">
+          <button type="button" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[#F4F7F5] text-[#475467] transition hover:bg-[#EDF2EF]">
             <PencilSimple size={14} />
           </button>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <Link href="/vault/xac-thuc" className="rounded-xl bg-[#F8FAF9] p-2.5">
-            <p className="flex items-center gap-1 text-[11px] text-[#667085]">
+        <div className="mt-3 grid grid-cols-2 gap-2.5">
+          <Link href="/vault/xac-thuc" className="rounded-2xl bg-[#F8FAF9] p-3 transition hover:bg-vaultgreen-soft/60">
+            <p className="flex items-center gap-1 text-[11px] text-[#98A2B3]">
               <ShieldCheck size={12} className="text-vaultgreen" /> Xác thực eKYC
             </p>
-            <p className="text-sm font-bold text-[#0B1220]">
+            <p className="mt-0.5 text-sm font-extrabold text-[#0B1220]">
               Cấp độ {me?.ekycLevel ?? 0}
-              {Number(me?.ekycLevel ?? 0) < 2 && <span className="ml-1 text-xs font-semibold text-vaultgreen">Nâng cấp →</span>}
+              {Number(me?.ekycLevel ?? 0) < 2 && <span className="ml-1 text-xs font-bold text-vaultgreen">Nâng cấp →</span>}
             </p>
           </Link>
-          <div className="rounded-xl bg-[#F8FAF9] p-2.5">
-            <p className="flex items-center gap-1 text-[11px] text-[#667085]">
+          <div className="rounded-2xl bg-[#F8FAF9] p-3">
+            <p className="flex items-center gap-1 text-[11px] text-[#98A2B3]">
               <LockKey size={12} className="text-vaultgreen" /> Điểm an toàn két
             </p>
-            <p className="text-sm font-bold text-[#0B1220]">{me?.hasPinSet ? '98/100' : '60/100'}</p>
+            <p className="mt-0.5 text-sm font-extrabold text-[#0B1220]">{me?.hasPinSet ? '98/100' : '60/100'}</p>
           </div>
         </div>
       </div>
 
       {/* Tài sản tích lũy bảo hộ */}
-      <div className="mt-4 rounded-2xl bg-gradient-to-br from-vaultgreen to-vaultgreen-dark p-4 text-white shadow-lg">
-        <div className="flex items-center justify-between text-xs text-white/80">
+      <div className="relative isolate mt-4 overflow-hidden rounded-[22px] bg-[linear-gradient(135deg,#0B5C3B_0%,#0F7A4F_100%)] p-4 text-white shadow-[0_14px_32px_rgba(15,122,79,0.2)]">
+        <div className="pointer-events-none absolute -right-8 -top-10 -z-10 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+        <div className="flex items-center justify-between text-xs text-white/75">
           <span className="font-bold uppercase tracking-wide">Tài sản tích lũy bảo hộ</span>
-          <span className="flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5">
+          <span className="flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 font-bold">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> Đang sinh lời
           </span>
         </div>
-        <p className="mt-1 text-2xl font-black">{formatVnd(summary?.totalBalance ?? 0)} đ</p>
-        <p className="mt-4 text-xs text-white/70">Tiền lãi sinh sôi (YTD)</p>
-        <p className="font-bold text-amber-300">+{formatVnd(summary?.totalInterestReceived ?? 0)} đ</p>
+        <p className="mt-1 text-2xl font-black tracking-[-0.02em]">{formatVnd(summary?.totalBalance ?? 0)} đ</p>
+        <p className="mt-4 text-xs text-white/65">Tiền lãi sinh sôi (YTD)</p>
+        <p className="font-extrabold text-[#D6F58D]">+{formatVnd(summary?.totalInterestReceived ?? 0)} đ</p>
       </div>
 
       {/* Cài đặt tài chính & két */}
       <SectionTitle>Cài Đặt Tài Chính &amp; Két</SectionTitle>
-      <div className="divide-y divide-[#EAECF0] rounded-2xl border border-[#EAECF0] bg-white shadow-sm">
+      <div className="divide-y divide-[#F0F2F1] rounded-[22px] border border-[#E7ECEA] bg-white shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
         <Row
-          icon={<Fingerprint size={18} className="text-vaultgreen" />}
+          icon={<Fingerprint size={18} weight="bold" className="text-vaultgreen" />}
           title="Tài khoản nhận tiền rút"
           subtitle={bankAccounts?.length ? bankAccounts.map((b) => `${b.bankName} (${b.maskedNumber})`).join(', ') : 'Chưa có tài khoản'}
-          right={<span className="rounded-full bg-[#F2F4F7] px-2 py-0.5 text-xs font-bold">{bankAccounts?.length ?? 0} Thẻ</span>}
+          right={<span className="rounded-full bg-[#F4F7F5] px-2.5 py-1 text-xs font-black text-[#475467]">{bankAccounts?.length ?? 0} Thẻ</span>}
           onClick={() => setShowAddBank((v) => !v)}
         />
         <Row
-          icon={<DeviceMobile size={18} className="text-vaultgreen" />}
+          icon={<DeviceMobile size={18} weight="bold" className="text-vaultgreen" />}
           title="Hạn mức rút tiền / ngày"
           subtitle="Hạn mức theo phân hạng hiện tại"
-          right={<span className="text-sm font-bold text-[#0B1220]">{formatVnd(me?.dailyWithdrawalLimit ?? 0)} đ</span>}
+          right={<span className="text-sm font-extrabold text-[#0B1220]">{formatVnd(me?.dailyWithdrawalLimit ?? 0)} đ</span>}
         />
       </div>
 
       {showAddBank && (
-        <form onSubmit={handleAddBank} className="mt-3 space-y-2.5 rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-sm">
+        <form onSubmit={handleAddBank} className="mt-3 space-y-2.5 rounded-[22px] border border-[#E7ECEA] bg-white p-4 shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
           <select
             value={bankForm.bankCode}
             onChange={(e) => setBankForm((f) => ({ ...f, bankCode: e.target.value }))}
-            className="w-full rounded-xl border border-[#E4E7EC] px-3 py-2.5 text-sm"
+            className="w-full rounded-2xl border-2 border-[#E7ECEA] px-3 py-2.5 text-sm font-semibold outline-none focus:border-vaultgreen"
           >
             {BANKS.map((b) => (
               <option key={b.code} value={b.code}>
@@ -235,19 +236,19 @@ export default function VaultProfilePage() {
             inputMode="numeric"
             value={bankForm.accountNumber}
             onChange={(e) => setBankForm((f) => ({ ...f, accountNumber: e.target.value.replace(/\D/g, '') }))}
-            className="w-full rounded-xl border border-[#E4E7EC] px-3 py-2.5 text-sm"
+            className="w-full rounded-2xl border-2 border-[#E7ECEA] px-3 py-2.5 text-sm font-semibold outline-none focus:border-vaultgreen"
           />
           <input
             placeholder="Tên chủ tài khoản"
             value={bankForm.accountName}
             onChange={(e) => setBankForm((f) => ({ ...f, accountName: e.target.value }))}
-            className="w-full rounded-xl border border-[#E4E7EC] px-3 py-2.5 text-sm uppercase"
+            className="w-full rounded-2xl border-2 border-[#E7ECEA] px-3 py-2.5 text-sm font-semibold uppercase outline-none focus:border-vaultgreen"
           />
-          {bankError && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{bankError}</p>}
+          {bankError && <p className="rounded-2xl bg-red-50 px-3.5 py-2.5 text-xs font-semibold text-red-600">{bankError}</p>}
           <button
             type="submit"
             disabled={addBankAccount.isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-vaultgreen py-2.5 text-sm font-bold text-white disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-vaultgreen py-3 text-sm font-extrabold text-white shadow-[0_12px_24px_rgba(15,122,79,0.22)] transition hover:brightness-105 disabled:opacity-60"
           >
             <Plus size={16} weight="bold" /> {addBankAccount.isPending ? 'Đang thêm...' : 'Thêm tài khoản'}
           </button>
@@ -255,36 +256,36 @@ export default function VaultProfilePage() {
       )}
 
       {/* Bảo mật */}
-      <SectionTitle right={<span className="flex items-center gap-1 text-xs font-semibold text-vaultgreen"><ShieldCheck size={12} weight="fill" /> An toàn cao</span>}>
+      <SectionTitle right={<span className="flex items-center gap-1 text-xs font-bold text-vaultgreen"><ShieldCheck size={12} weight="fill" /> An toàn cao</span>}>
         Bảo Mật &amp; Quyền Riêng Tư
       </SectionTitle>
-      <div className="divide-y divide-[#EAECF0] rounded-2xl border border-[#EAECF0] bg-white shadow-sm">
+      <div className="divide-y divide-[#F0F2F1] rounded-[22px] border border-[#E7ECEA] bg-white shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
         <Row
-          icon={<Fingerprint size={18} className="text-vaultgreen" />}
+          icon={<Fingerprint size={18} weight="bold" className="text-vaultgreen" />}
           title="Sinh trắc học Face ID / Touch ID"
           subtitle="Đăng nhập nhanh và xác nhận lệnh"
           right={<Toggle checked={faceIdOn} onChange={setFaceIdOn} />}
         />
         <Row
-          icon={<LockKey size={18} className="text-vaultgreen" />}
+          icon={<LockKey size={18} weight="bold" className="text-vaultgreen" />}
           title="Mã PIN giao dịch (6 chữ số)"
           subtitle="Đổi mã PIN định kỳ bảo vệ két"
           onClick={openSetPin}
           right={
-            <span className="flex items-center gap-1 text-xs font-semibold text-[#667085]">
+            <span className="flex items-center gap-1 text-xs font-bold text-[#667085]">
               {me?.hasPinSet ? 'Đã kích hoạt' : 'Chưa đặt'} <CaretRight size={12} />
             </span>
           }
         />
         <Link
           href="/vault/doi-so-dien-thoai"
-          className="flex w-full items-center gap-3 p-3.5 text-left"
+          className="flex w-full items-center gap-3 p-3.5 text-left transition hover:bg-[#F7FAF8]"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-vaultgreen-soft">
-            <DeviceMobile size={18} className="text-vaultgreen" />
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-vaultgreen-soft">
+            <DeviceMobile size={18} weight="bold" className="text-vaultgreen" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-[#0B1220]">Đổi số điện thoại</p>
+            <p className="text-sm font-bold text-[#0B1220]">Đổi số điện thoại</p>
             <p className="truncate text-xs text-[#98A2B3]">Xác thực OTP cả số cũ &amp; số mới</p>
           </div>
           <CaretRight size={14} className="text-[#98A2B3]" />
@@ -293,29 +294,29 @@ export default function VaultProfilePage() {
 
       {/* Tiện ích */}
       <SectionTitle>Tiện Ích &amp; Trợ Giúp</SectionTitle>
-      <div className="divide-y divide-[#EAECF0] rounded-2xl border border-[#EAECF0] bg-white shadow-sm">
-        <Row icon={<Headset size={18} className="text-vaultgreen" />} title="Trung tâm hỗ trợ chuyên biệt 24/7" subtitle="Chuyên viên cố vấn tài chính riêng VIP" />
+      <div className="divide-y divide-[#F0F2F1] rounded-[22px] border border-[#E7ECEA] bg-white shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
+        <Row icon={<Headset size={18} weight="bold" className="text-vaultgreen" />} title="Trung tâm hỗ trợ chuyên biệt 24/7" subtitle="Chuyên viên cố vấn tài chính riêng VIP" />
         <Row
-          icon={<Moon size={18} className="text-vaultgreen" />}
+          icon={<Moon size={18} weight="bold" className="text-vaultgreen" />}
           title="Giao diện tối (Dark Mode)"
           subtitle="Tối ưu thị giác vào ban đêm"
           right={<Toggle checked={darkMode} onChange={setDarkMode} />}
         />
-        <Row icon={<FileText size={18} className="text-vaultgreen" />} title="Điều khoản &amp; Bảo chứng lưu ký két" subtitle="Giấy phép hoạt động quản lý quỹ" />
+        <Row icon={<FileText size={18} weight="bold" className="text-vaultgreen" />} title="Điều khoản &amp; Bảo chứng lưu ký két" subtitle="Giấy phép hoạt động quản lý quỹ" />
       </div>
 
       <button
         type="button"
         onClick={() => logout.mutate()}
-        className="mt-5 mb-8 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 py-3.5 text-sm font-bold text-red-600"
+        className="mt-5 mb-8 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 py-3.5 text-sm font-extrabold text-red-600 transition hover:bg-red-100"
       >
-        <SignOut size={18} /> Đăng xuất tài khoản an toàn
+        <SignOut size={18} weight="bold" /> Đăng xuất tài khoản an toàn
       </button>
 
       {showSetPin && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
-          <div className="w-full max-w-sm rounded-t-3xl bg-white p-5 sm:rounded-3xl">
-            <h2 className="text-base font-bold text-[#0B1220]">
+          <div className="w-full max-w-sm rounded-t-[28px] bg-white p-5 sm:rounded-[28px]">
+            <h2 className="text-base font-extrabold text-[#0B1220]">
               {me?.hasPinSet ? 'Đổi mã PIN giao dịch' : 'Đặt mã PIN giao dịch'}
             </h2>
 
@@ -329,14 +330,14 @@ export default function VaultProfilePage() {
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="••••••"
-                  className="mt-4 w-full rounded-xl border-2 border-[#EAECF0] px-4 py-3 text-center text-2xl font-bold tracking-[0.5em] outline-none focus:border-vaultgreen"
+                  className="mt-4 w-full rounded-2xl border-2 border-[#E7ECEA] px-4 py-3 text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-vaultgreen"
                 />
-                {pinError && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{pinError}</p>}
+                {pinError && <p className="mt-3 rounded-2xl bg-red-50 px-3.5 py-2.5 text-sm font-semibold text-red-600">{pinError}</p>}
                 <div className="mt-5 grid grid-cols-2 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setShowSetPin(false)}
-                    className="rounded-xl bg-[#F2F4F7] py-3 text-sm font-bold text-[#475467]"
+                    className="rounded-2xl bg-[#F4F7F5] py-3 text-sm font-extrabold text-[#475467] transition hover:bg-[#EDF2EF]"
                   >
                     Huỷ
                   </button>
@@ -344,7 +345,7 @@ export default function VaultProfilePage() {
                     type="button"
                     onClick={handleRequestPinOtp}
                     disabled={requestOtp.isPending || setPin.isPending || newPin.length !== 6}
-                    className="rounded-xl bg-vaultgreen py-3 text-sm font-bold text-white disabled:opacity-50"
+                    className="rounded-2xl bg-vaultgreen py-3 text-sm font-extrabold text-white shadow-[0_12px_24px_rgba(15,122,79,0.22)] transition hover:brightness-105 disabled:opacity-50"
                   >
                     {requestOtp.isPending || setPin.isPending ? 'Đang xử lý...' : 'Tiếp tục'}
                   </button>
@@ -356,12 +357,12 @@ export default function VaultProfilePage() {
                 <div className="mt-4">
                   <OtpInput value={pinOtp} onChange={setPinOtp} disabled={setPin.isPending} />
                 </div>
-                {pinError && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{pinError}</p>}
+                {pinError && <p className="mt-3 rounded-2xl bg-red-50 px-3.5 py-2.5 text-sm font-semibold text-red-600">{pinError}</p>}
                 <button
                   type="button"
                   onClick={handleConfirmSetPin}
                   disabled={setPin.isPending || pinOtp.length !== 6}
-                  className="mt-5 w-full rounded-xl bg-vaultgreen py-3 text-sm font-bold text-white disabled:opacity-50"
+                  className="mt-5 w-full rounded-2xl bg-vaultgreen py-3 text-sm font-extrabold text-white shadow-[0_12px_24px_rgba(15,122,79,0.22)] transition hover:brightness-105 disabled:opacity-50"
                 >
                   {setPin.isPending ? 'Đang xác nhận...' : 'Xác nhận'}
                 </button>
@@ -369,7 +370,7 @@ export default function VaultProfilePage() {
                   type="button"
                   onClick={handleResendPinOtp}
                   disabled={pinCooldown > 0 || requestOtp.isPending}
-                  className="mt-3 w-full text-center text-sm font-semibold text-vaultgreen disabled:text-[#98A2B3]"
+                  className="mt-3 w-full text-center text-sm font-bold text-vaultgreen disabled:text-[#98A2B3]"
                 >
                   {pinCooldown > 0 ? `Gửi lại mã sau ${pinCooldown}s` : 'Gửi lại mã'}
                 </button>
@@ -384,8 +385,8 @@ export default function VaultProfilePage() {
 
 function SectionTitle({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
   return (
-    <div className="mb-2 mt-5 flex items-center justify-between">
-      <h2 className="text-sm font-bold text-[#0B1220]">{children}</h2>
+    <div className="mb-2 mt-6 flex items-center justify-between">
+      <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#98A2B3]">{children}</h2>
       {right}
     </div>
   );
@@ -406,10 +407,10 @@ function Row({
 }) {
   const Comp = onClick ? 'button' : 'div';
   return (
-    <Comp type={onClick ? 'button' : undefined} onClick={onClick} className="flex w-full items-center gap-3 p-3.5 text-left">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-vaultgreen-soft">{icon}</span>
+    <Comp type={onClick ? 'button' : undefined} onClick={onClick} className={`flex w-full items-center gap-3 p-3.5 text-left ${onClick ? 'transition hover:bg-[#F7FAF8]' : ''}`}>
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-vaultgreen-soft">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-[#0B1220]">{title}</p>
+        <p className="text-sm font-bold text-[#0B1220]">{title}</p>
         {subtitle && <p className="truncate text-xs text-[#98A2B3]">{subtitle}</p>}
       </div>
       {right ?? <CaretRight size={14} className="text-[#98A2B3]" />}
