@@ -11,6 +11,7 @@ import {
   useConfirmVaultWithdrawal,
   useRequestVaultOtp,
 } from '@/lib/vault/useVaultData';
+import { useVaultMe } from '@/lib/vault/useVaultAuth';
 import { useIdempotencyKey } from '@/lib/vault/useIdempotencyKey';
 import { OtpInput, useResendCooldown } from '@/lib/vault/OtpInput';
 import { formatVnd } from '@/lib/vault/format';
@@ -20,6 +21,7 @@ const QUICK_AMOUNTS = [2_000_000, 5_000_000, 10_000_000];
 
 export default function VaultWithdrawPage() {
   const router = useRouter();
+  const { data: me } = useVaultMe();
   const { data: vaults } = useVaultAccounts();
   const { data: bankAccounts } = useVaultBankAccounts();
   const createWithdrawal = useCreateVaultWithdrawal();
@@ -77,6 +79,15 @@ export default function VaultWithdrawPage() {
         pin,
         idempotencyKey,
       });
+
+      // OTP đang TẠM TẮT — BE tự confirm() luôn, withdrawal.status đã là
+      // 'pending' (không còn 'pending_otp') ngay từ initiate(). Bỏ qua bước
+      // nhập OTP hoàn toàn. Khôi phục khi me.otpEnabled = true.
+      if (!me?.otpEnabled || withdrawal.status !== 'pending_otp') {
+        setSuccess(true);
+        return;
+      }
+
       setPendingWithdrawalId(withdrawal.id);
       setOtpSentAt(Date.now());
       setStep('otp');

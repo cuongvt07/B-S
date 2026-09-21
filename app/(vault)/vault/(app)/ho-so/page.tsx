@@ -69,12 +69,30 @@ export default function VaultProfilePage() {
       setPinError('Mã PIN phải gồm đúng 6 chữ số');
       return;
     }
+
+    // OTP đang TẠM TẮT (Twilio chưa cấu hình xong) — bỏ qua bước gửi/nhập
+    // OTP hoàn toàn, đặt PIN thẳng luôn. Khôi phục khi me.otpEnabled = true.
+    if (!me?.otpEnabled) {
+      await handleConfirmSetPinDirect();
+      return;
+    }
+
     try {
       await requestOtp.mutateAsync({ purpose: 'set_pin' });
       setPinSentAt(Date.now());
       setPinStep('otp');
     } catch (e) {
       setPinError(e instanceof VaultApiError ? e.message : 'Gửi mã OTP thất bại, thử lại sau');
+    }
+  }
+
+  async function handleConfirmSetPinDirect() {
+    setPinError(null);
+    try {
+      await setPin.mutateAsync({ pin: newPin });
+      setShowSetPin(false);
+    } catch (e) {
+      setPinError(e instanceof VaultApiError ? e.message : 'Cập nhật PIN thất bại, thử lại sau');
     }
   }
 
@@ -98,6 +116,9 @@ export default function VaultProfilePage() {
       setPinError(e instanceof VaultApiError ? e.message : 'Cập nhật PIN thất bại, thử lại sau');
     }
   }
+
+  // Nút "Tiếp tục" ở bước nhập PIN mới hiển thị khác nhau tuỳ OTP bật/tắt —
+  // xem JSX bên dưới dùng chung handleRequestPinOtp cho cả 2 trường hợp.
 
   return (
     <div className="mx-auto max-w-md px-4 pt-4">
@@ -322,10 +343,10 @@ export default function VaultProfilePage() {
                   <button
                     type="button"
                     onClick={handleRequestPinOtp}
-                    disabled={requestOtp.isPending || newPin.length !== 6}
+                    disabled={requestOtp.isPending || setPin.isPending || newPin.length !== 6}
                     className="rounded-xl bg-vaultgreen py-3 text-sm font-bold text-white disabled:opacity-50"
                   >
-                    {requestOtp.isPending ? 'Đang gửi mã...' : 'Tiếp tục'}
+                    {requestOtp.isPending || setPin.isPending ? 'Đang xử lý...' : 'Tiếp tục'}
                   </button>
                 </div>
               </>

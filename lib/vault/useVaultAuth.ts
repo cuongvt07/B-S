@@ -20,6 +20,10 @@ export interface VaultUser {
   faceIdEnabled: boolean;
   hasPinSet: boolean;
   dailyWithdrawalLimit: number;
+  // TẠM THỜI false trên toàn hệ thống (Twilio chưa cấu hình xong) — FE đọc
+  // field này để ẩn mọi màn hình nhập OTP tương ứng, KHÔNG hardcode ở FE.
+  // Xem services.twilio.otp_enabled / VaultOtpService::isEnabled() ở BE.
+  otpEnabled: boolean;
 }
 
 interface AuthPayload {
@@ -105,7 +109,9 @@ export function useVerifyVaultPhone() {
 export function useSetVaultPin() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: { pin: string; otpCode: string }) =>
+    // otpCode optional — chỉ cần khi me.otpEnabled === true (xem BE
+    // VaultAuthController::setPin, bắt buộc động theo VaultOtpService::isEnabled()).
+    mutationFn: (input: { pin: string; otpCode?: string }) =>
       vaultFetch<null>('/auth/pin', { method: 'POST', body: { pin: input.pin, otp_code: input.otpCode } }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['vault-me'] });

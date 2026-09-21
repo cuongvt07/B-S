@@ -53,8 +53,11 @@ export default function VaultAppLayout({ children }: { children: React.ReactNode
       return;
     }
     // Chưa xác thực SĐT (đăng ký dở, tắt app giữa chừng ở màn OTP) — chặn
-    // vào mọi trang trong (app), bắt hoàn tất xác thực trước.
-    if (me && !me.phoneVerified) {
+    // vào mọi trang trong (app), bắt hoàn tất xác thực trước. CHỈ áp dụng
+    // khi OTP đang bật thật — khi tắt tạm thời (me.otpEnabled === false),
+    // không chặn dù phoneVerified vẫn false (user đăng ký từ trước khi tắt
+    // OTP), tránh kẹt họ vĩnh viễn ở màn hình chờ SMS không bao giờ tới.
+    if (me && me.otpEnabled && !me.phoneVerified) {
       router.replace('/vault/xac-thuc-sdt');
     }
   }, [hasToken, isError, me, router]);
@@ -63,7 +66,7 @@ export default function VaultAppLayout({ children }: { children: React.ReactNode
     return null; // sắp điều hướng ngay (useEffect ở trên) — không cần hiện gì.
   }
 
-  if (me && !me.phoneVerified) {
+  if (me && me.otpEnabled && !me.phoneVerified) {
     return null; // sắp điều hướng sang /vault/xac-thuc-sdt.
   }
 
