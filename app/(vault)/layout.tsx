@@ -1,10 +1,21 @@
 import type { Metadata } from 'next';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 
 /**
  * Layout gốc cho module Vault — chỉ set metadata + nền, KHÔNG mang theo
  * header/footer/nav của site chính (marketing/dashboard). Guard đăng nhập nằm
  * ở app/(vault)/vault/(app)/layout.tsx (route con), không ở đây.
+ *
+ * Font RIÊNG cho Vault (Plus Jakarta Sans — geometric, chuẩn fintech mobile
+ * app: Cash App/Revolut/Momo đều dùng font cùng họ), KHÔNG dùng chung Manrope
+ * của site BĐS chính — chỉ áp dụng trong .vault-frame (xem globals.css).
  */
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin', 'vietnamese'],
+  display: 'swap',
+  variable: '--font-vault',
+});
+
 export const metadata: Metadata = {
   title: { default: 'Vault — Tích lũy sinh lời', template: '%s | Vault' },
   robots: { index: false, follow: false }, // module nội bộ, không cần SEO index
@@ -12,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function VaultRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-dvh bg-[#E7ECEA] text-[#0B1220] sm:flex sm:items-center sm:justify-center">
+    <div className={`${plusJakarta.variable} h-dvh bg-[#E7ECEA] text-[#0B1220] sm:flex sm:items-center sm:justify-center`}>
       {/*
         Vault là giao diện MOBILE-FIRST. Trên màn hình rộng (>=640px), đóng
         khung lại như đang mở trên điện thoại (max-w cố định + shadow viền)

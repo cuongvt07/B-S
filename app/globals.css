@@ -1776,3 +1776,18 @@
     @apply bg-primary-soft text-primary font-bold px-3 py-1.5 rounded-md;
   }
 }
+
+/*
+ * Module Vault (Ví sinh lời) — style riêng, KHÔNG dùng chung design system
+ * site BĐS chính (Manrope + gạch chân link mặc định ở `a` trong @layer base
+ * phía trên). Đặt NGOÀI @layer để có độ đặc trưng cao hơn, chắc chắn override.
+ * Scope bằng .vault-frame (class neo có sẵn ở app/(vault)/layout.tsx) để
+ * không ảnh hưởng bất kỳ trang nào khác ngoài Vault.
+ */
+.vault-frame {
+  font-family: var(--font-vault), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.vault-frame a {
+  text-decoration: none;
+}
