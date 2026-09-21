@@ -219,9 +219,10 @@ export interface VaultDepositItem {
   id: number;
   vaultId: number;
   amount: number;
-  status: 'pending_payment' | 'success' | 'failed';
+  status: 'pending_payment' | 'success' | 'failed' | 'expired';
   paymentCode: string | null;
   qrImageUrl: string | null;
+  expiresAt: string;
   completedAt: string | null;
 }
 
@@ -258,7 +259,7 @@ export function useVaultDepositStatus(depositId: number | null) {
     enabled: depositId !== null,
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      return status === 'success' || status === 'failed' ? false : 3_000;
+      return status === 'success' || status === 'failed' || status === 'expired' ? false : 3_000;
     },
   });
 }

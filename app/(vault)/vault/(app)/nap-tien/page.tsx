@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Bank, CheckCircle, ClockCountdown } from '@phosphor-icons/react';
+import { ArrowLeft, Bank, CheckCircle, ClockCountdown, XCircle } from '@phosphor-icons/react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useVaultAccounts,
@@ -15,6 +14,25 @@ import { formatVnd } from '@/lib/vault/format';
 import { VaultApiError } from '@/lib/vault/vaultClient';
 
 const QUICK_AMOUNTS = [500_000, 2_000_000, 10_000_000, 50_000_000];
+
+/** Đếm ngược tới 1 mốc tuyệt đối (deadline ISO string) — khác useResendCooldown (đếm từ mốc bắt đầu). */
+function useCountdownTo(deadlineIso: string | undefined): number {
+  const [remainingSeconds, setRemainingSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!deadlineIso) {
+      setRemainingSeconds(0);
+      return;
+    }
+    const deadline = new Date(deadlineIso).getTime();
+    const tick = () => setRemainingSeconds(Math.max(0, Math.round((deadline - Date.now()) / 1000)));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [deadlineIso]);
+
+  return remainingSeconds;
+}
 
 export default function VaultDepositPage() {
   const router = useRouter();
@@ -31,6 +49,7 @@ export default function VaultDepositPage() {
   const idempotencyKey = useIdempotencyKey(amount);
 
   const { data: deposit } = useVaultDepositStatus(depositId);
+  const remainingSeconds = useCountdownTo(deposit?.status === 'pending_payment' ? deposit.expiresAt : undefined);
 
   // Vừa chuyển sang success — cập nhật số dư/lịch sử 1 lần (xem ghi chú ở
   // useVaultDepositStatus vì sao không đặt side-effect này trong hook đó).
@@ -41,6 +60,15 @@ export default function VaultDepositPage() {
       qc.invalidateQueries({ queryKey: ['vault', 'activity'] });
     }
   }, [deposit?.status, qc]);
+
+  // Thành công/hết hạn — tự động điều hướng về ví sau vài giây để user kịp
+  // đọc thông báo, không cần tự bấm nút.
+  useEffect(() => {
+    if (deposit?.status === 'success' || deposit?.status === 'expired') {
+      const timer = setTimeout(() => router.replace('/vault'), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [deposit?.status, router]);
 
   async function handleConfirm() {
     setError(null);
@@ -67,15 +95,31 @@ export default function VaultDepositPage() {
         <p className="mt-2 text-sm text-[#667085]">
           {formatVnd(deposit.amount)} đ đã được cộng vào két của bạn.
         </p>
-        <Link href="/vault" className="mt-8 w-full rounded-xl bg-vaultgreen py-3.5 text-center text-base font-bold text-white shadow-lg">
-          Về trang chủ
-        </Link>
+        <p className="mt-4 text-xs text-[#98A2B3]">Đang chuyển về ví...</p>
+      </div>
+    );
+  }
+
+  if (deposit?.status === 'expired') {
+    return (
+      <div className="mx-auto flex min-h-screen sm:min-h-full max-w-md flex-col items-center justify-center px-6 text-center">
+        <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500">
+          <XCircle size={36} weight="fill" />
+        </span>
+        <h1 className="text-xl font-bold text-[#0B1220]">Phiên giao dịch quá hạn</h1>
+        <p className="mt-2 text-sm text-[#667085]">
+          Bạn chưa chuyển khoản trong thời gian cho phép. Vui lòng tạo lệnh nạp tiền mới.
+        </p>
+        <p className="mt-4 text-xs text-[#98A2B3]">Đang chuyển về trang chủ...</p>
       </div>
     );
   }
 
   // Đã tạo lệnh — hiện QR chờ chuyển khoản + tự động polling xác nhận.
   if (deposit && deposit.status === 'pending_payment') {
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+
     return (
       <div className="mx-auto max-w-md px-4 pb-8 pt-4">
         <div className="mb-4 flex items-center gap-3">
@@ -106,7 +150,11 @@ export default function VaultDepositPage() {
         <div className="mt-4 flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
           <ClockCountdown size={18} className="shrink-0 animate-pulse" />
           <span>
-            Đang chờ xác nhận chuyển khoản... Két sẽ tự động cộng tiền ngay khi ngân hàng báo có, không cần tải lại trang.
+            Đang chờ xác nhận chuyển khoản...{' '}
+            <strong className="mono">
+              Còn {minutes}:{seconds.toString().padStart(2, '0')}
+            </strong>
+            {' '}— két sẽ tự động cộng tiền ngay khi ngân hàng báo có, không cần tải lại trang.
           </span>
         </div>
 
