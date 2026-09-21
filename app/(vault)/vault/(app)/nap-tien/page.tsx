@@ -1,10 +1,15 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Bank, CheckCircle } from '@phosphor-icons/react';
-import { useVaultAccounts, useCreateVaultDeposit } from '@/lib/vault/useVaultData';
+import { ArrowLeft, Bank, CheckCircle, ClockCountdown } from '@phosphor-icons/react';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  useVaultAccounts,
+  useCreateVaultDeposit,
+  useVaultDepositStatus,
+} from '@/lib/vault/useVaultData';
 import { useIdempotencyKey } from '@/lib/vault/useIdempotencyKey';
 import { formatVnd } from '@/lib/vault/format';
 import { VaultApiError } from '@/lib/vault/vaultClient';
@@ -13,16 +18,29 @@ const QUICK_AMOUNTS = [500_000, 2_000_000, 10_000_000, 50_000_000];
 
 export default function VaultDepositPage() {
   const router = useRouter();
+  const qc = useQueryClient();
   const { data: vaults } = useVaultAccounts();
   const createDeposit = useCreateVaultDeposit();
 
   const flexibleVault = useMemo(() => vaults?.find((v) => v.type === 'flexible') ?? vaults?.[0], [vaults]);
   const [amountInput, setAmountInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [depositId, setDepositId] = useState<number | null>(null);
 
   const amount = Number(amountInput.replace(/\D/g, '')) || 0;
   const idempotencyKey = useIdempotencyKey(amount);
+
+  const { data: deposit } = useVaultDepositStatus(depositId);
+
+  // Vừa chuyển sang success — cập nhật số dư/lịch sử 1 lần (xem ghi chú ở
+  // useVaultDepositStatus vì sao không đặt side-effect này trong hook đó).
+  useEffect(() => {
+    if (deposit?.status === 'success') {
+      qc.invalidateQueries({ queryKey: ['vault', 'summary'] });
+      qc.invalidateQueries({ queryKey: ['vault', 'vaults'] });
+      qc.invalidateQueries({ queryKey: ['vault', 'activity'] });
+    }
+  }, [deposit?.status, qc]);
 
   async function handleConfirm() {
     setError(null);
@@ -32,26 +50,69 @@ export default function VaultDepositPage() {
       return;
     }
     try {
-      await createDeposit.mutateAsync({ vaultId: flexibleVault.id, amount, idempotencyKey });
-      setSuccess(true);
+      const created = await createDeposit.mutateAsync({ vaultId: flexibleVault.id, amount, idempotencyKey });
+      setDepositId(created.id);
     } catch (e) {
-      setError(e instanceof VaultApiError ? e.message : 'Nạp tiền thất bại, thử lại sau');
+      setError(e instanceof VaultApiError ? e.message : 'Tạo lệnh nạp tiền thất bại, thử lại sau');
     }
   }
 
-  if (success) {
+  if (deposit?.status === 'success') {
     return (
       <div className="mx-auto flex min-h-screen sm:min-h-full max-w-md flex-col items-center justify-center px-6 text-center">
         <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-vaultgreen-soft text-vaultgreen">
           <CheckCircle size={36} weight="fill" />
         </span>
-        <h1 className="text-xl font-bold text-[#0B1220]">Yêu cầu nạp tiền đã được tạo</h1>
+        <h1 className="text-xl font-bold text-[#0B1220]">Nạp tiền thành công</h1>
         <p className="mt-2 text-sm text-[#667085]">
-          {formatVnd(amount)} đ đang được xác nhận, sẽ vào két của bạn trong ít giây.
+          {formatVnd(deposit.amount)} đ đã được cộng vào két của bạn.
         </p>
         <Link href="/vault" className="mt-8 w-full rounded-xl bg-vaultgreen py-3.5 text-center text-base font-bold text-white shadow-lg">
           Về trang chủ
         </Link>
+      </div>
+    );
+  }
+
+  // Đã tạo lệnh — hiện QR chờ chuyển khoản + tự động polling xác nhận.
+  if (deposit && deposit.status === 'pending_payment') {
+    return (
+      <div className="mx-auto max-w-md px-4 pb-8 pt-4">
+        <div className="mb-4 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setDepositId(null)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F4F7]"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <h1 className="text-base font-bold text-[#0B1220]">Quét mã để nạp tiền</h1>
+        </div>
+
+        <div className="rounded-2xl border border-[#EAECF0] bg-white p-4 text-center shadow-sm">
+          {deposit.qrImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={deposit.qrImageUrl} alt="Mã QR chuyển khoản" className="mx-auto w-full max-w-[280px] rounded-xl" />
+          ) : (
+            <p className="py-10 text-sm text-[#667085]">Chưa cấu hình tài khoản nhận tiền, vui lòng thử lại sau.</p>
+          )}
+
+          <p className="mt-4 text-2xl font-black text-[#0B1220]">{formatVnd(deposit.amount)} đ</p>
+          <p className="mt-1 text-xs text-[#667085]">
+            Nội dung chuyển khoản: <span className="font-bold text-vaultgreen">{deposit.paymentCode}</span>
+          </p>
+        </div>
+
+        <div className="mt-4 flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
+          <ClockCountdown size={18} className="shrink-0 animate-pulse" />
+          <span>
+            Đang chờ xác nhận chuyển khoản... Két sẽ tự động cộng tiền ngay khi ngân hàng báo có, không cần tải lại trang.
+          </span>
+        </div>
+
+        <p className="mt-4 rounded-xl bg-[#F8FAF9] p-3 text-xs text-[#667085]">
+          Vui lòng chuyển khoản ĐÚNG số tiền và giữ nguyên nội dung chuyển khoản (mã {deposit.paymentCode}) để hệ thống tự động khớp giao dịch.
+        </p>
       </div>
     );
   }
@@ -106,7 +167,7 @@ export default function VaultDepositPage() {
       </div>
 
       <p className="mt-4 rounded-xl bg-[#F8FAF9] p-3 text-xs text-[#667085]">
-        Đây là môi trường mô phỏng để test luồng — tiền sẽ được cộng vào két sau vài giây, không qua cổng thanh toán thật.
+        Nạp tiền qua chuyển khoản ngân hàng (VietQR) — tiền vào két tự động ngay khi ngân hàng xác nhận, thường trong vài giây.
       </p>
 
       {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
@@ -117,7 +178,7 @@ export default function VaultDepositPage() {
         disabled={createDeposit.isPending || amount <= 0}
         className="mt-6 w-full rounded-2xl bg-vaultgreen py-4 text-base font-bold text-white shadow-xl disabled:opacity-50"
       >
-        {createDeposit.isPending ? 'Đang xử lý...' : `Xác nhận nạp ${formatVnd(amount)} đ`}
+        {createDeposit.isPending ? 'Đang tạo mã QR...' : `Tạo mã QR nạp ${formatVnd(amount)} đ`}
       </button>
     </div>
   );

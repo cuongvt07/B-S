@@ -215,19 +215,50 @@ export function useVerifyVaultOtp() {
   });
 }
 
+export interface VaultDepositItem {
+  id: number;
+  vaultId: number;
+  amount: number;
+  status: 'pending_payment' | 'success' | 'failed';
+  paymentCode: string | null;
+  qrImageUrl: string | null;
+  completedAt: string | null;
+}
+
+/**
+ * Chỉ TẠO lệnh nạp (status=pending_payment) + trả về QR VietQR để FE hiển
+ * thị — CHƯA có tiền vào két. Tiền chỉ vào két sau khi SePayWebhookController
+ * xác nhận đúng giao dịch (xem useVaultDepositStatus để polling chờ kết quả).
+ */
 export function useCreateVaultDeposit() {
-  const qc = useQueryClient();
   return useMutation({
     // Xem ghi chú idempotencyKey ở useCreateVaultWithdrawal — áp dụng tương tự.
     mutationFn: (input: { vaultId: number; amount: number; idempotencyKey: string }) =>
-      vaultFetch<{ id: number; status: string }>('/deposits', {
+      vaultFetch<VaultDepositItem>('/deposits', {
         method: 'POST',
         body: { vault_id: input.vaultId, amount: input.amount, idempotency_key: input.idempotencyKey },
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['vault', 'summary'] });
-      qc.invalidateQueries({ queryKey: ['vault', 'vaults'] });
-      qc.invalidateQueries({ queryKey: ['vault', 'activity'] });
+  });
+}
+
+/**
+ * Polling trạng thái 1 lệnh nạp đang chờ SePay xác nhận — dừng tự động khi
+ * đã success/failed (refetchInterval trả về false). enabled=false khi chưa
+ * có depositId (trước khi useCreateVaultDeposit tạo lệnh xong).
+ *
+ * Nơi gọi (trang nạp tiền) tự invalidate summary/vaults/activity khi thấy
+ * status chuyển sang 'success' (side-effect KHÔNG đặt trong refetchInterval
+ * vì callback đó chạy lại mỗi lần polling, không có cách nào biết "đã xử lý
+ * xong lần chuyển trạng thái này chưa" để tránh invalidate lặp lại).
+ */
+export function useVaultDepositStatus(depositId: number | null) {
+  return useQuery({
+    queryKey: ['vault', 'deposit', depositId],
+    queryFn: () => vaultFetch<VaultDepositItem>(`/deposits/${depositId}`),
+    enabled: depositId !== null,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status === 'success' || status === 'failed' ? false : 3_000;
     },
   });
 }
