@@ -160,6 +160,34 @@ export default function VaultDashboardPage() {
         })}
       </section>
 
+      {/* Dòng tiền gần nhất — ưu tiên hiển thị NGAY, không phải cuộn sâu mới thấy */}
+      <section className="mt-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-extrabold text-[#0B1220]">Biến động gần đây</h2>
+          <Link href="/vault/giao-dich" className="flex items-center gap-1 text-xs font-extrabold text-vaultgreen">Xem thêm <CaretRight size={14} weight="bold" /></Link>
+        </div>
+        <div className="mt-2 divide-y divide-[#F0F2F1] rounded-[22px] border border-[#E7ECEA] bg-white px-3 shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
+          {visibleActivity.slice(0, 3).map((item) => {
+            const meta = ACTIVITY_LABEL[item.type] ?? { label: item.type, icon: <ChartLineUp size={17} />, tone: 'text-vaultgreen' };
+            return (
+              <div key={item.id} className="flex items-center justify-between gap-3 py-2.5">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#F4F7F5] ${meta.tone}`}>{meta.icon}</span>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-bold text-[#344054]">{meta.label}</p>
+                    <p className="mt-0.5 text-[10px] text-[#98A2B3]">{formatVaultDate(item.createdAt)}</p>
+                  </div>
+                </div>
+                <span className={`shrink-0 text-xs font-black ${item.amount >= 0 ? 'text-vaultgreen' : 'text-red-500'}`}>
+                  {item.amount >= 0 ? '+' : ''}{formatVnd(item.amount)} đ
+                </span>
+              </div>
+            );
+          })}
+          {!visibleActivity.length && <p className="py-6 text-center text-xs text-[#98A2B3]">Chưa có biến động nào.</p>}
+        </div>
+      </section>
+
       <section className="mt-7">
         <div className="flex items-end justify-between">
           <div>
@@ -241,36 +269,6 @@ export default function VaultDashboardPage() {
         </div>
         <span className="ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#D6F58D] text-[#315B2F] transition group-hover:scale-105"><GiftIcon size={21} weight="bold" /></span>
       </Link>
-
-      <section className="mb-2 mt-7">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#98A2B3]">Dòng tiền</p>
-            <h2 className="mt-1 text-lg font-black tracking-[-0.02em] text-[#0B1220]">Biến động gần đây</h2>
-          </div>
-          <Link href="/vault/giao-dich" className="flex items-center gap-1 text-xs font-extrabold text-vaultgreen">Xem thêm <CaretRight size={14} weight="bold" /></Link>
-        </div>
-        <div className="mt-3 divide-y divide-[#F0F2F1] rounded-[22px] border border-[#E7ECEA] bg-white px-3 shadow-[0_8px_24px_rgba(16,24,40,0.05)]">
-          {visibleActivity.map((item) => {
-            const meta = ACTIVITY_LABEL[item.type] ?? { label: item.type, icon: <ChartLineUp size={17} />, tone: 'text-vaultgreen' };
-            return (
-              <div key={item.id} className="flex items-center justify-between gap-3 py-3">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F7F5] ${meta.tone}`}>{meta.icon}</span>
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-bold text-[#344054]">{meta.label}</p>
-                    <p className="mt-0.5 text-[10px] text-[#98A2B3]">{formatVaultDate(item.createdAt)}</p>
-                  </div>
-                </div>
-                <span className={`shrink-0 text-xs font-black ${item.amount >= 0 ? 'text-vaultgreen' : 'text-red-500'}`}>
-                  {item.amount >= 0 ? '+' : ''}{formatVnd(item.amount)} đ
-                </span>
-              </div>
-            );
-          })}
-          {!visibleActivity.length && <p className="py-8 text-center text-xs text-[#98A2B3]">Chưa có biến động nào.</p>}
-        </div>
-      </section>
     </div>
   );
 }
