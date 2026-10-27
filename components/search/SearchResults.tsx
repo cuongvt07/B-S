@@ -77,7 +77,7 @@ export function SearchResults({ initialFilter = {} }: SearchResultsProps) {
 
         <FilterChips filter={filter} setFilter={setFilter} />
 
-        <ListingGrid listings={data?.data} loading={isLoading} skeletonCount={6} />
+        <ListingGrid listings={data?.data} loading={isLoading} skeletonCount={6} adChance={0.5} />
 
         {data && data.meta.totalPages > 1 && (
           <div className="flex justify-center pt-4">

@@ -1,4 +1,6 @@
+import { Fragment } from 'react';
 import type { Listing } from '@/types';
+import { CashbackAd } from '@/components/ads';
 import { ListingCard } from './ListingCard';
 import { ListingCardSkeleton } from './ListingCardSkeleton';
 
@@ -9,7 +11,11 @@ interface Props {
   empty?: React.ReactNode;
   /** Number of cards to load with `priority` (above-the-fold). Default 0. */
   priorityCount?: number;
+  /** Xác suất chèn khối quảng cáo Săn Cashback sau hàng tin đầu tiên. */
+  adChance?: number;
 }
+
+const AD_AFTER_INDEX = 2;
 
 export function ListingGrid({
   listings,
@@ -17,6 +23,7 @@ export function ListingGrid({
   skeletonCount = 6,
   empty,
   priorityCount = 0,
+  adChance,
 }: Props) {
   if (loading) {
     return (
@@ -37,7 +44,12 @@ export function ListingGrid({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {listings.map((l, i) => (
-        <ListingCard key={l.id} listing={l} priority={i < priorityCount} />
+        <Fragment key={l.id}>
+          <ListingCard listing={l} priority={i < priorityCount} />
+          {adChance !== undefined && i === Math.min(AD_AFTER_INDEX, listings.length - 1) && (
+            <CashbackAd chance={adChance} limit={2} className="my-0" />
+          )}
+        </Fragment>
       ))}
     </div>
   );

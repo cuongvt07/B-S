@@ -13,6 +13,7 @@ import {
   FavoriteButton,
 } from '@/components/listing';
 import { Badge } from '@/components/ui';
+import { CashbackAd, InlineCashbackAd } from '@/components/ads';
 import { Breadcrumbs, JsonLd, listingSchema, breadcrumbSchema } from '@/components/seo';
 import { formatPrice, formatArea, formatTimeAgo, formatNumber } from '@/lib/utils/format';
 import { extractIdFromSlug } from '@/lib/utils/slugify';
@@ -182,9 +183,15 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
           <section>
             <h2 className="mb-3 text-lg font-semibold">Mô tả chi tiết</h2>
-            <div className="whitespace-pre-line rounded-md border border-brdr bg-white p-4 text-sm leading-relaxed text-ink">
-              {l.description}
-            </div>
+            {/* Tách từng dòng thành <p> để quảng cáo có điểm chèn giữa các đoạn. */}
+            <InlineCashbackAd
+              chance={0.7}
+              className="whitespace-pre-line rounded-md border border-brdr bg-white p-4 text-sm leading-relaxed text-ink"
+            >
+              {l.description.split('\n').map((line, i) => (
+                <p key={i}>{line || ' '}</p>
+              ))}
+            </InlineCashbackAd>
           </section>
 
           {l.amenities.length > 0 && (
@@ -259,6 +266,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
         <div className="lg:sticky lg:top-20 lg:self-start">
           <ContactSidebar listing={l} />
+          <CashbackAd chance={0.5} />
         </div>
       </div>
 

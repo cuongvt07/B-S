@@ -7,6 +7,7 @@ import { getVehicle, listVehicles } from '@/lib/server-data';
 import { VehicleCard } from '@/components/vehicle';
 import { Breadcrumbs, JsonLd, vehicleSchema, breadcrumbSchema } from '@/components/seo';
 import { SITE } from '@/lib/constants';
+import { InlineCashbackAd } from '@/components/ads';
 import { formatPrice, formatNumber, formatTimeAgo, maskPhone } from '@/lib/utils/format';
 
 interface PageProps {
@@ -118,7 +119,11 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           {v.description && (
             <section>
               <h2 className="mb-3 text-lg font-semibold">Mô tả</h2>
-              <p className="whitespace-pre-line text-sm leading-6 text-ink">{v.description}</p>
+              <InlineCashbackAd chance={0.7} className="whitespace-pre-line text-sm leading-6 text-ink">
+                {v.description.split('\n').map((line, i) => (
+                  <p key={i}>{line || ' '}</p>
+                ))}
+              </InlineCashbackAd>
             </section>
           )}
         </div>

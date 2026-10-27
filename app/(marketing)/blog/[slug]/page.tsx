@@ -7,6 +7,7 @@ import { BlogContent, BlogTOC, BlogCard } from '@/components/blog';
 import { Breadcrumbs, JsonLd, articleSchema, breadcrumbSchema } from '@/components/seo';
 import { formatTimeAgo } from '@/lib/utils/format';
 import { SITE } from '@/lib/constants';
+import { InlineCashbackAd } from '@/components/ads';
 
 interface PageProps {
   params: { slug: string };
@@ -84,7 +85,9 @@ export default async function BlogDetailPage({ params }: PageProps) {
             />
           </div>
 
-          <BlogContent markdown={b.content} />
+          <InlineCashbackAd chance={0.7} minParagraphLength={80}>
+            <BlogContent markdown={b.content} />
+          </InlineCashbackAd>
 
           {b.tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 border-t border-brdr pt-4">
